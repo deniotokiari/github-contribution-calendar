@@ -1,0 +1,15 @@
+query QueryUserContribution($userName:String!) {
+    user(login: $userName){
+        contributionsCollection {
+            contributionCalendar {
+                weeks {
+                    contributionDays {
+                        date
+                        color
+                        contributionCount
+                    }
+                }
+            }
+        }
+    }
+}
