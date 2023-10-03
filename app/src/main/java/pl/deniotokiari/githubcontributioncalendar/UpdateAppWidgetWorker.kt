@@ -24,8 +24,8 @@ class UpdateAppWidgetWorker(
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
-                repeatInterval = 15,
-                repeatIntervalTimeUnit = TimeUnit.MINUTES
+                repeatInterval = 1,
+                repeatIntervalTimeUnit = TimeUnit.DAYS
             ).build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(

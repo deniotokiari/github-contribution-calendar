@@ -42,6 +42,10 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
 
         setResult(Activity.RESULT_CANCELED, Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId))
 
+        if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            finish()
+        }
+
         setContent {
             GitHubContributionCalendarTheme {
                 Surface(modifier = Modifier.wrapContentSize(), color = MaterialTheme.colorScheme.background) {
@@ -72,7 +76,7 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                                             context = this@AppWidgetConfigurationActivity,
                                             glanceId = glanceId
                                         ) {
-                                            it[stringPreferencesKey("username")] = username
+                                            it[AppWidget.USER_NAME_KEY] = username
                                         }
 
                                         UpdateAppWidgetWorker.start(this@AppWidgetConfigurationActivity)
