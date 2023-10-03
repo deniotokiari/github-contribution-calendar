@@ -1,6 +1,8 @@
 package pl.deniotokiari.githubcontributioncalendar
 
 import android.content.Context
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.ImageProvider
@@ -19,11 +21,22 @@ class AppWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val size = LocalSize.current
-            val bitmap = WidgetBitmapCreator()(
+            val params = WidgetBitmapCreator.getParamsForBitmap(
                 width = size.width.value.roundToInt(),
                 height = size.height.value.roundToInt(),
                 squareSize = 20,
                 padding = 1
+            )
+            val colors by ContributionCalendarRepository(apolloClient).getBlocks(
+                "deniotokiari",
+                params.hCount * params.wCount
+            )
+                .collectAsState(initial = IntArray(0))
+            val bitmap = WidgetBitmapCreator()(
+                width = size.width.value.roundToInt(),
+                height = size.height.value.roundToInt(),
+                params = params,
+                colors = colors
             )
 
             Spacer(
