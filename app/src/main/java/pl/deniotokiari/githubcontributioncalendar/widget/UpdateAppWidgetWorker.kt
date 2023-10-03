@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar
+package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
 import androidx.glance.appwidget.updateAll
@@ -11,9 +11,11 @@ import java.util.concurrent.TimeUnit
 
 class UpdateAppWidgetWorker(
     private val context: Context,
+    private val contributionCalendarRepository: ContributionCalendarRepository,
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
+        contributionCalendarRepository.updateAll()
         AppWidget().updateAll(context)
 
         return Result.success()
@@ -24,8 +26,8 @@ class UpdateAppWidgetWorker(
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
-                repeatInterval = 1,
-                repeatIntervalTimeUnit = TimeUnit.DAYS
+                repeatInterval = 12,
+                repeatIntervalTimeUnit = TimeUnit.HOURS
             ).build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(

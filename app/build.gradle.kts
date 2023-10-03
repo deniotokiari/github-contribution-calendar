@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.data.store)
     implementation(libs.work)
     implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.bundles.koin)
 
     testImplementation(libs.junit)
 

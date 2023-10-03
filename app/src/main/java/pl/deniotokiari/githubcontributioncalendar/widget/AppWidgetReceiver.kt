@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar
+package pl.deniotokiari.githubcontributioncalendar.widget
 
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver

@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar
+package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -62,44 +62,42 @@ class WidgetBitmapCreator {
             get() = hCount * wCount
     }
 
-    companion object {
-        fun getParamsForBitmap(
-            width: Int,
-            height: Int,
-            squareSize: Int,
-            padding: Int,
-            colorsSize: Int
-        ): Params {
-            val wOffset = squareSize / 2
-            val hOffset = squareSize / 2
-            val size = getValue(width - wOffset * 2, squareSize)
-            val wCount = (width - wOffset * 2) / size
-            val hCountMax = colorsSize / wCount
-            val hCount = min((height - hOffset * 2) / size, hCountMax)
-            val sizeF = size.toFloat()
-            val paddingF = padding.toFloat()
-            val wOffsetF = wOffset.toFloat()
-            // alter hOffset to make it symmetrical on top and bottom
-            val hOffsetF = ((height - hCount * size) / 2).toFloat()
+    fun getParamsForBitmap(
+        width: Int,
+        height: Int,
+        squareSize: Int,
+        padding: Int,
+        colorsSize: Int
+    ): Params {
+        val wOffset = squareSize / 2
+        val hOffset = squareSize / 2
+        val size = getValue(width - wOffset * 2, squareSize)
+        val wCount = (width - wOffset * 2) / size
+        val hCountMax = colorsSize / wCount
+        val hCount = min((height - hOffset * 2) / size, hCountMax)
+        val sizeF = size.toFloat()
+        val paddingF = padding.toFloat()
+        val wOffsetF = wOffset.toFloat()
+        // alter hOffset to make it symmetrical on top and bottom
+        val hOffsetF = ((height - hCount * size) / 2).toFloat()
 
-            return Params(
-                hCount = hCount,
-                wCount = wCount,
-                blockSize = sizeF,
-                padding = paddingF,
-                hOffset = hOffsetF,
-                wOffset = wOffsetF
-            )
+        return Params(
+            hCount = hCount,
+            wCount = wCount,
+            blockSize = sizeF,
+            padding = paddingF,
+            hOffset = hOffsetF,
+            wOffset = wOffsetF
+        )
+    }
+
+    private fun getValue(a: Int, b: Int): Int {
+        var c = b
+
+        while (a.mod(c) > 0) {
+            c--
         }
 
-        private fun getValue(a: Int, b: Int): Int {
-            var c = b
-
-            while (a.mod(c) > 0) {
-                c--
-            }
-
-            return c
-        }
+        return c
     }
 }

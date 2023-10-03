@@ -4,9 +4,7 @@ query QueryUserContribution($userName:String!) {
             contributionCalendar {
                 weeks {
                     contributionDays {
-                        date
                         color
-                        contributionCount
                     }
                 }
             }
