@@ -19,9 +19,11 @@ class AppWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             val size = LocalSize.current
-            val bitmap = Repo().getBitmap(
+            val bitmap = WidgetBitmapCreator()(
                 width = size.width.value.roundToInt(),
-                height = size.height.value.roundToInt()
+                height = size.height.value.roundToInt(),
+                squareSize = 20,
+                padding = 1
             )
 
             Spacer(
