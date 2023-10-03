@@ -26,6 +26,15 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".AppWidgetConfigurationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.GitHubContributionCalendarWidgetConfiguration">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
         <receiver
             android:name=".AppWidgetReceiver"
             android:exported="true">
