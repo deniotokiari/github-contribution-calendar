@@ -4,15 +4,14 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 
 class WidgetBitmapCreator {
     operator fun invoke(
         width: Int,
         height: Int,
         params: Params,
-        colors: IntArray
+        colors: IntArray,
+        defaultColor: Int
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(
             width,
@@ -41,7 +40,7 @@ class WidgetBitmapCreator {
                     rect.inset(params.padding, params.padding)
                     rect.offset(params.wOffset, params.hOffset)
 
-                    paint.color = colors.getOrElse(index++) { Color.Black.toArgb() }
+                    paint.color = colors.getOrElse(index++) { defaultColor }
                     drawRect(rect, paint)
                 }
             }

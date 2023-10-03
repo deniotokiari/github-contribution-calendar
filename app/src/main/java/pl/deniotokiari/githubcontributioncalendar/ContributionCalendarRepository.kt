@@ -11,23 +11,31 @@ import pl.deniotokiari.githubcontributioncalendar.service.github.QueryUserContri
 class ContributionCalendarRepository(
     private val apolloClient: ApolloClient
 ) {
-    fun getBlocks(user: String, size: Int): Flow<IntArray> = flow {
-        val result = withContext(Dispatchers.IO) {
-            val response = apolloClient.query(QueryUserContributionQuery(user)).execute()
+    fun getBlocks(user: String, size: Int, defaultColor: Int): Flow<IntArray> = flow {
+        if (size != 0) {
+            // TODO calculate from and to for request
 
-            response
-                .data
-                ?.user
-                ?.contributionsCollection
-                ?.contributionCalendar
-                ?.weeks
-                ?.flatMap { it.contributionDays }
-                ?.map { it.color.toColorInt() }
+            val result = withContext(Dispatchers.IO) {
+                val response = apolloClient.query(QueryUserContributionQuery(user)).execute()
 
-        } ?: emptyList()
+                response
+                    .data
+                    ?.user
+                    ?.contributionsCollection
+                    ?.contributionCalendar
+                    ?.weeks
+                    ?.flatMap { it.contributionDays }
+                    ?.map { it.color.toColorInt() }
 
-        val trimSize = result.size - size
+            } ?: emptyList()
 
-        emit(result.drop(trimSize).toIntArray())
+            emit(
+                IntArray(size) {
+                    result.getOrNull(it + result.size - size) ?: defaultColor
+                }
+            )
+        } else {
+            emit(IntArray(0))
+        }
     }
 }
