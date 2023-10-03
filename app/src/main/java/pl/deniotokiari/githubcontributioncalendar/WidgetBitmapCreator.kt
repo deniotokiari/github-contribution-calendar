@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import java.lang.Integer.min
 
 class WidgetBitmapCreator {
     operator fun invoke(
@@ -56,20 +57,25 @@ class WidgetBitmapCreator {
         val padding: Float,
         val hOffset: Float,
         val wOffset: Float
-    )
+    ) {
+        val blocksCount: Int
+            get() = hCount * wCount
+    }
 
     companion object {
         fun getParamsForBitmap(
             width: Int,
             height: Int,
             squareSize: Int,
-            padding: Int
+            padding: Int,
+            colorsSize: Int
         ): Params {
             val wOffset = squareSize / 2
             val hOffset = squareSize / 2
             val size = getValue(width - wOffset * 2, squareSize)
             val wCount = (width - wOffset * 2) / size
-            val hCount = (height - hOffset * 2) / size
+            val hCountMax = colorsSize / wCount
+            val hCount = min((height - hOffset * 2) / size, hCountMax)
             val sizeF = size.toFloat()
             val paddingF = padding.toFloat()
             val wOffsetF = wOffset.toFloat()

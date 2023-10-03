@@ -1,8 +1,6 @@
 package pl.deniotokiari.githubcontributioncalendar
 
 import android.content.Context
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
@@ -21,6 +19,10 @@ class AppWidget : GlanceAppWidget() {
     override val sizeMode: SizeMode = SizeMode.Exact
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        val colors = ContributionCalendarRepository(apolloClient).getBlocks(
+            user = "deniotokiari",
+        )
+
         provideContent {
             val defaultColor = Purple80.toArgb()
             val size = LocalSize.current
@@ -28,22 +30,20 @@ class AppWidget : GlanceAppWidget() {
                 width = size.width.value.roundToInt(),
                 height = size.height.value.roundToInt(),
                 squareSize = 20,
-                padding = 1
+                padding = 1,
+                colorsSize = colors.size
             )
-            val colors by ContributionCalendarRepository(apolloClient).getBlocks(
-                user = "deniotokiari",
-                size = params.hCount * params.wCount,
-                defaultColor = defaultColor
-            )
-                .collectAsState(initial = IntArray(0))
+            val blocksCount = params.blocksCount
+            val offset = colors.size - blocksCount
             val bitmap = WidgetBitmapCreator()(
                 width = size.width.value.roundToInt(),
                 height = size.height.value.roundToInt(),
                 params = params,
-                colors = colors,
+                colors = IntArray(blocksCount) {
+                    colors.getOrNull(it + offset) ?: defaultColor
+                },
                 defaultColor = defaultColor
             )
-
             Spacer(
                 modifier = GlanceModifier.fillMaxSize().background(ImageProvider(bitmap))
             )
