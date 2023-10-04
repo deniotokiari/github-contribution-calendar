@@ -29,8 +29,8 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
+import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
 import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
 
 class AppWidgetConfigurationActivity : ComponentActivity() {

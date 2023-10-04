@@ -15,13 +15,13 @@ import pl.deniotokiari.githubcontributioncalendar.widget.ContributionCalendarRep
 import pl.deniotokiari.githubcontributioncalendar.widget.GitHubLocalDataSource
 import pl.deniotokiari.githubcontributioncalendar.widget.GitHubRemoteDataSource
 import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetBitmapCreator
+import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 
 val appModule = module {
     single { AppDispatchers.IO }
     single { get<Context>().dataStore }
     single { apolloClient }
-    singleOf(::WidgetBitmapCreator)
+    singleOf(::BlocksBitmapCreator)
     singleOf(::GitHubService)
     singleOf(::GitHubLocalDataSource)
     singleOf(::GitHubRemoteDataSource)

@@ -28,7 +28,7 @@ class GitHubLocalDataSource(
         }
     }
 
-    suspend fun removeUser(user: String) {
+    suspend fun removeUserContribution(user: String) {
         val key = stringPreferencesKey(user)
 
         dataStore.edit {

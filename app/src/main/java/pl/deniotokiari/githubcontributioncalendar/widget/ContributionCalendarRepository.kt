@@ -46,6 +46,11 @@ class ContributionCalendarRepository(
             emit(emptyList())
         }
 
+    suspend fun removeBlocksForUser(user: String) {
+        removeUser(user)
+        gitHubLocalDataSource.removeUserContribution(user)
+    }
+
     suspend fun updateAll() = runCatching {
         withContext(io.dispatcher) {
             getAllUsers().forEach { user ->

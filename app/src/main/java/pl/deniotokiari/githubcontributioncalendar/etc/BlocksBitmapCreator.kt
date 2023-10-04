@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.etc
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -6,7 +6,7 @@ import android.graphics.Paint
 import android.graphics.RectF
 import java.lang.Integer.min
 
-class WidgetBitmapCreator {
+class BlocksBitmapCreator {
     operator fun invoke(
         width: Int,
         height: Int,
@@ -30,12 +30,16 @@ class WidgetBitmapCreator {
 
         Canvas(bitmap).apply {
             repeat(params.hCount) { i ->
+                val iOffset = params.blockSize * i
+
                 repeat(params.wCount) { j ->
+                    val jOffset = params.blockSize * j
+
                     rect.apply {
-                        left = params.blockSize * j
-                        top = params.blockSize * i
-                        right = params.blockSize * j + params.blockSize
-                        bottom = params.blockSize * i + params.blockSize
+                        left = jOffset
+                        top = iOffset
+                        right = jOffset + params.blockSize
+                        bottom = iOffset + params.blockSize
                     }
 
                     rect.inset(params.padding, params.padding)
