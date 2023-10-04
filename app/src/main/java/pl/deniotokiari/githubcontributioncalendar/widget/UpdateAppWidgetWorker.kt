@@ -2,8 +2,10 @@ package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
 import androidx.glance.appwidget.updateAll
+import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
@@ -24,7 +26,7 @@ class UpdateAppWidgetWorker(
     }
 
     companion object {
-        private const val WORK_NAME = "UpdateAppWidgetWorker"
+        const val WORK_NAME = "UpdateAppWidgetWorker"
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
@@ -38,7 +40,14 @@ class UpdateAppWidgetWorker(
                 } else {
                     TimeUnit.HOURS
                 }
-            ).build()
+            )
+                .setConstraints(
+                    Constraints
+                        .Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
