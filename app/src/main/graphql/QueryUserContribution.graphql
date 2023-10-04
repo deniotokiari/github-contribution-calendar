@@ -1,6 +1,6 @@
-query QueryUserContribution($userName:String!) {
+query QueryUserContribution($userName:String!, $from: DateTime, $to: DateTime) {
     user(login: $userName){
-        contributionsCollection {
+        contributionsCollection(from: $from, to: $to) {
             contributionCalendar {
                 weeks {
                     contributionDays {

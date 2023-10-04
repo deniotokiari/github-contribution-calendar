@@ -31,7 +31,7 @@ class ContributionCalendarRepository(
             var items = gitHubLocalDataSource.getUserContribution(user)
 
             if (items.isEmpty()) {
-                items = gitHubRemoteDataSource.getUserContribution(user)?.map { it.toColorInt() } ?: emptyList()
+                items = gitHubRemoteDataSource.getUserContribution(user).map { it.toColorInt() }
 
                 gitHubLocalDataSource.setUserContribution(user, items)
             }
@@ -54,7 +54,7 @@ class ContributionCalendarRepository(
     suspend fun updateAll() = runCatching {
         withContext(io.dispatcher) {
             getAllUsers().forEach { user ->
-                val result = gitHubRemoteDataSource.getUserContribution(user)?.map { it.toColorInt() } ?: emptyList()
+                val result = gitHubRemoteDataSource.getUserContribution(user).map { it.toColorInt() }
 
                 if (result.isNotEmpty()) {
                     gitHubLocalDataSource.setUserContribution(user, result)

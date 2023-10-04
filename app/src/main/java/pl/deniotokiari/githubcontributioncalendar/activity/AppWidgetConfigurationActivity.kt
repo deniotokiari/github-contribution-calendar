@@ -63,7 +63,8 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                             onValueChange = {
                                 username = it
                             },
-                            label = { Text(text = "GitHub username") }
+                            label = { Text(text = "GitHub username") },
+                            modifier = Modifier.fillMaxWidth()
                         )
                         Row(
                             modifier = Modifier
