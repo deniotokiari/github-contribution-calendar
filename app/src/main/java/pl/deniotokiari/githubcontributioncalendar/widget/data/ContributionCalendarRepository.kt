@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.widget.data
 
 import android.util.Log
 import androidx.core.graphics.toColorInt

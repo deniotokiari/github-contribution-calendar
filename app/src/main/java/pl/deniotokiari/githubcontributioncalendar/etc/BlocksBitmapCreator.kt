@@ -11,8 +11,7 @@ class BlocksBitmapCreator {
         width: Int,
         height: Int,
         params: Params,
-        colors: IntArray,
-        defaultColor: Int
+        colors: IntArray
     ): Bitmap {
         val bitmap = Bitmap.createBitmap(
             width,
@@ -45,7 +44,7 @@ class BlocksBitmapCreator {
                     rect.inset(params.padding, params.padding)
                     rect.offset(params.wOffset, params.hOffset)
 
-                    paint.color = colors.getOrElse(index++) { defaultColor }
+                    paint.color = colors[index++]
                     drawRect(rect, paint)
                 }
             }

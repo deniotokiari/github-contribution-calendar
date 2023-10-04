@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.widget.data
 
 import pl.deniotokiari.githubcontributioncalendar.network.GitHubService
 

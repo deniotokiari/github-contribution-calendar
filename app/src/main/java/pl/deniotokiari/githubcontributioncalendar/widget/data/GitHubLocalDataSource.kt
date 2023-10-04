@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.widget.data
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

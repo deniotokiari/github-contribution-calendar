@@ -8,6 +8,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
+import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
 import java.util.concurrent.TimeUnit
 
 class UpdateAppWidgetWorker(
