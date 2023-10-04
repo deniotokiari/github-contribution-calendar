@@ -7,6 +7,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import java.util.concurrent.TimeUnit
 
 class UpdateAppWidgetWorker(
@@ -26,8 +27,16 @@ class UpdateAppWidgetWorker(
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
-                repeatInterval = 12,
-                repeatIntervalTimeUnit = TimeUnit.HOURS
+                repeatInterval = if (BuildConfig.DEBUG) {
+                    15
+                } else {
+                    12
+                },
+                repeatIntervalTimeUnit = if (BuildConfig.DEBUG) {
+                    TimeUnit.MINUTES
+                } else {
+                    TimeUnit.HOURS
+                }
             ).build()
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
