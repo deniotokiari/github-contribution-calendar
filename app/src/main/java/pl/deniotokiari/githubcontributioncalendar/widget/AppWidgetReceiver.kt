@@ -12,6 +12,12 @@ class AppWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
     override fun onDisabled(context: Context?) {
         super.onDisabled(context)
 
-        context?.let { WorkManager.getInstance(it).cancelUniqueWork(UpdateAppWidgetWorker.WORK_NAME) }
+        context?.let { UpdateAppWidgetWorker.cancel(it) }
+    }
+
+    override fun onEnabled(context: Context?) {
+        super.onEnabled(context)
+
+        context?.let { UpdateAppWidgetWorker.start(it) }
     }
 }

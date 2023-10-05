@@ -31,7 +31,6 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
 import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
-import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
 
 class AppWidgetConfigurationActivity : ComponentActivity() {
     private val appWidgetId by lazy {
@@ -90,8 +89,6 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                                         ) {
                                             it[AppWidget.USER_NAME_KEY] = username
                                         }
-
-                                        UpdateAppWidgetWorker.start(this@AppWidgetConfigurationActivity)
 
                                         AppWidget().update(this@AppWidgetConfigurationActivity, glanceId)
 

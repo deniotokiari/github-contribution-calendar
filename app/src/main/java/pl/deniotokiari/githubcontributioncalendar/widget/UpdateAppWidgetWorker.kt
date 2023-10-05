@@ -13,6 +13,8 @@ import androidx.work.WorkerParameters
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
 import java.util.concurrent.TimeUnit
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 class UpdateAppWidgetWorker(
     private val context: Context,
@@ -20,16 +22,23 @@ class UpdateAppWidgetWorker(
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
+        val start = System.currentTimeMillis()
         Log.d("LOG", "update all widget worker start")
         contributionCalendarRepository.updateAll()
+
         AppWidget().updateAll(context)
-        Log.d("LOG", "update all widget worker end")
+
+        Log.d("LOG", "update all widget worker end ${(System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)}")
 
         return Result.success()
     }
 
     companion object {
-        const val WORK_NAME = "UpdateAppWidgetWorker"
+        private const val WORK_NAME = "UpdateAppWidgetWorker"
+
+        fun cancel(context: Context) {
+            WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
+        }
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(

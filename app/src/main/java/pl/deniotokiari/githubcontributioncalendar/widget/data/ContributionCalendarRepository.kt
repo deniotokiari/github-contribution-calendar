@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -25,6 +26,7 @@ class ContributionCalendarRepository(
     private val io: AppDispatchers.IO
 ) {
     private val usersKey = stringPreferencesKey(USERS_KEY)
+
     // TODO: check if it could be implemented without mutex
     // as for now widget fire provideContent twice for each size change
     private val mutex by lazy { Mutex() }
@@ -61,10 +63,12 @@ class ContributionCalendarRepository(
     suspend fun updateAll() = runCatching {
         withContext(io.dispatcher) {
             getAllUsers().forEach { user ->
-                val result = gitHubRemoteDataSource.getUserContribution(user).map { it.toColorInt() }
+                launch {
+                    val result = gitHubRemoteDataSource.getUserContribution(user).map { it.toColorInt() }
 
-                if (result.isNotEmpty()) {
-                    gitHubLocalDataSource.setUserContribution(user, result)
+                    if (result.isNotEmpty()) {
+                        gitHubLocalDataSource.setUserContribution(user, result)
+                    }
                 }
             }
         }
