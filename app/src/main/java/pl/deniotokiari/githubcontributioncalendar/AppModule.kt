@@ -9,13 +9,13 @@ import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.workmanager.dsl.workerOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
+import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import pl.deniotokiari.githubcontributioncalendar.network.GitHubService
 import pl.deniotokiari.githubcontributioncalendar.network.apolloClient
+import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
 import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.data.GitHubLocalDataSource
 import pl.deniotokiari.githubcontributioncalendar.widget.data.GitHubRemoteDataSource
-import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
-import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 
 val appModule = module {
     single { AppDispatchers.IO }

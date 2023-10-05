@@ -33,6 +33,15 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+    flavorDimensions += "blocksGeneration"
+    productFlavors {
+        create("random") {
+            dimension = "blocksGeneration"
+        }
+        create("github") {
+            dimension = "blocksGeneration"
+        }
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
