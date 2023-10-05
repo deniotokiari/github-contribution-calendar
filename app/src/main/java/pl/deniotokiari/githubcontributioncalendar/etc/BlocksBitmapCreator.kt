@@ -11,6 +11,32 @@ class BlocksBitmapCreator {
     operator fun invoke(
         width: Int,
         height: Int,
+        squareSize: Int,
+        padding: Int,
+        colors: IntArray
+    ): Bitmap {
+        val params = getParamsForBitmap(
+            width = width,
+            height = height,
+            squareSize = squareSize,
+            padding = padding,
+            colorsSize = colors.size
+        )
+
+        val blocksCount = params.blocksCount
+        val offset = colors.size - blocksCount
+
+        return invoke(
+            width = width,
+            height = height,
+            params = params,
+            colors = IntArray(blocksCount) { colors[it + offset] }
+        )
+    }
+
+    operator fun invoke(
+        width: Int,
+        height: Int,
         params: Params,
         colors: IntArray
     ): Bitmap {

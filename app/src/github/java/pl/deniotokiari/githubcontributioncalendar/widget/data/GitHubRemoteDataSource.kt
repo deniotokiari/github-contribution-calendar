@@ -24,7 +24,7 @@ class GitHubRemoteDataSource(
                 from.plusYears(1).with(LocalTime.MAX).plusDays(-1)
             }
 
-            from and to
+            Pair(from, to)
         }
 
         return fromItems.mapNotNull { (from, to) ->
@@ -36,5 +36,3 @@ class GitHubRemoteDataSource(
         }.flatten()
     }
 }
-
-private infix fun <A, B> A.and(that: B): Pair<A, B> = Pair(this, that)

@@ -5,7 +5,6 @@ import android.widget.RemoteViews
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
@@ -28,7 +27,6 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.R
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
-import pl.deniotokiari.githubcontributioncalendar.ui.theme.Purple40
 import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
 import kotlin.math.roundToInt
 
@@ -85,7 +83,7 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                         width = width,
                         height = height,
                         params = params,
-                        colors = IntArray(blocksCount) { colors.getOrNull(it + offset) ?: Purple40.toArgb() }
+                        colors = IntArray(blocksCount) { colors[it + offset]}
                     )
                     Spacer(
                         modifier = GlanceModifier.fillMaxSize().background(ImageProvider(bitmap))

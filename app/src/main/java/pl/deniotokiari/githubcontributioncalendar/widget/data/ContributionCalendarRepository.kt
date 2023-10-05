@@ -8,8 +8,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -73,6 +75,12 @@ class ContributionCalendarRepository(
             }
         }
     }
+
+    fun getUsersWithContributions(): Flow<Map<String, List<Int>>> = flow {
+        val users = getAllUsers().toTypedArray()
+
+        emitAll(gitHubLocalDataSource.getContributionFor(*users))
+    }.flowOn(io.dispatcher)
 
     private suspend fun addUser(user: String) {
         val users = getAllUsers().toMutableList()

@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.work)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.bundles.koin)
+    implementation(libs.navigation.compose)
 
     testImplementation(libs.junit)
 
