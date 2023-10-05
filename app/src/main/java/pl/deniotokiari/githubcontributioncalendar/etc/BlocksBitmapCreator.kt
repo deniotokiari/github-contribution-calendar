@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
+import java.lang.Integer.max
 import java.lang.Integer.min
 
 class BlocksBitmapCreator {
@@ -74,8 +75,8 @@ class BlocksBitmapCreator {
     ): Params {
         val wOffset = squareSize / 2
         val hOffset = squareSize / 2
-        val wCount = (width - wOffset * 2) / squareSize
-        val hCountMax = colorsSize / wCount
+        val wCount = min(((width - wOffset * 2) / squareSize), colorsSize)
+        val hCountMax = max(colorsSize / wCount, 1)
         val hCount = min((height - hOffset * 2) / squareSize, hCountMax)
         val sizeF = squareSize.toFloat()
         val paddingF = padding.toFloat()

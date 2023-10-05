@@ -32,8 +32,8 @@ class ContributionCalendarRepository(
     private val mutex by lazy { Mutex() }
 
     fun getBlocks(user: String): Flow<List<Int>> = flow {
-        val result = mutex.withLock {
-            withContext(io.dispatcher) {
+        val result = withContext(io.dispatcher) {
+            mutex.withLock {
                 addUser(user)
 
                 var items = gitHubLocalDataSource.getUserContribution(user)
