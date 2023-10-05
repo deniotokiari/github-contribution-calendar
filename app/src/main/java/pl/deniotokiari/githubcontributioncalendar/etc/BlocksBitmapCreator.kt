@@ -74,15 +74,15 @@ class BlocksBitmapCreator {
     ): Params {
         val wOffset = squareSize / 2
         val hOffset = squareSize / 2
-        val size = getValue(width - wOffset * 2, squareSize)
-        val wCount = (width - wOffset * 2) / size
+        val wCount = (width - wOffset * 2) / squareSize
         val hCountMax = colorsSize / wCount
-        val hCount = min((height - hOffset * 2) / size, hCountMax)
-        val sizeF = size.toFloat()
+        val hCount = min((height - hOffset * 2) / squareSize, hCountMax)
+        val sizeF = squareSize.toFloat()
         val paddingF = padding.toFloat()
-        val wOffsetF = wOffset.toFloat()
         // alter hOffset to make it symmetrical on top and bottom
-        val hOffsetF = ((height - hCount * size) / 2).toFloat()
+        val hOffsetF = ((height - hCount * squareSize) / 2).toFloat()
+        // alter wOffset to make it symmetrical on left and right
+        val wOffsetF = ((width - wCount * squareSize) / 2).toFloat()
 
         return Params(
             hCount = hCount,
@@ -92,15 +92,5 @@ class BlocksBitmapCreator {
             hOffset = hOffsetF,
             wOffset = wOffsetF
         )
-    }
-
-    private fun getValue(a: Int, b: Int): Int {
-        var c = b
-
-        while (a.mod(c) > 0) {
-            c--
-        }
-
-        return c
     }
 }
