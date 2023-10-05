@@ -25,10 +25,12 @@ class ContributionCalendarRepository(
     private val io: AppDispatchers.IO
 ) {
     private val usersKey = stringPreferencesKey(USERS_KEY)
-    private val semaphore by lazy { Mutex() }
+    // TODO: check if it could be implemented without mutex
+    // as for now widget fire provideContent twice for each size change
+    private val mutex by lazy { Mutex() }
 
     fun getBlocks(user: String): Flow<List<Int>> = flow {
-        val result = semaphore.withLock {
+        val result = mutex.withLock {
             withContext(io.dispatcher) {
                 addUser(user)
 
