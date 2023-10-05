@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import pl.deniotokiari.githubcontributioncalendar.AppDispatchers
 
@@ -23,20 +25,23 @@ class ContributionCalendarRepository(
     private val io: AppDispatchers.IO
 ) {
     private val usersKey = stringPreferencesKey(USERS_KEY)
+    private val semaphore by lazy { Mutex() }
 
     fun getBlocks(user: String): Flow<List<Int>> = flow {
-        val result = withContext(io.dispatcher) {
-            addUser(user)
+        val result = semaphore.withLock {
+            withContext(io.dispatcher) {
+                addUser(user)
 
-            var items = gitHubLocalDataSource.getUserContribution(user)
+                var items = gitHubLocalDataSource.getUserContribution(user)
 
-            if (items.isEmpty()) {
-                items = gitHubRemoteDataSource.getUserContribution(user).map { it.toColorInt() }
+                if (items.isEmpty()) {
+                    items = gitHubRemoteDataSource.getUserContribution(user).map { it.toColorInt() }
 
-                gitHubLocalDataSource.setUserContribution(user, items)
+                    gitHubLocalDataSource.setUserContribution(user, items)
+                }
+
+                items
             }
-
-            items
         }
 
         emit(result)

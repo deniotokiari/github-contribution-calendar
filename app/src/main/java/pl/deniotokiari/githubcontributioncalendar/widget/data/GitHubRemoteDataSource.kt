@@ -7,13 +7,14 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 private val formatter = DateTimeFormatter.ISO_DATE_TIME
+private const val YEARS = 3
 
 class GitHubRemoteDataSource(
     private val gitHubService: GitHubService
 ) {
     suspend fun getUserContribution(username: String): List<String> {
-        Log.d("LOG", "getUserContribution remote")
-        val years = 3
+        Log.d("LOG", "getUserContribution remote for $username")
+        val years = YEARS
         val now = LocalDateTime.now()
         val fromItems = Array<Pair<LocalDateTime, LocalDateTime>>(years) {
             val from = now.plusYears(-(years - it - 1).toLong()).withDayOfYear(1).with(LocalTime.MIN)

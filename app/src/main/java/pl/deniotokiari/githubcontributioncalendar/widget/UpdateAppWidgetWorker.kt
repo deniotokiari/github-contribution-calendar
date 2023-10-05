@@ -1,6 +1,7 @@
 package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
+import android.util.Log
 import androidx.glance.appwidget.updateAll
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -19,8 +20,10 @@ class UpdateAppWidgetWorker(
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
+        Log.d("LOG", "update all widget worker start")
         contributionCalendarRepository.updateAll()
         AppWidget().updateAll(context)
+        Log.d("LOG", "update all widget worker end")
 
         return Result.success()
     }
@@ -41,6 +44,7 @@ class UpdateAppWidgetWorker(
                     TimeUnit.HOURS
                 }
             )
+                .setInitialDelay(15, TimeUnit.MINUTES)
                 .setConstraints(
                     Constraints
                         .Builder()
