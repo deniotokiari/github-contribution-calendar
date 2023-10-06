@@ -63,14 +63,14 @@ fun ContributionWidget(
             val bitmap = blocksBitmapCreator(
                 width = size.width,
                 height = size.height,
-                squareSize = 30,
-                padding = 1,
+                squareSize = BlocksBitmapCreator.DEFAULT_BLOCK_SIZE,
+                padding = BlocksBitmapCreator.DEFAULT_PADDING,
                 colors = colors
             )
 
             Image(
                 bitmap = bitmap.asImageBitmap(),
-                contentDescription = "",
+                contentDescription = "blocks",
                 modifier = Modifier.fillMaxSize()
             )
 

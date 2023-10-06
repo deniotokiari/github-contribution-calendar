@@ -1,31 +1,29 @@
 package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
-import android.widget.RemoteViews
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
-import androidx.glance.appwidget.AndroidRemoteViews
+import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.getAppWidgetState
-import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
-import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.wrapContentSize
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import pl.deniotokiari.githubcontributioncalendar.R
+import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
 import kotlin.math.roundToInt
@@ -55,26 +53,25 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
             if (username != null) {
                 val items = remember { repository.getBlocks(username) }
                 val colors by items.collectAsState(initial = emptyList())
+                val blockSize = currentState(key = BLOCK_SIZE_KEY)
+                val padding = currentState(key = PADDING_KEY)
 
                 if (colors.isEmpty()) {
                     Box(
                         modifier = GlanceModifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        AndroidRemoteViews(
-                            remoteViews = RemoteViews(context.packageName, R.layout.prgoress),
-                            modifier = GlanceModifier.wrapContentSize()
-                        )
+                        CircularProgressIndicator()
                     }
                 } else {
                     val size = LocalSize.current
-                    val width = size.width.value.roundToInt()
-                    val height = size.height.value.roundToInt()
+                    val width = size.width.value.roundToInt().px
+                    val height = size.height.value.roundToInt().px
                     val params = bitmapCreator.getParamsForBitmap(
                         width = width,
                         height = height,
-                        squareSize = 20,
-                        padding = 1,
+                        squareSize = blockSize ?: BlocksBitmapCreator.DEFAULT_BLOCK_SIZE,
+                        padding = padding ?: BlocksBitmapCreator.DEFAULT_PADDING,
                         colorsSize = colors.size
                     )
                     val blocksCount = params.blocksCount
@@ -83,10 +80,12 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                         width = width,
                         height = height,
                         params = params,
-                        colors = IntArray(blocksCount) { colors[it + offset]}
+                        colors = IntArray(blocksCount) { colors[it + offset] }
                     )
-                    Spacer(
-                        modifier = GlanceModifier.fillMaxSize().background(ImageProvider(bitmap))
+                    Image(
+                        provider = ImageProvider(bitmap),
+                        contentDescription = "blocks",
+                        modifier = GlanceModifier.fillMaxSize()
                     )
                 }
             }
@@ -95,5 +94,8 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
 
     companion object {
         val USER_NAME_KEY = stringPreferencesKey("username")
+        val BLOCK_SIZE_KEY = intPreferencesKey("blockSize")
+        val PADDING_KEY = intPreferencesKey("padding")
+        val OPACITY_SIZE_KEY = intPreferencesKey("opacity")
     }
 }

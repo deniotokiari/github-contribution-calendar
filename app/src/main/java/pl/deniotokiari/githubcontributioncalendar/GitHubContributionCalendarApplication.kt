@@ -6,6 +6,7 @@ import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 import pl.deniotokiari.githubcontributioncalendar.home.homeModule
 import pl.deniotokiari.githubcontributioncalendar.user.userModule
+import pl.deniotokiari.githubcontributioncalendar.widget.widgetModule
 
 class GitHubContributionCalendarApplication : Application() {
     override fun onCreate() {
@@ -17,6 +18,7 @@ class GitHubContributionCalendarApplication : Application() {
 
             modules(
                 appModule,
+                widgetModule,
                 homeModule,
                 userModule
             )

@@ -2,7 +2,6 @@ package pl.deniotokiari.githubcontributioncalendar.user
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,10 +9,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -24,6 +27,8 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
+import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
+import kotlin.math.roundToInt
 
 @Composable
 fun UserScreen(
@@ -54,8 +59,16 @@ fun UserScreen(
             )
         }
         ContributionWidget(user = uiState.user.user, colors = uiState.user.colors)
-
         // TODO block size
+        var blockSize by remember { mutableFloatStateOf(BlocksBitmapCreator.DEFAULT_BLOCK_SIZE.toFloat()) }
+        Slider(
+            value = blockSize,
+            onValueChange = { blockSize = it },
+            valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
+            steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
+        )
+        Text(text = blockSize.roundToInt().toString())
+
         // TODO padding
         // TODO transparency
     }

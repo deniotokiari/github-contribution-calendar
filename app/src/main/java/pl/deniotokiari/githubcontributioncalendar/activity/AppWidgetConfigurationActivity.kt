@@ -24,13 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.glance.GlanceId
-import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
-import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.SetUserNameToWidgetUseCase
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateWidgetByIdUseCase
 
 class AppWidgetConfigurationActivity : ComponentActivity() {
     private val appWidgetId by lazy {
@@ -39,6 +38,9 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
             AppWidgetManager.INVALID_APPWIDGET_ID
         ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
     }
+
+    private val setUserNameToWidgetUseCase: SetUserNameToWidgetUseCase by inject()
+    private val updateWidgetByIdUseCase: UpdateWidgetByIdUseCase by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,19 +80,14 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                             }
                             TextButton(
                                 onClick = {
-                                    val glanceAppWidgetManager =
-                                        GlanceAppWidgetManager(this@AppWidgetConfigurationActivity)
-                                    val glanceId: GlanceId = glanceAppWidgetManager.getGlanceIdBy(appWidgetId)
-
                                     lifecycleScope.launch {
-                                        updateAppWidgetState(
-                                            context = this@AppWidgetConfigurationActivity,
-                                            glanceId = glanceId
-                                        ) {
-                                            it[AppWidget.USER_NAME_KEY] = username
-                                        }
-
-                                        AppWidget().update(this@AppWidgetConfigurationActivity, glanceId)
+                                        setUserNameToWidgetUseCase(
+                                            SetUserNameToWidgetUseCase.Params(
+                                                userName = username,
+                                                id = appWidgetId
+                                            )
+                                        )
+                                        updateWidgetByIdUseCase(appWidgetId)
 
                                         setResult(
                                             Activity.RESULT_OK,

@@ -120,4 +120,17 @@ class BlocksBitmapCreator {
             wOffset = wOffsetF
         )
     }
+
+    companion object {
+        const val BLOCK_SIZE_MIN = 20
+        const val BLOCK_SIZE_MAX = 60
+        const val PADDING_MIN = 1
+        const val PADDING_MAX = 4
+        const val OPACITY_MIN = 0.1
+        const val OPACITY_MAX = 1
+
+        const val DEFAULT_BLOCK_SIZE = 40
+        const val DEFAULT_PADDING = 2
+        const val DEFAULT_OPACITY = 0
+    }
 }
