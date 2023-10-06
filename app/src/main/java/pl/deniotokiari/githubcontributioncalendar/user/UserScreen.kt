@@ -16,7 +16,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
@@ -43,10 +46,14 @@ fun UserScreen(
             }
             Text(
                 text = uiState.user.user,
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.align(Alignment.Center),
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
             )
         }
-        ContributionWidget(user = uiState.user.user, colors = uiState.user.colors, showUser = false)
+        ContributionWidget(user = uiState.user.user, colors = uiState.user.colors)
 
         // TODO block size
         // TODO padding

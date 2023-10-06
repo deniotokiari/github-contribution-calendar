@@ -104,8 +104,14 @@ class ContributionCalendarRepository(
 
         users.remove(user)
 
-        dataStore.edit {
-            it[usersKey] = users.joinToString(separator = SEPARATOR)
+        if (user.isEmpty()) {
+            dataStore.edit {
+                it.remove(usersKey)
+            }
+        } else {
+            dataStore.edit {
+                it[usersKey] = users.joinToString(separator = SEPARATOR)
+            }
         }
     }
 
