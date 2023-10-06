@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import pl.deniotokiari.githubcontributioncalendar.home.HomeScreen
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
+import pl.deniotokiari.githubcontributioncalendar.user.UserScreen
 
 val LocalNavController = compositionLocalOf<NavHostController> { error("no default navController") }
 
@@ -31,6 +32,11 @@ class MainActivity : ComponentActivity() {
                             startDestination = "home"
                         ) {
                             composable("home") { HomeScreen() }
+                            composable("user/{user}") {
+                                val user = requireNotNull(it.arguments?.getString("user"))
+
+                                UserScreen(user = user)
+                            }
                         }
                     }
                 }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -80,6 +81,10 @@ class ContributionCalendarRepository(
         val users = getAllUsers().toTypedArray()
 
         emitAll(gitHubLocalDataSource.getContributionFor(*users))
+    }.flowOn(io.dispatcher)
+
+    fun getUserContribution(user: String): Flow<List<Int>> = gitHubLocalDataSource.getContributionFor(user).map {
+        it[user] ?: emptyList()
     }.flowOn(io.dispatcher)
 
     private suspend fun addUser(user: String) {
