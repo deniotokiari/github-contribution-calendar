@@ -6,10 +6,14 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMap
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -77,11 +81,11 @@ class ContributionCalendarRepository(
         }
     }
 
-    fun getUsersWithContributions(): Flow<Map<String, List<Int>>> = flow {
-        val users = getAllUsers().toTypedArray()
-
-        emitAll(gitHubLocalDataSource.getContributionFor(*users))
-    }.flowOn(io.dispatcher)
+    @OptIn(FlowPreview::class)
+    fun getUsersWithContributions(): Flow<Map<String, List<Int>>> = dataStore.data
+        .filter { it.contains(usersKey) }
+        .map { getAllUsers().toTypedArray() }
+        .flatMapConcat { gitHubLocalDataSource.getContributionFor(*it) }
 
     fun getUserContribution(user: String): Flow<List<Int>> = gitHubLocalDataSource.getContributionFor(user).map {
         it[user] ?: emptyList()
