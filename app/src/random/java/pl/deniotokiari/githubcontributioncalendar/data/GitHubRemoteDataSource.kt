@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget.data
+package pl.deniotokiari.githubcontributioncalendar.data
 
 import android.util.Log
 import kotlinx.coroutines.delay

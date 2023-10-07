@@ -87,7 +87,12 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                                                 id = appWidgetId
                                             )
                                         )
-                                        updateWidgetByIdUseCase(appWidgetId)
+                                        updateWidgetByIdUseCase(
+                                            UpdateWidgetByIdUseCase.Params(
+                                                widgetId = appWidgetId,
+                                                userName = username
+                                            )
+                                        )
 
                                         setResult(
                                             Activity.RESULT_OK,

@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 
 class UserViewModel(
     private val user: String,
     contributionCalendarRepository: ContributionCalendarRepository
 ) : ViewModel() {
-    val uiState: StateFlow<UiState> = contributionCalendarRepository.getUserContribution(user).map {
+    val uiState: StateFlow<UiState> = contributionCalendarRepository.contributionsByUser(user).map {
         UiState(
             user = UiState.User(
                 user = user,

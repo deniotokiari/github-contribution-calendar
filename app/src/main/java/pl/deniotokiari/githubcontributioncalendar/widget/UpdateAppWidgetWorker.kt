@@ -11,7 +11,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
-import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -24,7 +24,7 @@ class UpdateAppWidgetWorker(
     override suspend fun doWork(): Result {
         val start = System.currentTimeMillis()
         Log.d("LOG", "update all widget worker start")
-        contributionCalendarRepository.updateAll()
+        contributionCalendarRepository.updateAllContributions()
 
         AppWidget().updateAll(context)
 

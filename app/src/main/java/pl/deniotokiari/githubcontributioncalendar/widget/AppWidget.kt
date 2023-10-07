@@ -1,6 +1,7 @@
 package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,8 +25,8 @@ import androidx.glance.layout.fillMaxSize
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.core.px
+import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
-import pl.deniotokiari.githubcontributioncalendar.widget.data.ContributionCalendarRepository
 import kotlin.math.roundToInt
 
 class AppWidget : GlanceAppWidget(), KoinComponent {
@@ -37,7 +38,7 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
 
         if (username != null) {
             val repository: ContributionCalendarRepository by inject()
-            repository.removeBlocksForUser(username)
+            repository.removeContributionsForUser(username)
         }
 
         super.onDelete(context, glanceId)
@@ -51,7 +52,8 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
             val username = currentState(key = USER_NAME_KEY)
 
             if (username != null) {
-                val items = remember { repository.getBlocks(username) }
+                Log.d("LOG", "provideContent for $username")
+                val items = remember { repository.contributionsByUser(username) }
                 val colors by items.collectAsState(initial = emptyList())
                 val blockSize = currentState(key = BLOCK_SIZE_KEY)
                 val padding = currentState(key = PADDING_KEY)
