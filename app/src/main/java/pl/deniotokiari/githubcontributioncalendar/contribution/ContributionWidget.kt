@@ -38,7 +38,7 @@ fun ContributionWidget(
         modifier = modifier
             .padding(vertical = 4.dp)
             .fillMaxWidth()
-            .height(100.dp)
+            .height(110.dp)
             .onGloballyPositioned {
                 if (it.size != IntSize.Zero) {
                     size = it.size

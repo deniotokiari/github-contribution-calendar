@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
-import pl.deniotokiari.githubcontributioncalendar.ui.theme.PurpleGrey40
 
 @Composable
 fun HomeScreen(
@@ -56,7 +55,7 @@ fun HomeScreen(
                                     Text(
                                         text = user,
                                         style = TextStyle(
-                                            fontSize = 16.sp,
+                                            fontSize = 18.sp,
                                         ),
                                         modifier = Modifier.padding(4.dp)
                                     )

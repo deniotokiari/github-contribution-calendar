@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 
 class UserViewModel(
     private val user: String,
@@ -22,9 +23,14 @@ class UserViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
 
+    fun updateBlockSize(value: Int) {
+
+    }
+
     data class UiState(
         val user: User,
-        val loading: Boolean
+        val loading: Boolean,
+        val blockSize: Int
     ) {
         data class User(
             val user: String,
@@ -56,7 +62,8 @@ class UserViewModel(
                     user = user,
                     colors = IntArray(0)
                 ),
-                loading = false
+                loading = false,
+                blockSize = BlocksBitmapCreator.DEFAULT_BLOCK_SIZE
             )
         }
     }

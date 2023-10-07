@@ -16,6 +16,7 @@ val appModule = module {
     single { AppDispatchers.IO }
     single(qualifier = named("app")) { get<Context>().appDataStore }
     single(qualifier = named("contribution")) { get<Context>().contributionDataStore }
+    single(qualifier = named("widgetConfiguration")) { get<Context>().widgetConfigurationDataStore }
     single { apolloClient }
     singleOf(::BlocksBitmapCreator)
 }
@@ -29,3 +30,6 @@ private val Context.appDataStore: DataStore<Preferences> by preferencesDataStore
 
 // for user contributions
 private val Context.contributionDataStore: DataStore<Preferences> by preferencesDataStore(name = "contribution")
+
+// for widget configuration
+private val Context.widgetConfigurationDataStore: DataStore<Preferences> by preferencesDataStore(name = "widgetConfiguration")

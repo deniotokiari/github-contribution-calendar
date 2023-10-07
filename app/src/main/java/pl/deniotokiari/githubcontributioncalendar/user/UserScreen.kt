@@ -67,7 +67,7 @@ fun UserScreen(
             valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
             steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
         )
-        Text(text = blockSize.roundToInt().toString())
+        Text(text = "Block size ${blockSize.roundToInt()}")
 
         // TODO padding
         // TODO transparency
