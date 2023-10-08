@@ -91,8 +91,8 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                     val params = bitmapCreator.getParamsForBitmap(
                         width = width,
                         height = height,
-                        squareSize = blockSize ?: BlocksBitmapCreator.DEFAULT_BLOCK_SIZE,
-                        padding = padding ?: BlocksBitmapCreator.DEFAULT_PADDING,
+                        squareSize = blockSize,
+                        padding = padding,
                         colorsSize = colors.size
                     )
                     val blocksCount = params.blocksCount

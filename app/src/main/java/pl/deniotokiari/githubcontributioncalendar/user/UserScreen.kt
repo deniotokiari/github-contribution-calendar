@@ -66,7 +66,7 @@ fun UserScreen(
             valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
             steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
         )
-        Text(text = "Block size ${uiState.config.blockSize}")
+        Text(text = "Block size ${uiState.config.blockSize}", modifier = Modifier.padding(8.dp))
 
         Slider(
             value = uiState.config.padding.toFloat(),
@@ -76,7 +76,7 @@ fun UserScreen(
             valueRange = BlocksBitmapCreator.PADDING_MIN.toFloat()..BlocksBitmapCreator.PADDING_MAX.toFloat(),
             steps = BlocksBitmapCreator.PADDING_MAX - BlocksBitmapCreator.PADDING_MIN - 1
         )
-        Text(text = "Padding ${uiState.config.padding}")
+        Text(text = "Padding ${uiState.config.padding}", modifier = Modifier.padding(8.dp))
 
         // TODO transparency
     }
