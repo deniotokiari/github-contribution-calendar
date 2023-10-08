@@ -29,8 +29,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val destination = intent?.extras?.getString(AppWidget.DESTINATION_USER)
-
         setContent {
             GitHubContributionCalendarTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
