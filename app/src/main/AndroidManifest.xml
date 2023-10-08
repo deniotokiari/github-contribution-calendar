@@ -20,6 +20,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.GitHubContributionCalendar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

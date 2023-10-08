@@ -11,6 +11,10 @@ import androidx.glance.GlanceModifier
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
+import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionParametersOf
+import androidx.glance.action.actionStartActivity
+import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -23,6 +27,7 @@ import androidx.glance.layout.Box
 import androidx.glance.layout.fillMaxSize
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import pl.deniotokiari.githubcontributioncalendar.activity.MainActivity
 import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
@@ -101,7 +106,16 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                     Image(
                         provider = ImageProvider(bitmap),
                         contentDescription = "blocks",
-                        modifier = GlanceModifier.fillMaxSize()
+                        modifier = GlanceModifier
+                            .fillMaxSize()
+                            .clickable(
+                                actionStartActivity<MainActivity>(
+                                    parameters = actionParametersOf(
+                                        DESTINATION_USER_KEY to username,
+                                        DESTINATION_WIDGET_ID_KEY to id.getWidgetId(context)
+                                    )
+                                )
+                            )
                     )
                 }
             }
@@ -110,6 +124,10 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
 
     companion object {
         val USER_NAME_KEY = stringPreferencesKey("username")
+        const val DESTINATION_USER = "DESTINATION_USER"
+        const val DESTINATION_WIDGET_ID = "DESTINATION_WIDGET_ID"
+        val DESTINATION_USER_KEY = ActionParameters.Key<String>(DESTINATION_USER)
+        val DESTINATION_WIDGET_ID_KEY = ActionParameters.Key<Int>(DESTINATION_WIDGET_ID)
     }
 }
 
