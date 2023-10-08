@@ -1,12 +1,10 @@
 package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
@@ -15,6 +13,7 @@ import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.getAppWidgetState
@@ -27,6 +26,7 @@ import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.RemoveWidgetByUserNameAndWidgetIdUseCase
 import kotlin.math.roundToInt
 
 class AppWidget : GlanceAppWidget(), KoinComponent {
@@ -37,26 +37,40 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
         val username = prefs[USER_NAME_KEY]
 
         if (username != null) {
-            val repository: ContributionCalendarRepository by inject()
-            repository.removeContributionsForUser(username)
+            val removeWidgetByUserNameAndWidgetIdUseCase: RemoveWidgetByUserNameAndWidgetIdUseCase by inject()
+            val widgetId = glanceId.getWidgetId(context)
+
+            removeWidgetByUserNameAndWidgetIdUseCase(
+                RemoveWidgetByUserNameAndWidgetIdUseCase.Params(
+                    widgetId = widgetId,
+                    userName = username
+                )
+            )
         }
 
         super.onDelete(context, glanceId)
     }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val repository: ContributionCalendarRepository by inject()
+        val contributionCalendarRepository: ContributionCalendarRepository by inject()
+        val widgetConfigurationRepository: WidgetConfigurationRepository by inject()
         val bitmapCreator: BlocksBitmapCreator by inject()
 
         provideContent {
             val username = currentState(key = USER_NAME_KEY)
 
             if (username != null) {
-                Log.d("LOG", "provideContent for $username")
-                val items = remember { repository.contributionsByUser(username) }
+                val items = remember { contributionCalendarRepository.contributionsByUser(username) }
+                val widgetConfig = remember {
+                    widgetConfigurationRepository.configurationByWidgetIdAndUserName(
+                        widgetId = id.getWidgetId(context),
+                        userName = username
+                    )
+                }
                 val colors by items.collectAsState(initial = emptyList())
-                val blockSize = currentState(key = BLOCK_SIZE_KEY)
-                val padding = currentState(key = PADDING_KEY)
+                val config by widgetConfig.collectAsState(initial = WidgetConfiguration.default())
+                val blockSize = config.blockSize
+                val padding = config.padding
 
                 if (colors.isEmpty()) {
                     Box(
@@ -96,8 +110,7 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
 
     companion object {
         val USER_NAME_KEY = stringPreferencesKey("username")
-        val BLOCK_SIZE_KEY = intPreferencesKey("blockSize")
-        val PADDING_KEY = intPreferencesKey("padding")
-        val OPACITY_SIZE_KEY = intPreferencesKey("opacity")
     }
 }
+
+private fun GlanceId.getWidgetId(context: Context): Int = GlanceAppWidgetManager(context).getAppWidgetId(this)

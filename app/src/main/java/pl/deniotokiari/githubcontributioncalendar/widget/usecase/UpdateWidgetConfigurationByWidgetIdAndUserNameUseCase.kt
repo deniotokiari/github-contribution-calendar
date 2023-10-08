@@ -4,22 +4,19 @@ import android.content.Context
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import pl.deniotokiari.githubcontributioncalendar.core.UseCase
-import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
 
-class UpdateWidgetByIdUseCase(
+class UpdateWidgetConfigurationByWidgetIdAndUserNameUseCase(
     private val context: Context,
-    private val contributionCalendarRepository: ContributionCalendarRepository,
     private val widgetConfigurationRepository: WidgetConfigurationRepository
-) : UseCase<UpdateWidgetByIdUseCase.Params, Unit> {
+) : UseCase<UpdateWidgetConfigurationByWidgetIdAndUserNameUseCase.Params, Unit> {
     override suspend fun invoke(params: Params) {
-        contributionCalendarRepository.updateContributionsForUser(params.userName)
         widgetConfigurationRepository.addConfiguration(
             widgetId = params.widgetId,
             userName = params.userName,
-            config = WidgetConfiguration.default()
+            config = params.config
         )
 
         val glanceAppWidgetManager = GlanceAppWidgetManager(context)
@@ -30,6 +27,7 @@ class UpdateWidgetByIdUseCase(
 
     data class Params(
         val widgetId: Int,
-        val userName: String
+        val userName: String,
+        val config: WidgetConfiguration
     )
 }

@@ -4,33 +4,55 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
-import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
+import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
+import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateWidgetConfigurationByWidgetIdAndUserNameUseCase
 
 class UserViewModel(
     private val user: String,
-    contributionCalendarRepository: ContributionCalendarRepository
+    private val widgetId: Int,
+    contributionCalendarRepository: ContributionCalendarRepository,
+    private val configurationRepository: WidgetConfigurationRepository,
+    private val updateWidgetConfigurationByWidgetIdAndUserNameUseCase: UpdateWidgetConfigurationByWidgetIdAndUserNameUseCase
 ) : ViewModel() {
-    val uiState: StateFlow<UiState> = contributionCalendarRepository.contributionsByUser(user).map {
-        UiState(
-            user = UiState.User(
-                user = user,
-                colors = it.toIntArray()
-            ),
-            loading = false
-        )
+    val uiState: StateFlow<UiState> = combine(
+        configurationRepository.configurationByWidgetIdAndUserName(widgetId = widgetId, userName = user),
+        contributionCalendarRepository.contributionsByUser(user = user)
+    ) { config, contributions ->
+        if (contributions.isNotEmpty()) {
+            UiState(
+                user = UiState.User(
+                    user = user,
+                    colors = contributions.toIntArray()
+                ),
+                loading = false,
+                config = config
+            )
+        } else {
+            UiState.default(user = user)
+        }
     }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
 
     fun updateBlockSize(value: Int) {
-
+        viewModelScope.launch {
+            updateWidgetConfigurationByWidgetIdAndUserNameUseCase(
+                UpdateWidgetConfigurationByWidgetIdAndUserNameUseCase.Params(
+                    widgetId = widgetId,
+                    userName = user,
+                    config = uiState.value.config.copy(blockSize = value)
+                )
+            )
+        }
     }
 
     data class UiState(
         val user: User,
         val loading: Boolean,
-        val blockSize: Int
+        val config: WidgetConfiguration
     ) {
         data class User(
             val user: String,
@@ -63,7 +85,7 @@ class UserViewModel(
                     colors = IntArray(0)
                 ),
                 loading = false,
-                blockSize = BlocksBitmapCreator.DEFAULT_BLOCK_SIZE
+                config = WidgetConfiguration.default()
             )
         }
     }

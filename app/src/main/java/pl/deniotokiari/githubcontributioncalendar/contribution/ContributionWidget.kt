@@ -22,11 +22,13 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
+import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 
 @Composable
 fun ContributionWidget(
     user: String,
     colors: IntArray,
+    config: WidgetConfiguration,
     modifier: Modifier = Modifier,
     onClicked: ((String) -> Unit)? = null,
     content: (@Composable BoxScope.() -> Unit)? = null,
@@ -63,8 +65,8 @@ fun ContributionWidget(
             val bitmap = blocksBitmapCreator(
                 width = size.width,
                 height = size.height,
-                squareSize = BlocksBitmapCreator.DEFAULT_BLOCK_SIZE,
-                padding = BlocksBitmapCreator.DEFAULT_PADDING,
+                squareSize = config.blockSize,
+                padding = config.padding,
                 colors = colors
             )
 

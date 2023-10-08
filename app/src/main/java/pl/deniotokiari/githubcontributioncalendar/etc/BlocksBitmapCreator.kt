@@ -131,6 +131,6 @@ class BlocksBitmapCreator {
 
         const val DEFAULT_BLOCK_SIZE = 40
         const val DEFAULT_PADDING = 2
-        const val DEFAULT_OPACITY = 0
+        const val DEFAULT_OPACITY = 0F
     }
 }

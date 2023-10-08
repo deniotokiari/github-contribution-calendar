@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import pl.deniotokiari.githubcontributioncalendar.AppDispatchers
+import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 
 class WidgetConfigurationRepository(
     private val dataStore: DataStore<Preferences>,
@@ -40,7 +41,7 @@ class WidgetConfigurationRepository(
             val userName: String = keySplit[1]
             val config = WidgetConfiguration.decode(item as String)
 
-            (widgetId to userName) to config
+            result.add((widgetId to userName) to config)
         }
 
         result
@@ -67,6 +68,12 @@ data class WidgetConfiguration(
     fun encode() = "$blockSize:$padding:$opacity"
 
     companion object {
+        fun default() = WidgetConfiguration(
+            blockSize = BlocksBitmapCreator.DEFAULT_BLOCK_SIZE,
+            padding = BlocksBitmapCreator.DEFAULT_PADDING,
+            opacity = BlocksBitmapCreator.DEFAULT_OPACITY
+        )
+
         fun decode(value: String): WidgetConfiguration {
             val items = value.split(":")
 

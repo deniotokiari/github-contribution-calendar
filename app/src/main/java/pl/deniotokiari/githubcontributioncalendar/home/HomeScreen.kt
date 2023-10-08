@@ -41,19 +41,21 @@ fun HomeScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                uiState.items.forEach { (user: String, items: IntArray) ->
+                uiState.items.forEach { (userName, widgetId, config, items) ->
                     item {
                         ContributionWidget(
-                            user = user,
+                            user = userName,
                             colors = items,
-                            onClicked = { navController.navigate("user/${user}") },
-                            modifier = Modifier,//.background(color),
+                            config = config,
+                            onClicked = {
+                                navController.navigate("user/${userName}/${widgetId}")
+                            },
                             content = {
                                 Box(
                                     modifier = Modifier.background(MaterialTheme.colorScheme.background)
                                 ) {
                                     Text(
-                                        text = user,
+                                        text = userName,
                                         style = TextStyle(
                                             fontSize = 18.sp,
                                         ),

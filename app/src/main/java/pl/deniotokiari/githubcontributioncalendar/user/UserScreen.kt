@@ -14,9 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -33,7 +30,8 @@ import kotlin.math.roundToInt
 @Composable
 fun UserScreen(
     user: String,
-    viewModel: UserViewModel = koinViewModel(parameters = { parametersOf(user) })
+    widgetId: Int,
+    viewModel: UserViewModel = koinViewModel(parameters = { parametersOf(user, widgetId) })
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
@@ -58,16 +56,17 @@ fun UserScreen(
                 )
             )
         }
-        ContributionWidget(user = uiState.user.user, colors = uiState.user.colors)
-        // TODO block size
-        var blockSize by remember { mutableFloatStateOf(BlocksBitmapCreator.DEFAULT_BLOCK_SIZE.toFloat()) }
+        ContributionWidget(user = uiState.user.user, colors = uiState.user.colors, config = uiState.config)
+
         Slider(
-            value = blockSize,
-            onValueChange = { blockSize = it },
+            value = uiState.config.blockSize.toFloat(),
+            onValueChange = {
+                viewModel.updateBlockSize(it.roundToInt())
+            },
             valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
             steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
         )
-        Text(text = "Block size ${blockSize.roundToInt()}")
+        Text(text = "Block size ${uiState.config.blockSize}")
 
         // TODO padding
         // TODO transparency

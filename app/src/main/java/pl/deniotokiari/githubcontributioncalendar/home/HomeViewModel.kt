@@ -1,39 +1,46 @@
 package pl.deniotokiari.githubcontributioncalendar.home
 
-import androidx.compose.ui.tooling.data.EmptyGroup.data
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapMerge
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.stateIn
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
+import kotlin.math.min
 
 class HomeViewModel(
     contributionCalendarRepository: ContributionCalendarRepository,
     widgetConfigurationRepository: WidgetConfigurationRepository
 ) : ViewModel() {
     val uiState: StateFlow<UiState> = combine(
-        contributionCalendarRepository.allContributions(),
-        widgetConfigurationRepository.configurations()
-    ) { contributions, configurations ->
+        widgetConfigurationRepository.configurations(),
+        contributionCalendarRepository.allContributions()
+    ) { configurations, contributions ->
+        val items = mutableListOf<UiState.User>()
+
+        repeat(min(contributions.size, configurations.size)) { index ->
+            val (userName, colors) = contributions[index]
+            val (widgetIdAndUserName, config) = configurations[index]
+            val (widgetId, _) = widgetIdAndUserName
+
+            items.add(
+                UiState.User(
+                    name = userName,
+                    widgetId = widgetId,
+                    config = config,
+                    colors = colors.toIntArray()
+                )
+            )
+        }
+
         UiState(
-            items = 
+            items = items,
             loading = false
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
-
-    /*contributionCalendarRepository.allContributions().map { map ->
-        UiState(
-            items = map.map { (user, items) -> UiState.User(name = user, colors = items.toIntArray()) },
-            loading = false
-        )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))*/
 
     data class UiState(
         val items: List<User>,
