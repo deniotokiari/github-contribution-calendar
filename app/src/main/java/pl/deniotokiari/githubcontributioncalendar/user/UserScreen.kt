@@ -68,7 +68,16 @@ fun UserScreen(
         )
         Text(text = "Block size ${uiState.config.blockSize}")
 
-        // TODO padding
+        Slider(
+            value = uiState.config.padding.toFloat(),
+            onValueChange = {
+                viewModel.updatePadding(it.roundToInt())
+            },
+            valueRange = BlocksBitmapCreator.PADDING_MIN.toFloat()..BlocksBitmapCreator.PADDING_MAX.toFloat(),
+            steps = BlocksBitmapCreator.PADDING_MAX - BlocksBitmapCreator.PADDING_MIN - 1
+        )
+        Text(text = "Padding ${uiState.config.padding}")
+
         // TODO transparency
     }
 }

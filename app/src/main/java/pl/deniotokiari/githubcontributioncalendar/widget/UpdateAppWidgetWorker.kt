@@ -10,7 +10,6 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
@@ -28,7 +27,10 @@ class UpdateAppWidgetWorker(
 
         AppWidget().updateAll(context)
 
-        Log.d("LOG", "update all widget worker end ${(System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)}")
+        Log.d(
+            "LOG",
+            "update all widget worker end ${(System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)}"
+        )
 
         return Result.success()
     }
@@ -42,16 +44,8 @@ class UpdateAppWidgetWorker(
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
-                repeatInterval = if (BuildConfig.DEBUG) {
-                    15
-                } else {
-                    12
-                },
-                repeatIntervalTimeUnit = if (BuildConfig.DEBUG) {
-                    TimeUnit.MINUTES
-                } else {
-                    TimeUnit.HOURS
-                }
+                repeatInterval = 12,
+                repeatIntervalTimeUnit = TimeUnit.HOURS
             )
                 .setInitialDelay(15, TimeUnit.MINUTES)
                 .setConstraints(

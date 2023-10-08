@@ -37,6 +37,18 @@ class UserViewModel(
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
 
+    fun updatePadding(value: Int) {
+        viewModelScope.launch {
+            updateWidgetConfigurationByWidgetIdAndUserNameUseCase(
+                UpdateWidgetConfigurationByWidgetIdAndUserNameUseCase.Params(
+                    widgetId = widgetId,
+                    userName = user,
+                    config = uiState.value.config.copy(padding = value)
+                )
+            )
+        }
+    }
+
     fun updateBlockSize(value: Int) {
         viewModelScope.launch {
             updateWidgetConfigurationByWidgetIdAndUserNameUseCase(
