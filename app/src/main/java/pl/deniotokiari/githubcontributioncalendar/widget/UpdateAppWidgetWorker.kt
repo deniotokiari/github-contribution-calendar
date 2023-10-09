@@ -44,7 +44,7 @@ class UpdateAppWidgetWorker(
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
-                repeatInterval = 12,
+                repeatInterval = 6,
                 repeatIntervalTimeUnit = TimeUnit.HOURS
             )
                 .setInitialDelay(15, TimeUnit.MINUTES)

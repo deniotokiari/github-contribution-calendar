@@ -73,6 +73,8 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                             horizontalArrangement = Arrangement.End
                         )
                         {
+                            var okEnabled by remember { mutableStateOf(true) }
+
                             TextButton(onClick = {
                                 finish()
                             }) {
@@ -81,6 +83,7 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                             TextButton(
                                 onClick = {
                                     lifecycleScope.launch {
+                                        okEnabled = false
                                         setUserNameToWidgetUseCase(
                                             SetUserNameToWidgetUseCase.Params(
                                                 userName = username,
@@ -98,12 +101,14 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                                             Activity.RESULT_OK,
                                             Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                                         )
+
                                         finish()
                                     }
                                 },
-                                enabled = username.isNotEmpty()
+                                enabled = username.isNotEmpty() && okEnabled
                             ) {
                                 Text(text = stringResource(id = android.R.string.ok))
+
                             }
                         }
                     }

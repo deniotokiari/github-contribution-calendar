@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.stateIn
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
-import kotlin.math.min
 
 class HomeViewModel(
     contributionCalendarRepository: ContributionCalendarRepository,
@@ -21,10 +20,10 @@ class HomeViewModel(
     ) { configurations, contributions ->
         val items = mutableListOf<UiState.User>()
 
-        repeat(min(contributions.size, configurations.size)) { index ->
-            val (userName, colors) = contributions[index]
+        repeat(configurations.size) { index ->
             val (widgetIdAndUserName, config) = configurations[index]
-            val (widgetId, _) = widgetIdAndUserName
+            val (widgetId, userName) = widgetIdAndUserName
+            val (_, colors) = contributions.first { (user, _) -> user == userName }
 
             items.add(
                 UiState.User(
