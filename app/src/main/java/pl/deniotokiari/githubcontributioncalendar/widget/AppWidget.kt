@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
@@ -21,17 +23,24 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.getAppWidgetState
+import androidx.glance.background
 import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.padding
+import androidx.glance.text.Text
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.activity.MainActivity
 import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import pl.deniotokiari.githubcontributioncalendar.widget.usecase.RemoveWidgetByUserNameAndWidgetIdUseCase
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import kotlin.math.roundToInt
 
 class AppWidget : GlanceAppWidget(), KoinComponent {
@@ -117,6 +126,21 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                                 )
                             )
                     )
+
+                    if (BuildConfig.DEBUG) {
+                        Text(
+                            modifier = GlanceModifier.padding(6.dp).background(Color.White),
+                            text = LocalDateTime.now().format(
+                                DateTimeFormatterBuilder()
+                                    .appendValue(ChronoField.HOUR_OF_DAY, 2)
+                                    .appendLiteral(':')
+                                    .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+                                    .optionalStart()
+                                    .appendLiteral(':')
+                                    .appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter()
+                            )
+                        )
+                    }
                 }
             }
         }
