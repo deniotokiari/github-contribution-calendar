@@ -6,6 +6,7 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import pl.deniotokiari.githubcontributioncalendar.core.UseCase
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
+import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
 
@@ -24,6 +25,8 @@ class UpdateWidgetByIdUseCase(
 
         val glanceAppWidgetManager = GlanceAppWidgetManager(context)
         val glanceId: GlanceId = glanceAppWidgetManager.getGlanceIdBy(params.widgetId)
+
+        UpdateAppWidgetWorker.start(context)
 
         AppWidget().update(context, glanceId)
     }

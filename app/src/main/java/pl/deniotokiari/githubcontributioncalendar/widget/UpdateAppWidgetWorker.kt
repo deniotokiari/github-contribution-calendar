@@ -10,6 +10,8 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.awaitCancellation
+import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
@@ -18,12 +20,15 @@ import kotlin.time.toDuration
 class UpdateAppWidgetWorker(
     private val context: Context,
     private val contributionCalendarRepository: ContributionCalendarRepository,
+    private val devRepository: DevRepository,
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
+        devRepository.incrementWidgetUpdateCount()
         val start = System.currentTimeMillis()
         Log.d("LOG", "update all widget worker start")
-        contributionCalendarRepository.updateAllContributions()
+
+        val updatedCount = contributionCalendarRepository.updateAllContributions()
 
         AppWidget().updateAll(context)
 
@@ -31,6 +36,12 @@ class UpdateAppWidgetWorker(
             "LOG",
             "update all widget worker end ${(System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)}"
         )
+
+        if (updatedCount == 0) {
+            cancel(context)
+
+            awaitCancellation()
+        }
 
         return Result.success()
     }
@@ -44,8 +55,8 @@ class UpdateAppWidgetWorker(
 
         fun start(context: Context) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
-                repeatInterval = 6,
-                repeatIntervalTimeUnit = TimeUnit.HOURS
+                repeatInterval = 15,
+                repeatIntervalTimeUnit = TimeUnit.MINUTES
             )
                 .setInitialDelay(15, TimeUnit.MINUTES)
                 .setConstraints(

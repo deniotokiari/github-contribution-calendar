@@ -31,8 +31,10 @@ import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
+import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.activity.MainActivity
 import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
@@ -128,17 +130,22 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                     )
 
                     if (BuildConfig.DEBUG) {
+                        val time = LocalDateTime.now().format(
+                            DateTimeFormatterBuilder()
+                                .appendValue(ChronoField.HOUR_OF_DAY, 2)
+                                .appendLiteral(':')
+                                .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+                                .optionalStart()
+                                .appendLiteral(':')
+                                .appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter()
+                        )
+                        val count by remember {
+                            get<DevRepository>().widgetUpdateCount()
+                        }.collectAsState(initial = 0)
+
                         Text(
                             modifier = GlanceModifier.padding(6.dp).background(Color.White),
-                            text = LocalDateTime.now().format(
-                                DateTimeFormatterBuilder()
-                                    .appendValue(ChronoField.HOUR_OF_DAY, 2)
-                                    .appendLiteral(':')
-                                    .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-                                    .optionalStart()
-                                    .appendLiteral(':')
-                                    .appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter()
-                            )
+                            text = "${count}: $time"
                         )
                     }
                 }

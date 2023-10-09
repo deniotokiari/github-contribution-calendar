@@ -17,8 +17,10 @@ val appModule = module {
     single(qualifier = named("app")) { get<Context>().appDataStore }
     single(qualifier = named("contribution")) { get<Context>().contributionDataStore }
     single(qualifier = named("widgetConfiguration")) { get<Context>().widgetConfigurationDataStore }
+    single(qualifier = named("dev")) { get<Context>().devDataStore }
     single { apolloClient }
     singleOf(::BlocksBitmapCreator)
+    single { DevRepository(get(qualifier = named("dev"))) }
 }
 
 sealed class AppDispatchers(val dispatcher: CoroutineDispatcher) {
@@ -33,3 +35,6 @@ private val Context.contributionDataStore: DataStore<Preferences> by preferences
 
 // for widget configuration
 private val Context.widgetConfigurationDataStore: DataStore<Preferences> by preferencesDataStore(name = "widgetConfiguration")
+
+// for dev purpose
+private val Context.devDataStore: DataStore<Preferences> by preferencesDataStore(name = "dev")

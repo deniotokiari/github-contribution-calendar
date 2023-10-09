@@ -13,18 +13,6 @@ import pl.deniotokiari.githubcontributioncalendar.activity.AppWidgetConfiguratio
 class AppWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
     override val glanceAppWidget: GlanceAppWidget = AppWidget()
 
-    override fun onDisabled(context: Context?) {
-        super.onDisabled(context)
-
-        context?.let { UpdateAppWidgetWorker.cancel(it) }
-    }
-
-    override fun onEnabled(context: Context?) {
-        super.onEnabled(context)
-
-        context?.let { UpdateAppWidgetWorker.start(it) }
-    }
-
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
 

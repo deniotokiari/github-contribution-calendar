@@ -40,7 +40,7 @@ class ContributionCalendarRepository(
         }
     }
 
-    suspend fun updateAllContributions() = withContext(io.dispatcher) {
+    suspend fun updateAllContributions(): Int = withContext(io.dispatcher) {
         mutex.withLock {
             val users = gitHubLocalDataSource.getAllUsers()
 
@@ -53,6 +53,8 @@ class ContributionCalendarRepository(
                     }
                 }
             }
+
+            users.size
         }
     }
 }
