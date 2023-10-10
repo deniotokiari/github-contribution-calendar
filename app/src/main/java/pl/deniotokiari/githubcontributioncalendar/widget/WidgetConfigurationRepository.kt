@@ -1,10 +1,12 @@
 package pl.deniotokiari.githubcontributioncalendar.widget
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -52,9 +54,18 @@ class WidgetConfigurationRepository(
         userName: String
     ): Flow<WidgetConfiguration> = dataStore.data.map {
         val key = widgetIdAndUserNameToStringPreferencesKey(widgetId, userName)
+        val value = it[key]
 
-        WidgetConfiguration.decode(it[key]!!)
-    }.flowOn(io.dispatcher)
+        if (value != null) {
+            WidgetConfiguration.decode(value)
+        } else {
+            WidgetConfiguration.default()
+        }
+    }
+        .catch {
+            Log.d("LOG", "WidgetConfigurationRepository.configurationByWidgetIdAndUserName ${it.message}")
+        }
+        .flowOn(io.dispatcher)
 
     private fun widgetIdAndUserNameToStringPreferencesKey(widgetId: Int, userName: String) =
         stringPreferencesKey("$widgetId:$userName")

@@ -12,10 +12,11 @@ import org.koin.dsl.module
 import pl.deniotokiari.githubcontributioncalendar.data.dataModule
 import pl.deniotokiari.githubcontributioncalendar.home.homeModule
 import pl.deniotokiari.githubcontributioncalendar.user.userModule
+import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
 import pl.deniotokiari.githubcontributioncalendar.widget.widgetModule
 
 class GitHubContributionCalendarApplication : Application() {
-    private val applicationCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val applicationCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate() {
         super.onCreate()
@@ -35,5 +36,7 @@ class GitHubContributionCalendarApplication : Application() {
                 userModule
             )
         }
+
+        UpdateAppWidgetWorker.start(this)
     }
 }

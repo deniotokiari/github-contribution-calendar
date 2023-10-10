@@ -3,5 +3,5 @@
     android:initialLayout="@layout/glance_default_loading_layout"
     android:resizeMode="horizontal|vertical"
     android:configure="pl.deniotokiari.githubcontributioncalendar.activity.AppWidgetConfigurationActivity"
-    android:updatePeriodMillis="43200000"
+    android:updatePeriodMillis="1800000"
     android:widgetCategory="home_screen" />

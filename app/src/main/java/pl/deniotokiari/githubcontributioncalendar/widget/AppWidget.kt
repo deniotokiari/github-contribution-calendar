@@ -1,9 +1,9 @@
 package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
@@ -68,26 +68,25 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
     }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val contributionCalendarRepository: ContributionCalendarRepository by inject()
-        val widgetConfigurationRepository: WidgetConfigurationRepository by inject()
-        val bitmapCreator: BlocksBitmapCreator by inject()
+        Log.d("LOG", "provideGlance for $id")
 
         provideContent {
             val username = currentState(key = USER_NAME_KEY)
 
             if (username != null) {
-                val items = remember { contributionCalendarRepository.contributionsByUser(username) }
-                val widgetConfig = remember {
-                    widgetConfigurationRepository.configurationByWidgetIdAndUserName(
-                        widgetId = id.getWidgetId(context),
-                        userName = username
-                    )
-                }
-                val colors by items.collectAsState(initial = emptyList())
-                val config by widgetConfig.collectAsState(initial = WidgetConfiguration.default())
+                val contributionCalendarRepository: ContributionCalendarRepository by inject()
+                val widgetConfigurationRepository: WidgetConfigurationRepository by inject()
+                val bitmapCreator: BlocksBitmapCreator by inject()
+
+                val colors by contributionCalendarRepository.contributionsByUser(username)
+                    .collectAsState(initial = emptyList())
+                val config by widgetConfigurationRepository.configurationByWidgetIdAndUserName(
+                    widgetId = id.getWidgetId(context),
+                    userName = username
+                ).collectAsState(initial = WidgetConfiguration.default())
                 val blockSize = config.blockSize
                 val padding = config.padding
-
+                Log.d("LOG", "provideContent for $username $id colors => ${colors.size}")
                 if (colors.isEmpty()) {
                     Box(
                         modifier = GlanceModifier.fillMaxSize(),
@@ -139,9 +138,7 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                                 .appendLiteral(':')
                                 .appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter()
                         )
-                        val count by remember {
-                            get<DevRepository>().widgetUpdateCount()
-                        }.collectAsState(initial = 0)
+                        val count by get<DevRepository>().widgetUpdateCount().collectAsState(initial = 0)
 
                         Text(
                             modifier = GlanceModifier.padding(6.dp).background(Color.White),

@@ -1,6 +1,7 @@
 package pl.deniotokiari.githubcontributioncalendar.widget.usecase
 
 import android.content.Context
+import android.util.Log
 import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
@@ -11,14 +12,18 @@ class SetUserNameToWidgetUseCase(
     private val context: Context
 ) : UseCase<SetUserNameToWidgetUseCase.Params, Unit> {
     override suspend fun invoke(params: Params) {
-        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
-        val glanceId: GlanceId = glanceAppWidgetManager.getGlanceIdBy(params.id)
+        runCatching {
+            val glanceAppWidgetManager = GlanceAppWidgetManager(context)
+            val glanceId: GlanceId = glanceAppWidgetManager.getGlanceIdBy(params.id)
 
-        updateAppWidgetState(
-            context = context,
-            glanceId = glanceId
-        ) {
-            it[AppWidget.USER_NAME_KEY] = params.userName
+            updateAppWidgetState(
+                context = context,
+                glanceId = glanceId
+            ) {
+                it[AppWidget.USER_NAME_KEY] = params.userName
+            }
+        }.onFailure {
+            Log.d("LOG", "SetUserNameToWidgetUseCase => ${it.message}")
         }
     }
 
