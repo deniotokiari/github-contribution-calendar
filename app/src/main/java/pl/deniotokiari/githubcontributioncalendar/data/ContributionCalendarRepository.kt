@@ -20,7 +20,7 @@ class ContributionCalendarRepository(
         gitHubLocalDataSource.allContributions().flowOn(io.dispatcher)
 
     fun contributionsByUser(user: String): Flow<List<Int>> =
-        gitHubLocalDataSource.contributionsByUser(user).flowOn(io.dispatcher)
+        gitHubLocalDataSource.contributionsByUser(user)
 
     suspend fun removeContributionsForUser(userName: String) = withContext(io.dispatcher) {
         gitHubLocalDataSource.removeContributionsForUser(userName)

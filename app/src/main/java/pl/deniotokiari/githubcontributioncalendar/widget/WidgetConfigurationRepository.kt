@@ -65,7 +65,6 @@ class WidgetConfigurationRepository(
         .catch {
             Log.d("LOG", "WidgetConfigurationRepository.configurationByWidgetIdAndUserName ${it.message}")
         }
-        .flowOn(io.dispatcher)
 
     private fun widgetIdAndUserNameToStringPreferencesKey(widgetId: Int, userName: String) =
         stringPreferencesKey("$widgetId:$userName")

@@ -85,8 +85,6 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                     widgetId = widgetId,
                     userName = username
                 ).collectAsState(initial = WidgetConfiguration.default())
-                val blockSize = config.blockSize
-                val padding = config.padding
                 Log.d("LOG", "provideContent for $username $id colors => ${colors.size}")
                 if (colors.isEmpty()) {
                     Box(
@@ -96,6 +94,8 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                         CircularProgressIndicator()
                     }
                 } else {
+                    val blockSize = config.blockSize
+                    val padding = config.padding
                     val size = LocalSize.current
                     val width = size.width.value.roundToInt().px
                     val height = size.height.value.roundToInt().px
