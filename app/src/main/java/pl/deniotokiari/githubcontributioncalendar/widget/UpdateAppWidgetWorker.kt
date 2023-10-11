@@ -3,12 +3,14 @@ package pl.deniotokiari.githubcontributioncalendar.widget
 import android.content.Context
 import android.util.Log
 import androidx.glance.appwidget.updateAll
+import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
@@ -47,12 +49,6 @@ class UpdateAppWidgetWorker(
             }"
         )
 
-        /*if (updatedCount == 0) {
-            cancel(context)
-
-            awaitCancellation()
-        }*/
-
         return Result.success()
     }
 
@@ -71,8 +67,14 @@ class UpdateAppWidgetWorker(
                 .setConstraints(
                     Constraints
                         .Builder()
+                        .setRequiresDeviceIdle(false)
+                        .setRequiresBatteryNotLow(false)
                         .setRequiredNetworkType(NetworkType.CONNECTED)
                         .build()
+                ).setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    WorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
                 )
                 .build()
 
