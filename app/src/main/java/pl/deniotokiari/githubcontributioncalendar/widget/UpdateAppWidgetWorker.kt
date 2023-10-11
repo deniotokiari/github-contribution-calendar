@@ -38,7 +38,9 @@ class UpdateAppWidgetWorker(
                 -1
             }
 
-        AppWidget().updateAll(context)
+        if (updatedCount > 0) {
+            AppWidget().updateAll(context)
+        }
 
         Log.d(
             "LOG",

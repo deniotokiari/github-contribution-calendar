@@ -24,12 +24,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
-import pl.deniotokiari.githubcontributioncalendar.widget.usecase.SetUserNameToWidgetUseCase
-import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateWidgetByIdUseCase
+import pl.deniotokiari.githubcontributioncalendar.widget.SetUpAppWidgetWorker
 
 class AppWidgetConfigurationActivity : ComponentActivity() {
     private val appWidgetId by lazy {
@@ -38,9 +34,6 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
             AppWidgetManager.INVALID_APPWIDGET_ID
         ) ?: AppWidgetManager.INVALID_APPWIDGET_ID
     }
-
-    private val setUserNameToWidgetUseCase: SetUserNameToWidgetUseCase by inject()
-    private val updateWidgetByIdUseCase: UpdateWidgetByIdUseCase by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,27 +77,18 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                                 onClick = {
                                     okEnabled = false
 
-                                    lifecycleScope.launch {
-                                        setUserNameToWidgetUseCase(
-                                            SetUserNameToWidgetUseCase.Params(
-                                                userName = username,
-                                                id = appWidgetId
-                                            )
-                                        )
-                                        updateWidgetByIdUseCase(
-                                            UpdateWidgetByIdUseCase.Params(
-                                                widgetId = appWidgetId,
-                                                userName = username
-                                            )
-                                        )
+                                    SetUpAppWidgetWorker.start(
+                                        context = this@AppWidgetConfigurationActivity,
+                                        widgetId = appWidgetId,
+                                        userName = username
+                                    )
 
-                                        setResult(
-                                            Activity.RESULT_OK,
-                                            Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                                        )
+                                    setResult(
+                                        Activity.RESULT_OK,
+                                        Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                                    )
 
-                                        finish()
-                                    }
+                                    finish()
                                 },
                                 enabled = username.isNotEmpty() && okEnabled
                             ) {

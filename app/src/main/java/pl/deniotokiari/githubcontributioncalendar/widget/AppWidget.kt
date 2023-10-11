@@ -7,6 +7,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
@@ -19,7 +20,6 @@ import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
-import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.getAppWidgetState
@@ -51,10 +51,10 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
     override suspend fun onDelete(context: Context, glanceId: GlanceId) {
         val prefs = getAppWidgetState<Preferences>(context, glanceId)
         val username = prefs[USER_NAME_KEY]
+        val widgetId = prefs[WIDGET_ID_KEY]
 
-        if (username != null) {
+        if (username != null && widgetId != null) {
             val removeWidgetByUserNameAndWidgetIdUseCase: RemoveWidgetByUserNameAndWidgetIdUseCase by inject()
-            val widgetId = glanceId.getWidgetId(context)
 
             removeWidgetByUserNameAndWidgetIdUseCase(
                 RemoveWidgetByUserNameAndWidgetIdUseCase.Params(
@@ -72,8 +72,9 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
 
         provideContent {
             val username = currentState(key = USER_NAME_KEY)
+            val widgetId = currentState(key = WIDGET_ID_KEY)
 
-            if (username != null) {
+            if (username != null && widgetId != null) {
                 val contributionCalendarRepository: ContributionCalendarRepository by inject()
                 val widgetConfigurationRepository: WidgetConfigurationRepository by inject()
                 val bitmapCreator: BlocksBitmapCreator by inject()
@@ -81,7 +82,7 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                 val colors by contributionCalendarRepository.contributionsByUser(username)
                     .collectAsState(initial = emptyList())
                 val config by widgetConfigurationRepository.configurationByWidgetIdAndUserName(
-                    widgetId = id.getWidgetId(context),
+                    widgetId = widgetId,
                     userName = username
                 ).collectAsState(initial = WidgetConfiguration.default())
                 val blockSize = config.blockSize
@@ -122,7 +123,7 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                                 actionStartActivity<MainActivity>(
                                     parameters = actionParametersOf(
                                         DESTINATION_USER_KEY to username,
-                                        DESTINATION_WIDGET_ID_KEY to id.getWidgetId(context)
+                                        DESTINATION_WIDGET_ID_KEY to widgetId
                                     )
                                 )
                             )
@@ -152,11 +153,10 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
 
     companion object {
         val USER_NAME_KEY = stringPreferencesKey("username")
+        val WIDGET_ID_KEY = intPreferencesKey("")
         const val DESTINATION_USER = "DESTINATION_USER"
         const val DESTINATION_WIDGET_ID = "DESTINATION_WIDGET_ID"
         val DESTINATION_USER_KEY = ActionParameters.Key<String>(DESTINATION_USER)
         val DESTINATION_WIDGET_ID_KEY = ActionParameters.Key<Int>(DESTINATION_WIDGET_ID)
     }
 }
-
-private fun GlanceId.getWidgetId(context: Context): Int = GlanceAppWidgetManager(context).getAppWidgetId(this)
