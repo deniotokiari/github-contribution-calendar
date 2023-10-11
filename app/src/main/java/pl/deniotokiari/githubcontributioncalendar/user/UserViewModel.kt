@@ -10,12 +10,14 @@ import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.SetWidgetConfigUseCase
 
 class UserViewModel(
     private val user: String,
     private val widgetId: Int,
     contributionCalendarRepository: ContributionCalendarRepository,
     private val configurationRepository: WidgetConfigurationRepository,
+    private val setWidgetConfigUseCase: SetWidgetConfigUseCase
 ) : ViewModel() {
     val uiState: StateFlow<UiState> = combine(
         configurationRepository.configurationByWidgetIdAndUserName(widgetId = widgetId, userName = user),
@@ -37,20 +39,24 @@ class UserViewModel(
 
     fun updatePadding(value: Int) {
         viewModelScope.launch {
-            configurationRepository.addConfiguration(
-                widgetId = widgetId,
-                userName = user,
-                config = uiState.value.config.copy(padding = value)
+            setWidgetConfigUseCase(
+                SetWidgetConfigUseCase.Params(
+                    widgetId = widgetId,
+                    userName = user,
+                    config = uiState.value.config.copy(padding = value)
+                )
             )
         }
     }
 
     fun updateBlockSize(value: Int) {
         viewModelScope.launch {
-            configurationRepository.addConfiguration(
-                widgetId = widgetId,
-                userName = user,
-                config = uiState.value.config.copy(padding = value)
+            setWidgetConfigUseCase(
+                SetWidgetConfigUseCase.Params(
+                    widgetId = widgetId,
+                    userName = user,
+                    config = uiState.value.config.copy(blockSize = value)
+                )
             )
         }
     }
