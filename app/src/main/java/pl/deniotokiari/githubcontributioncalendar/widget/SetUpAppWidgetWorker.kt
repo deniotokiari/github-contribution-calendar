@@ -42,7 +42,7 @@ class SetUpAppWidgetWorker(
             it[AppWidget.WIDGET_ID_KEY] = widgetId
         }
 
-        contributionCalendarRepository.loadContributionsForUser(userName)
+        contributionCalendarRepository.updateContributionsForUser(userName)
         widgetConfigurationRepository.addConfiguration(widgetId, userName, WidgetConfiguration.default())
 
         AppWidget().update(context, glanceId)

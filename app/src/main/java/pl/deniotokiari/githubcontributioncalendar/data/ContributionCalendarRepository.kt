@@ -22,24 +22,8 @@ class ContributionCalendarRepository(
     fun contributionsByUser(user: String): Flow<List<Int>> =
         gitHubLocalDataSource.contributionsByUser(user).flowOn(io.dispatcher)
 
-    suspend fun addContributionsForUser(userName: String, items: List<Int>) = withContext(io.dispatcher) {
-        gitHubLocalDataSource.addContributionsForUser(userName, items)
-    }
-
     suspend fun removeContributionsForUser(userName: String) = withContext(io.dispatcher) {
         gitHubLocalDataSource.removeContributionsForUser(userName)
-    }
-
-    suspend fun loadContributionsForUser(userName: String) = withContext(io.dispatcher) {
-        mutex.withLock {
-           // if (gitHubLocalDataSource.contributionsByUser(userName).firstOrNull().isNullOrEmpty()) {
-                val remoteItems = gitHubRemoteDataSource.getUserContribution(userName).map { it.toColorInt() }
-
-                if (remoteItems.isNotEmpty()) {
-                    gitHubLocalDataSource.addContributionsForUser(userName, remoteItems)
-                }
-            //}
-        }
     }
 
     suspend fun updateContributionsForUser(userName: String) = withContext(io.dispatcher) {
