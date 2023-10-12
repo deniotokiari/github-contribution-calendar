@@ -80,7 +80,7 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                     OutlinedTextField(
                         value = username,
                         onValueChange = {
-                            username = it
+                            username = it.trim()
                         },
                         label = { Text(text = "GitHub username") },
                         modifier = Modifier.fillMaxWidth()
