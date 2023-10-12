@@ -2,6 +2,7 @@ package pl.deniotokiari.githubcontributioncalendar.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -11,14 +12,17 @@ import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepos
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.usecase.SetWidgetConfigUseCase
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateWidgetByUserNameAndWidgetIdUseCase
 
 class UserViewModel(
     private val user: String,
     private val widgetId: Int,
-    contributionCalendarRepository: ContributionCalendarRepository,
-    private val configurationRepository: WidgetConfigurationRepository,
-    private val setWidgetConfigUseCase: SetWidgetConfigUseCase
+    private val contributionCalendarRepository: ContributionCalendarRepository,
+    configurationRepository: WidgetConfigurationRepository,
+    private val setWidgetConfigUseCase: SetWidgetConfigUseCase,
+    private val updateWidgetByUserNameAndWidgetIdUseCase: UpdateWidgetByUserNameAndWidgetIdUseCase
 ) : ViewModel() {
+    private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val uiState: StateFlow<UiState> = combine(
         configurationRepository.configurationByWidgetIdAndUserName(widgetId = widgetId, userName = user),
         contributionCalendarRepository.contributionsByUser(user = user)
@@ -30,12 +34,32 @@ class UserViewModel(
                     colors = contributions.toIntArray()
                 ),
                 loading = false,
-                config = config
+                config = config,
+                refreshing = false
             )
         } else {
             UiState.default(user = user)
         }
-    }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
+    }.combine(_refreshing) { state, refreshing ->
+        state.copy(refreshing = refreshing)
+    }
+        .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
+
+    fun refreshUserContribution() {
+        viewModelScope.launch {
+            _refreshing.value = true
+
+            contributionCalendarRepository.updateContributionsForUser(user)
+            updateWidgetByUserNameAndWidgetIdUseCase(
+                UpdateWidgetByUserNameAndWidgetIdUseCase.Params(
+                    widgetId = widgetId,
+                    userName = user
+                )
+            )
+
+            _refreshing.value = false
+        }
+    }
 
     fun updatePadding(value: Int) {
         viewModelScope.launch {
@@ -64,7 +88,8 @@ class UserViewModel(
     data class UiState(
         val user: User,
         val loading: Boolean,
-        val config: WidgetConfiguration
+        val config: WidgetConfiguration,
+        val refreshing: Boolean
     ) {
         data class User(
             val user: String,
@@ -97,7 +122,8 @@ class UserViewModel(
                     colors = IntArray(0)
                 ),
                 loading = false,
-                config = WidgetConfiguration.default()
+                config = WidgetConfiguration.default(),
+                refreshing = false
             )
         }
     }

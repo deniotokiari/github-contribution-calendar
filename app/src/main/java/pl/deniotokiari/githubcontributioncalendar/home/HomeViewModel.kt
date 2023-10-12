@@ -2,18 +2,23 @@ package pl.deniotokiari.githubcontributioncalendar.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidgetsUseCase
 
 class HomeViewModel(
-    contributionCalendarRepository: ContributionCalendarRepository,
-    widgetConfigurationRepository: WidgetConfigurationRepository
+    private val contributionCalendarRepository: ContributionCalendarRepository,
+    widgetConfigurationRepository: WidgetConfigurationRepository,
+    private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase
 ) : ViewModel() {
+    private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val uiState: StateFlow<UiState> = combine(
         widgetConfigurationRepository.configurations(),
         contributionCalendarRepository.allContributions()
@@ -37,13 +42,25 @@ class HomeViewModel(
 
         UiState(
             items = items,
-            loading = false
+            loading = false,
+            refreshing = false
         )
-    }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
+    }.combine(_refreshing) { state, refreshing -> state.copy(refreshing = refreshing) }
+        .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
+
+    fun refreshUsersContributions() {
+        viewModelScope.launch {
+            _refreshing.value = true
+            contributionCalendarRepository.updateAllContributions()
+            updateAllWidgetsUseCase(Unit)
+            _refreshing.value = false
+        }
+    }
 
     data class UiState(
         val items: List<User>,
-        val loading: Boolean
+        val loading: Boolean,
+        val refreshing: Boolean,
     ) {
         data class User(
             val name: String,
@@ -78,7 +95,8 @@ class HomeViewModel(
         companion object {
             fun default() = UiState(
                 items = emptyList(),
-                loading = false
+                loading = false,
+                refreshing = false
             )
         }
     }

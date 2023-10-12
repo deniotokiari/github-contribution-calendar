@@ -5,12 +5,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.pullrefresh.pullRefresh
+import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +39,10 @@ fun UserScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.refreshing,
+        onRefresh = { viewModel.refreshUserContribution() }
+    )
 
     Column(
         modifier = Modifier
@@ -56,28 +64,47 @@ fun UserScreen(
                 )
             )
         }
-        ContributionWidget(user = uiState.user.user, colors = uiState.user.colors, config = uiState.config)
 
-        Slider(
-            value = uiState.config.blockSize.toFloat(),
-            onValueChange = {
-                viewModel.updateBlockSize(it.roundToInt())
-            },
-            valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
-            steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
-        )
-        Text(text = "Block size ${uiState.config.blockSize}", modifier = Modifier.padding(8.dp))
+        Box(
+            modifier = Modifier
+                .pullRefresh(pullRefreshState)
+                .fillMaxSize()
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                item {
+                    ContributionWidget(user = uiState.user.user, colors = uiState.user.colors, config = uiState.config)
 
-        Slider(
-            value = uiState.config.padding.toFloat(),
-            onValueChange = {
-                viewModel.updatePadding(it.roundToInt())
-            },
-            valueRange = BlocksBitmapCreator.PADDING_MIN.toFloat()..BlocksBitmapCreator.PADDING_MAX.toFloat(),
-            steps = BlocksBitmapCreator.PADDING_MAX - BlocksBitmapCreator.PADDING_MIN - 1
-        )
-        Text(text = "Padding ${uiState.config.padding}", modifier = Modifier.padding(8.dp))
+                    Slider(
+                        value = uiState.config.blockSize.toFloat(),
+                        onValueChange = {
+                            viewModel.updateBlockSize(it.roundToInt())
+                        },
+                        valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
+                        steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
+                    )
+                    Text(text = "Block size ${uiState.config.blockSize}", modifier = Modifier.padding(8.dp))
 
-        // TODO transparency
+                    Slider(
+                        value = uiState.config.padding.toFloat(),
+                        onValueChange = {
+                            viewModel.updatePadding(it.roundToInt())
+                        },
+                        valueRange = BlocksBitmapCreator.PADDING_MIN.toFloat()..BlocksBitmapCreator.PADDING_MAX.toFloat(),
+                        steps = BlocksBitmapCreator.PADDING_MAX - BlocksBitmapCreator.PADDING_MIN - 1
+                    )
+                    Text(text = "Padding ${uiState.config.padding}", modifier = Modifier.padding(8.dp))
+
+                    // TODO transparency
+                }
+            }
+
+            PullRefreshIndicator(
+                refreshing = uiState.refreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
     }
 }

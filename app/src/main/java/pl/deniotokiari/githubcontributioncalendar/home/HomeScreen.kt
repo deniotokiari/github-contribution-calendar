@@ -18,6 +18,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pullrefresh.PullRefreshIndicator
+import androidx.compose.material3.pullrefresh.pullRefresh
+import androidx.compose.material3.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,10 +41,15 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.refreshing,
+        onRefresh = { viewModel.refreshUsersContributions() }
+    )
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .pullRefresh(pullRefreshState)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -108,5 +116,11 @@ fun HomeScreen(
         if (uiState.loading) {
             CircularProgressIndicator()
         }
+
+        PullRefreshIndicator(
+            refreshing = uiState.refreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }

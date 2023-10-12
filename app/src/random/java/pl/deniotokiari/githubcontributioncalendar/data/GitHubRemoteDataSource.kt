@@ -6,13 +6,13 @@ import kotlin.random.Random
 
 class GitHubRemoteDataSource {
     suspend fun getUserContribution(username: String): List<String> {
-        val delay = Random.nextLong(from = 10 * 1000L, until = 30 * 1000L)
+        val delay = Random.nextLong(from = 1 * 1000L, until = 2 * 1000L)
         Log.d("LOG", "getUserContribution random for $username with delay ${delay / 1000} seconds")
 
         val result = mutableListOf<String>()
 
         // to fit minimal widget size
-        repeat(6) {
+        repeat(400) {
             val value = if (Random.nextBoolean()) {
                 "red"
             } else {
