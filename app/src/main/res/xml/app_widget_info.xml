@@ -4,4 +4,5 @@
     android:resizeMode="horizontal|vertical"
     android:configure="pl.deniotokiari.githubcontributioncalendar.activity.AppWidgetConfigurationActivity"
     android:updatePeriodMillis="0"
+    android:previewImage="@mipmap/img"
     android:widgetCategory="home_screen" />
