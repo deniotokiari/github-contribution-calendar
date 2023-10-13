@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            throw RuntimeException("Test Crash")
             GitHubContributionCalendarTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     CompositionLocalProvider(LocalNavController provides rememberNavController()) {

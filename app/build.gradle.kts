@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.com.apollographql.apollo3)
+    alias(libs.plugins.com.google.gms.google.services)
+    alias(libs.plugins.com.google.firebase.crashlytics)
 }
 
 android {
@@ -79,6 +81,9 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.bundles.koin)
     implementation(libs.navigation.compose)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.crashlytics.ktx)
 
     testImplementation(libs.junit)
 

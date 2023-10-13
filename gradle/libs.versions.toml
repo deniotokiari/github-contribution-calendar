@@ -14,6 +14,9 @@ data-store = "1.0.0"
 work = "2.9.0-beta01"
 koin = "3.5.0"
 navigation = "2.7.4"
+google-services = "4.4.0"
+firebase-bom = "32.3.1"
+firebase-crashlytics = "2.9.9"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -40,11 +43,16 @@ koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = 
 koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 koin-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager", version.ref = "koin" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analytics-ktx"}
+firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
 com-apollographql-apollo3 = { id = "com.apollographql.apollo3", version.ref = "apollo3" }
+com-google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+com-google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebase-crashlytics" }
 
 [bundles]
 glance = ["glance-appwidget", "glance-material3"]
