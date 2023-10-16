@@ -31,7 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
 import pl.deniotokiari.githubcontributioncalendar.widget.SetUpAppWidgetWorker
@@ -39,6 +39,7 @@ import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
 
 
 class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
+    private val appAnalytics: AppAnalytics by inject()
     private val appWidgetId by lazy {
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -47,6 +48,12 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
     }
 
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        appAnalytics.trackIsIgnoringBatteryOptimizations(
+            (getSystemService(POWER_SERVICE) as? PowerManager)?.isIgnoringBatteryOptimizations(
+                packageName
+            ) == true
+        )
+
         setContent { MainContent() }
     }
 
@@ -63,6 +70,7 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
         val powerManager = getSystemService(POWER_SERVICE) as? PowerManager
 
         if (powerManager?.isIgnoringBatteryOptimizations(packageName) == true) {
+            appAnalytics.trackIsIgnoringBatteryOptimizations(true)
             setContent { MainContent() }
         } else {
             launcher.launch(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
@@ -113,7 +121,7 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
 
                                 UpdateAppWidgetWorker.start(this@AppWidgetConfigurationActivity)
 
-                                get<AppAnalytics>().trackWidgetAdd(username)
+                                appAnalytics.trackWidgetAdd(username)
 
                                 setResult(
                                     Activity.RESULT_OK,

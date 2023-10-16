@@ -40,4 +40,8 @@ class AppAnalytics(
     fun trackUserView(user: String) {
         analytics.track("view_user", mapOf("user" to user))
     }
+
+    fun trackIsIgnoringBatteryOptimizations(value: Boolean) {
+        analytics.track("is_ignoring_battery_optimizations", mapOf("ignoring" to value))
+    }
 }
