@@ -8,7 +8,10 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import pl.deniotokiari.githubcontributioncalendar.analytics.Analytics
+import pl.deniotokiari.githubcontributioncalendar.analytics.FirebaseAnalyticsImpl
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import pl.deniotokiari.githubcontributioncalendar.network.apolloClient
 
@@ -21,6 +24,7 @@ val appModule = module {
     single { apolloClient }
     singleOf(::BlocksBitmapCreator)
     single { DevRepository(get(qualifier = named("dev"))) }
+    singleOf(::FirebaseAnalyticsImpl) bind Analytics::class
 }
 
 sealed class AppDispatchers(val dispatcher: CoroutineDispatcher) {

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
+import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
 import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
 import pl.deniotokiari.githubcontributioncalendar.widget.AppWidgetReceiver
 
@@ -48,16 +49,16 @@ fun HomeScreen(
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .pullRefresh(pullRefreshState)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().weight(1F),
             ) {
                 uiState.items.forEach { (userName, widgetId, config, items) ->
                     item {
@@ -85,6 +86,10 @@ fun HomeScreen(
                     }
                 }
             }
+
+            AddBanner(
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
         val context = LocalContext.current

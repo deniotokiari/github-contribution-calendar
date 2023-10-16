@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
+import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
 import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import kotlin.math.roundToInt
@@ -70,34 +71,48 @@ fun UserScreen(
                 .pullRefresh(pullRefreshState)
                 .fillMaxSize()
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                item {
-                    ContributionWidget(user = uiState.user.user, colors = uiState.user.colors, config = uiState.config)
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1F),
+                ) {
+                    item {
+                        ContributionWidget(
+                            user = uiState.user.user,
+                            colors = uiState.user.colors,
+                            config = uiState.config
+                        )
 
-                    Slider(
-                        value = uiState.config.blockSize.toFloat(),
-                        onValueChange = {
-                            viewModel.updateBlockSize(it.roundToInt())
-                        },
-                        valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
-                        steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
-                    )
-                    Text(text = "Block size ${uiState.config.blockSize}", modifier = Modifier.padding(8.dp))
+                        Slider(
+                            value = uiState.config.blockSize.toFloat(),
+                            onValueChange = {
+                                viewModel.updateBlockSize(it.roundToInt())
+                            },
+                            valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
+                            steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
+                        )
+                        Text(text = "Block size ${uiState.config.blockSize}", modifier = Modifier.padding(8.dp))
 
-                    Slider(
-                        value = uiState.config.padding.toFloat(),
-                        onValueChange = {
-                            viewModel.updatePadding(it.roundToInt())
-                        },
-                        valueRange = BlocksBitmapCreator.PADDING_MIN.toFloat()..BlocksBitmapCreator.PADDING_MAX.toFloat(),
-                        steps = BlocksBitmapCreator.PADDING_MAX - BlocksBitmapCreator.PADDING_MIN - 1
-                    )
-                    Text(text = "Padding ${uiState.config.padding}", modifier = Modifier.padding(8.dp))
+                        Slider(
+                            value = uiState.config.padding.toFloat(),
+                            onValueChange = {
+                                viewModel.updatePadding(it.roundToInt())
+                            },
+                            valueRange = BlocksBitmapCreator.PADDING_MIN.toFloat()..BlocksBitmapCreator.PADDING_MAX.toFloat(),
+                            steps = BlocksBitmapCreator.PADDING_MAX - BlocksBitmapCreator.PADDING_MIN - 1
+                        )
+                        Text(text = "Padding ${uiState.config.padding}", modifier = Modifier.padding(8.dp))
 
-                    // TODO transparency
+                        // TODO transparency
+                    }
                 }
+
+                AddBanner(
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             PullRefreshIndicator(
