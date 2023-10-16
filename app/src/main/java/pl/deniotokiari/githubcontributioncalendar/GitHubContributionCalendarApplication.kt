@@ -1,8 +1,8 @@
 package pl.deniotokiari.githubcontributioncalendar
 
 import android.app.Application
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.crashlytics.ktx.crashlytics
 import com.google.firebase.ktx.Firebase
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.koin.workManagerFactory
@@ -13,12 +13,11 @@ import pl.deniotokiari.githubcontributioncalendar.user.userModule
 import pl.deniotokiari.githubcontributioncalendar.widget.widgetModule
 
 class GitHubContributionCalendarApplication : Application() {
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
-
     override fun onCreate() {
         super.onCreate()
 
-        firebaseAnalytics = Firebase.analytics
+        Firebase.crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+        Firebase.analytics.setAnalyticsCollectionEnabled(!BuildConfig.DEBUG)
 
         startKoin {
             androidContext(this@GitHubContributionCalendarApplication)

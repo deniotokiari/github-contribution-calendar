@@ -27,6 +27,8 @@ android {
 
         buildConfigField("String", "GITHUB_TOKEN", "\"${gradleLocalProperties(rootDir).getProperty("github.token")}\"")
         buildConfigField("String", "GITHUB_URL", "\"${gradleLocalProperties(rootDir).getProperty("github.url")}\"")
+
+        manifestPlaceholders["admobAppId"] = gradleLocalProperties(rootDir).getProperty("admobAppId")
     }
 
     buildTypes {
@@ -84,6 +86,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics.ktx)
     implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.play.services.ads)
 
     testImplementation(libs.junit)
 
