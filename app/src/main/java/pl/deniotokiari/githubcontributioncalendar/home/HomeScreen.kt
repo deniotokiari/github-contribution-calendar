@@ -31,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
+import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
 import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
@@ -88,7 +89,8 @@ fun HomeScreen(
             }
 
             AddBanner(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                adUnitId = BuildConfig.HOME_SCREEN_AD_ID
             )
         }
 
