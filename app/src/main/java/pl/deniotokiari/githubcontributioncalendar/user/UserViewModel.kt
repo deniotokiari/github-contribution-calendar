@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
@@ -20,7 +21,8 @@ class UserViewModel(
     private val contributionCalendarRepository: ContributionCalendarRepository,
     configurationRepository: WidgetConfigurationRepository,
     private val setWidgetConfigUseCase: SetWidgetConfigUseCase,
-    private val updateWidgetByUserNameAndWidgetIdUseCase: UpdateWidgetByUserNameAndWidgetIdUseCase
+    private val updateWidgetByUserNameAndWidgetIdUseCase: UpdateWidgetByUserNameAndWidgetIdUseCase,
+    private val appAnalytics: AppAnalytics
 ) : ViewModel() {
     private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val uiState: StateFlow<UiState> = combine(
@@ -45,6 +47,10 @@ class UserViewModel(
     }
         .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
 
+    init {
+        appAnalytics.trackUserView(user)
+    }
+
     fun refreshUserContribution() {
         viewModelScope.launch {
             _refreshing.value = true
@@ -57,31 +63,41 @@ class UserViewModel(
                 )
             )
 
+            appAnalytics.trackUserRefresh()
+
             _refreshing.value = false
         }
     }
 
     fun updatePadding(value: Int) {
         viewModelScope.launch {
+            val config = uiState.value.config.copy(padding = value)
+
             setWidgetConfigUseCase(
                 SetWidgetConfigUseCase.Params(
                     widgetId = widgetId,
                     userName = user,
-                    config = uiState.value.config.copy(padding = value)
+                    config = config
                 )
             )
+
+            appAnalytics.trackWidgetConfigUpdate(user, config)
         }
     }
 
     fun updateBlockSize(value: Int) {
         viewModelScope.launch {
+            val config = uiState.value.config.copy(blockSize = value)
+
             setWidgetConfigUseCase(
                 SetWidgetConfigUseCase.Params(
                     widgetId = widgetId,
                     userName = user,
-                    config = uiState.value.config.copy(blockSize = value)
+                    config = config
                 )
             )
+
+            appAnalytics.trackWidgetConfigUpdate(user, config)
         }
     }
 

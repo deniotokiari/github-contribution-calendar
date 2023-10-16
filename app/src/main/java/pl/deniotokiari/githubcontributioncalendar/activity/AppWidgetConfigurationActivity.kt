@@ -30,12 +30,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
 import pl.deniotokiari.githubcontributioncalendar.widget.SetUpAppWidgetWorker
 import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
 
 
-class AppWidgetConfigurationActivity : ComponentActivity() {
+class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
     private val appWidgetId by lazy {
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -109,6 +112,8 @@ class AppWidgetConfigurationActivity : ComponentActivity() {
                                 )
 
                                 UpdateAppWidgetWorker.start(this@AppWidgetConfigurationActivity)
+
+                                get<AppAnalytics>().trackWidgetAdd(username)
 
                                 setResult(
                                     Activity.RESULT_OK,

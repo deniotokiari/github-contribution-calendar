@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
@@ -16,7 +17,8 @@ import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidget
 class HomeViewModel(
     private val contributionCalendarRepository: ContributionCalendarRepository,
     widgetConfigurationRepository: WidgetConfigurationRepository,
-    private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase
+    private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase,
+    private val appAnalytics: AppAnalytics
 ) : ViewModel() {
     private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val uiState: StateFlow<UiState> = combine(
@@ -48,11 +50,20 @@ class HomeViewModel(
     }.combine(_refreshing) { state, refreshing -> state.copy(refreshing = refreshing) }
         .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
 
+    init {
+        appAnalytics.trackHomeView()
+    }
+
     fun refreshUsersContributions() {
         viewModelScope.launch {
             _refreshing.value = true
-            contributionCalendarRepository.updateAllContributions()
+
+            val size = contributionCalendarRepository.updateAllContributions()
+
             updateAllWidgetsUseCase(Unit)
+
+            appAnalytics.trackHomeRefresh(size)
+
             _refreshing.value = false
         }
     }

@@ -36,6 +36,7 @@ import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.activity.MainActivity
+import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
@@ -62,6 +63,8 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                     userName = username
                 )
             )
+
+            get<AppAnalytics>().trackWidgetRemove(username)
         }
 
         super.onDelete(context, glanceId)
