@@ -29,6 +29,7 @@ android {
         buildConfigField("String", "GITHUB_URL", "\"${gradleLocalProperties(rootDir).getProperty("github.url")}\"")
         buildConfigField("String", "HOME_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("homeScreenAdId")}\"")
         buildConfigField("String", "USER_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("userScreenAdId")}\"")
+        buildConfigField("String", "ABOUT_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("aboutScreenAdId")}\"")
 
         manifestPlaceholders["admobAppId"] = gradleLocalProperties(rootDir).getProperty("admobAppId")
     }

@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.android.gms.ads.MobileAds
+import pl.deniotokiari.githubcontributioncalendar.about.AboutScreen
 import pl.deniotokiari.githubcontributioncalendar.home.HomeScreen
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
 import pl.deniotokiari.githubcontributioncalendar.user.UserScreen
@@ -53,6 +54,7 @@ class MainActivity : ComponentActivity() {
 
                                 UserScreen(user = user, widgetId = widgetId)
                             }
+                            composable("about") { AboutScreen() }
                         }
 
                         val navHostController = LocalNavController.current

@@ -7,6 +7,7 @@ import com.google.firebase.ktx.Firebase
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
+import pl.deniotokiari.githubcontributioncalendar.about.aboutModule
 import pl.deniotokiari.githubcontributioncalendar.data.dataModule
 import pl.deniotokiari.githubcontributioncalendar.home.homeModule
 import pl.deniotokiari.githubcontributioncalendar.user.userModule
@@ -28,7 +29,8 @@ class GitHubContributionCalendarApplication : Application() {
                 dataModule,
                 widgetModule,
                 homeModule,
-                userModule
+                userModule,
+                aboutModule
             )
         }
     }
