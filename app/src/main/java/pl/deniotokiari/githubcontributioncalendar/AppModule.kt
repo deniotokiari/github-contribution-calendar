@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.module.dsl.singleOf
@@ -25,6 +27,7 @@ val appModule = module {
     single { apolloClient }
     singleOf(::BlocksBitmapCreator)
     single { DevRepository(get(qualifier = named("dev"))) }
+    single { Firebase.analytics }
     singleOf(::FirebaseAnalyticsImpl) bind Analytics::class
     singleOf(::AppAnalytics)
 }
