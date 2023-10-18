@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
+import pl.deniotokiari.githubcontributioncalendar.R
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
 import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
@@ -55,7 +57,10 @@ fun UserScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(imageVector = Icons.Filled.ArrowBack, contentDescription = "back button")
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = stringResource(id = R.string.back_button_description)
+                )
             }
             Text(
                 text = uiState.user.user,

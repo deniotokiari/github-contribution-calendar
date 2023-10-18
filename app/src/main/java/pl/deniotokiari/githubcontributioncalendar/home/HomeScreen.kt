@@ -62,7 +62,10 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             IconButton(onClick = { navController.navigate("about") }) {
-                Icon(imageVector = Icons.Outlined.Info, contentDescription = "about")
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = stringResource(id = R.string.about_button_description)
+                )
             }
             Text(
                 text = stringResource(id = R.string.app_name),
@@ -142,8 +145,11 @@ fun HomeScreen(
                         )
                     }
                 }) {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = "add widget")
-                    Text(text = "Add widget")
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(id = R.string.add_widget_button_description)
+                    )
+                    Text(text = stringResource(id = R.string.add_widget))
                 }
             }
 

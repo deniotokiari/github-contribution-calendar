@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">GitHub Contribution Calendar</string>
+    <string name="short_about">Visualize user GitHub activity with colorful blocks. Gain insights at a glance.</string>
+    <string name="features_description">The app allows for both individual and bulk widget refresh, widget customization, and provides multiple daily updates for real-time data.</string>
+    <string name="back_button_description">back button</string>
+    <string name="about_button_description">about button</string>
+    <string name="add_widget_button_description">add widget button</string>
+    <string name="about">About</string>
+    <string name="version">Version %1$s (%2$d)</string>
+    <string name="add_widget">Add widget</string>
 </resources>
