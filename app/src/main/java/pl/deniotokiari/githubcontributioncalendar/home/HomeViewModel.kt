@@ -27,19 +27,21 @@ class HomeViewModel(
     ) { configurations, contributions ->
         val items = mutableListOf<UiState.User>()
 
-        repeat(configurations.size) { index ->
-            val (widgetIdAndUserName, config) = configurations[index]
-            val (widgetId, userName) = widgetIdAndUserName
-            val (_, colors) = contributions.first { (user, _) -> user == userName }
+        if (contributions.isNotEmpty()) {
+            repeat(configurations.size) { index ->
+                val (widgetIdAndUserName, config) = configurations[index]
+                val (widgetId, userName) = widgetIdAndUserName
+                val (_, colors) = contributions.first { (user, _) -> user == userName }
 
-            items.add(
-                UiState.User(
-                    name = userName,
-                    widgetId = widgetId,
-                    config = config,
-                    colors = colors.toIntArray()
+                items.add(
+                    UiState.User(
+                        name = userName,
+                        widgetId = widgetId,
+                        config = config,
+                        colors = colors.toIntArray()
+                    )
                 )
-            )
+            }
         }
 
         UiState(

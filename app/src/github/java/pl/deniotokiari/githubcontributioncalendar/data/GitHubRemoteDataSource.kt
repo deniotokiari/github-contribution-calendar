@@ -29,10 +29,19 @@ class GitHubRemoteDataSource(
         }
 
         return fromItems.mapNotNull { (from, to) ->
-            gitHubService.queryUserContribution(
-                username = username,
-                from = formatter.format(from),
-                to = formatter.format(to)
+            runCatching {
+                gitHubService.queryUserContribution(
+                    username = username,
+                    from = formatter.format(from),
+                    to = formatter.format(to)
+                )
+            }.fold(
+                onSuccess = { it },
+                onFailure = {
+                    Log.d("LOG", "getUserContribution ${it.message}")
+
+                    null
+                }
             )
         }.flatten()
     }
