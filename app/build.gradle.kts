@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.firebase.analytics.ktx)
     implementation(libs.firebase.crashlytics.ktx)
     implementation(libs.play.services.ads)
+    implementation(libs.firebase.config)
 
     testImplementation(libs.junit)
 

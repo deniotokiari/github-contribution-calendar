@@ -1,6 +1,7 @@
 package pl.deniotokiari.githubcontributioncalendar.about
 
 import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,8 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -42,6 +45,7 @@ import pl.deniotokiari.githubcontributioncalendar.ui.theme.PurpleGrey80
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import kotlin.random.Random
 
+
 @Composable
 fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
     val navController = LocalNavController.current
@@ -54,6 +58,7 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
         Pink40.toArgb()
     )
     val activity = LocalContext.current as Activity
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -106,14 +111,29 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
                     text = stringResource(id = R.string.features_description)
                 )
 
-                TextButton(onClick = { /*TODO*/ }) {
-                    Text(
-                        modifier = Modifier.padding(2.dp),
-                        text = stringResource(id = R.string.contact_via_email),
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                        )
-                    )
+                when (val state = uiState) {
+                    is AboutViewModel.UiState.Idle -> {
+                        TextButton(onClick = {
+                            val intent = Intent(Intent.ACTION_SEND).apply {
+                                type = "plain/text"
+                                putExtra(Intent.EXTRA_EMAIL, arrayOf(state.email))
+                            }
+
+                            activity.startActivity(intent)
+
+                            viewModel.onSupportEmailClicked()
+                        }) {
+                            Text(
+                                modifier = Modifier.padding(2.dp),
+                                text = stringResource(id = R.string.contact_via_email),
+                                style = TextStyle(
+                                    fontSize = 16.sp,
+                                )
+                            )
+                        }
+                    }
+
+                    AboutViewModel.UiState.Loading -> Unit
                 }
 
                 TextButton(onClick = { AdInterstitial.show(BuildConfig.SUPPORT_AD_ID, activity) }) {

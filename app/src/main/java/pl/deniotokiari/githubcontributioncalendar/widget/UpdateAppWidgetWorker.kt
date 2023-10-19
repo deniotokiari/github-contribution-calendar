@@ -66,9 +66,9 @@ class UpdateAppWidgetWorker(
             WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
         }
 
-        fun start(context: Context) {
+        fun start(context: Context, repeatInterval: Long) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
-                repeatInterval = 12,
+                repeatInterval = repeatInterval,
                 repeatIntervalTimeUnit = TimeUnit.HOURS
             )
                 .setConstraints(
@@ -88,7 +88,7 @@ class UpdateAppWidgetWorker(
 
             WorkManager.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 request
             )
         }

@@ -10,6 +10,7 @@ import org.koin.core.context.startKoin
 import pl.deniotokiari.githubcontributioncalendar.about.aboutModule
 import pl.deniotokiari.githubcontributioncalendar.data.dataModule
 import pl.deniotokiari.githubcontributioncalendar.home.homeModule
+import pl.deniotokiari.githubcontributioncalendar.prefs.prefsModule
 import pl.deniotokiari.githubcontributioncalendar.user.userModule
 import pl.deniotokiari.githubcontributioncalendar.widget.widgetModule
 
@@ -26,6 +27,7 @@ class GitHubContributionCalendarApplication : Application() {
 
             modules(
                 appModule,
+                prefsModule,
                 dataModule,
                 widgetModule,
                 homeModule,
