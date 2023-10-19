@@ -30,6 +30,7 @@ android {
         buildConfigField("String", "HOME_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("homeScreenAdId")}\"")
         buildConfigField("String", "USER_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("userScreenAdId")}\"")
         buildConfigField("String", "ABOUT_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("aboutScreenAdId")}\"")
+        buildConfigField("String", "SUPPORT_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("supportAdId")}\"")
 
         manifestPlaceholders["admobAppId"] = gradleLocalProperties(rootDir).getProperty("admobAppId")
     }

@@ -1,5 +1,6 @@
 package pl.deniotokiari.githubcontributioncalendar.about
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +15,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
 import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
+import pl.deniotokiari.githubcontributioncalendar.ad.AdInterstitial
 import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
 import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Pink40
@@ -49,6 +53,7 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
         PurpleGrey40.toArgb(),
         Pink40.toArgb()
     )
+    val activity = LocalContext.current as Activity
 
     Column(
         modifier = Modifier
@@ -100,6 +105,26 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
                     modifier = Modifier.padding(16.dp),
                     text = stringResource(id = R.string.features_description)
                 )
+
+                TextButton(onClick = { /*TODO*/ }) {
+                    Text(
+                        modifier = Modifier.padding(2.dp),
+                        text = stringResource(id = R.string.contact_via_email),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                        )
+                    )
+                }
+
+                TextButton(onClick = { AdInterstitial.show(BuildConfig.SUPPORT_AD_ID, activity) }) {
+                    Text(
+                        modifier = Modifier.padding(2.dp),
+                        text = stringResource(id = R.string.support),
+                        style = TextStyle(
+                            fontSize = 16.sp,
+                        )
+                    )
+                }
             }
 
             Text(
