@@ -69,6 +69,20 @@ class UserViewModel(
         }
     }
 
+    fun updateOpacity(value: Int) {
+        viewModelScope.launch {
+            val config = uiState.value.config.copy(opacity = value)
+
+            setWidgetConfigUseCase(
+                SetWidgetConfigUseCase.Params(
+                    widgetId = widgetId,
+                    userName = user,
+                    config = config
+                )
+            )
+        }
+    }
+
     fun updatePadding(value: Int) {
         viewModelScope.launch {
             val config = uiState.value.config.copy(padding = value)

@@ -73,7 +73,7 @@ class WidgetConfigurationRepository(
 data class WidgetConfiguration(
     val blockSize: Int,
     val padding: Int,
-    val opacity: Float
+    val opacity: Int
 ) {
     fun encode() = "$blockSize:$padding:$opacity"
 
@@ -90,7 +90,7 @@ data class WidgetConfiguration(
             return WidgetConfiguration(
                 blockSize = items[0].toInt(),
                 padding = items[1].toInt(),
-                opacity = items[2].toFloat()
+                opacity = items[2].toInt()
             )
         }
     }

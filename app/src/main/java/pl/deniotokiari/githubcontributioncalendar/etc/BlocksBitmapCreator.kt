@@ -12,6 +12,7 @@ class BlocksBitmapCreator {
         width: Int,
         height: Int,
         squareSize: Int,
+        opacity: Int,
         padding: Int,
         colors: IntArray
     ): Bitmap {
@@ -20,7 +21,8 @@ class BlocksBitmapCreator {
             height = height,
             squareSize = squareSize,
             padding = padding,
-            colorsSize = colors.size
+            colorsSize = colors.size,
+            opacity = opacity
         )
 
         val blocksCount = params.blocksCount
@@ -72,6 +74,7 @@ class BlocksBitmapCreator {
                     rect.offset(params.wOffset, params.hOffset)
 
                     paint.color = colors[index++]
+                    paint.alpha = params.opacity
                     drawRect(rect, paint)
                 }
             }
@@ -84,6 +87,7 @@ class BlocksBitmapCreator {
         val hCount: Int,
         val wCount: Int,
         val blockSize: Float,
+        val opacity: Int,
         val padding: Float,
         val hOffset: Float,
         val wOffset: Float
@@ -96,6 +100,7 @@ class BlocksBitmapCreator {
         width: Int,
         height: Int,
         squareSize: Int,
+        opacity: Int,
         padding: Int,
         colorsSize: Int
     ): Params {
@@ -117,7 +122,8 @@ class BlocksBitmapCreator {
             blockSize = sizeF,
             padding = paddingF,
             hOffset = hOffsetF,
-            wOffset = wOffsetF
+            wOffset = wOffsetF,
+            opacity = opacity
         )
     }
 
@@ -126,11 +132,11 @@ class BlocksBitmapCreator {
         const val BLOCK_SIZE_MAX = 60
         const val PADDING_MIN = 0
         const val PADDING_MAX = 4
-        const val OPACITY_MIN = 0.1
-        const val OPACITY_MAX = 1
+        const val OPACITY_MIN = 90
+        const val OPACITY_MAX = 255
 
         const val DEFAULT_BLOCK_SIZE = 40
         const val DEFAULT_PADDING = 2
-        const val DEFAULT_OPACITY = 0F
+        const val DEFAULT_OPACITY = 255
     }
 }

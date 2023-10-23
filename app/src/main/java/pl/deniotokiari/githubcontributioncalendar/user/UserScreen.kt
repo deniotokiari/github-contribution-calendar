@@ -112,7 +112,15 @@ fun UserScreen(
                         )
                         Text(text = "Padding ${uiState.config.padding}", modifier = Modifier.padding(8.dp))
 
-                        // TODO transparency
+                        Slider(
+                            value = uiState.config.opacity.toFloat(),
+                            onValueChange = {
+                                viewModel.updateOpacity(it.roundToInt())
+                            },
+                            valueRange = BlocksBitmapCreator.OPACITY_MIN.toFloat()..BlocksBitmapCreator.OPACITY_MAX.toFloat(),
+                            steps = BlocksBitmapCreator.OPACITY_MAX - BlocksBitmapCreator.OPACITY_MIN - 1
+                        )
+                        Text(text = "Opacity ${uiState.config.opacity}", modifier = Modifier.padding(8.dp))
                     }
                 }
 

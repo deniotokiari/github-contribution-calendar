@@ -67,7 +67,8 @@ fun ContributionWidget(
                 height = size.height,
                 squareSize = config.blockSize,
                 padding = config.padding,
-                colors = colors
+                colors = colors,
+                opacity = config.opacity
             )
 
             Image(

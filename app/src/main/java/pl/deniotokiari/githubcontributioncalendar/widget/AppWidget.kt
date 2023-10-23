@@ -107,7 +107,8 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                         height = height,
                         squareSize = blockSize,
                         padding = padding,
-                        colorsSize = colors.size
+                        colorsSize = colors.size,
+                        opacity = config.opacity
                     )
                     val blocksCount = params.blocksCount
                     val offset = colors.size - blocksCount
@@ -156,7 +157,7 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
 
     companion object {
         val USER_NAME_KEY = stringPreferencesKey("username")
-        val WIDGET_ID_KEY = intPreferencesKey("")
+        val WIDGET_ID_KEY = intPreferencesKey("widgetId")
         const val DESTINATION_USER = "DESTINATION_USER"
         const val DESTINATION_WIDGET_ID = "DESTINATION_WIDGET_ID"
         val DESTINATION_USER_KEY = ActionParameters.Key<String>(DESTINATION_USER)
