@@ -105,7 +105,6 @@
 }
 -keep public class com.android.installreferrer.** { *; }
 
--dontobfuscate
 -optimizationpasses 5
 
 -keep class * extends android.app.Activity
