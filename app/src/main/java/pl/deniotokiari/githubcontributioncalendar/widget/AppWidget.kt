@@ -2,6 +2,7 @@ package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
@@ -9,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.glance.GlanceComposable
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.Image
@@ -38,7 +40,7 @@ import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.activity.MainActivity
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.px
-import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.data.decode
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import pl.deniotokiari.githubcontributioncalendar.widget.usecase.RemoveWidgetByUserNameAndWidgetIdUseCase
 import java.time.LocalDateTime
@@ -70,87 +72,111 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
         super.onDelete(context, glanceId)
     }
 
+    @GlanceComposable
+    @Composable
+    private fun Loading() {
+        Box(
+            modifier = GlanceModifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
+
+    @GlanceComposable
+    @Composable
+    private fun Empty(userName: String) {
+        Box(
+            modifier = GlanceModifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = "No data for $userName")
+        }
+    }
+
+    @GlanceComposable
+    @Composable
+    private fun Content(
+        userName: String,
+        widgetId: Int,
+        config: WidgetConfiguration,
+        colors: List<Int>
+    ) {
+        val bitmapCreator: BlocksBitmapCreator by inject()
+        val blockSize = config.blockSize
+        val padding = config.padding
+        val size = LocalSize.current
+        val width = size.width.value.roundToInt().px
+        val height = size.height.value.roundToInt().px
+        val params = bitmapCreator.getParamsForBitmap(
+            width = width,
+            height = height,
+            squareSize = blockSize,
+            padding = padding,
+            colorsSize = colors.size,
+            opacity = config.opacity
+        )
+        val blocksCount = params.blocksCount
+        val offset = colors.size - blocksCount
+        val bitmap = bitmapCreator(
+            width = width,
+            height = height,
+            params = params,
+            colors = IntArray(blocksCount) { colors[it + offset] }
+        )
+        Image(
+            provider = ImageProvider(bitmap),
+            contentDescription = "blocks",
+            modifier = GlanceModifier
+                .fillMaxSize()
+                .clickable(
+                    actionStartActivity<MainActivity>(
+                        parameters = actionParametersOf(
+                            DESTINATION_USER_KEY to userName,
+                            DESTINATION_WIDGET_ID_KEY to widgetId
+                        )
+                    )
+                )
+        )
+
+        if (BuildConfig.DEBUG) {
+            val time = LocalDateTime.now().format(
+                DateTimeFormatterBuilder()
+                    .appendValue(ChronoField.HOUR_OF_DAY, 2)
+                    .appendLiteral(':')
+                    .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+                    .optionalStart()
+                    .appendLiteral(':')
+                    .appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter()
+            )
+            val count by get<DevRepository>().widgetUpdateCount().collectAsState(initial = 0)
+
+            Text(
+                modifier = GlanceModifier.padding(6.dp).background(Color.White),
+                text = "${count}: $time"
+            )
+        }
+    }
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         Log.d("LOG", "provideGlance for $id")
 
         provideContent {
             val username = currentState(key = USER_NAME_KEY)
             val widgetId = currentState(key = WIDGET_ID_KEY)
+            val config = currentState(key = CONFIG_KEY)?.let(WidgetConfiguration::decode)
+            val colors = currentState(key = COLORS_KEY)?.let { it.decode() }
 
-            if (username != null && widgetId != null) {
-                val contributionCalendarRepository: ContributionCalendarRepository by inject()
-                val widgetConfigurationRepository: WidgetConfigurationRepository by inject()
-                val bitmapCreator: BlocksBitmapCreator by inject()
-
-                val colors by contributionCalendarRepository.contributionsByUser(username)
-                    .collectAsState(initial = emptyList())
-                val config by widgetConfigurationRepository.configurationByWidgetIdAndUserName(
-                    widgetId = widgetId,
-                    userName = username
-                ).collectAsState(initial = WidgetConfiguration.default())
+            if (username != null && widgetId != null && config != null && colors != null) {
                 Log.d("LOG", "provideContent for $username $id colors => ${colors.size}")
+
                 if (colors.isEmpty()) {
-                    Box(
-                        modifier = GlanceModifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+                    Empty(userName = username)
                 } else {
-                    val blockSize = config.blockSize
-                    val padding = config.padding
-                    val size = LocalSize.current
-                    val width = size.width.value.roundToInt().px
-                    val height = size.height.value.roundToInt().px
-                    val params = bitmapCreator.getParamsForBitmap(
-                        width = width,
-                        height = height,
-                        squareSize = blockSize,
-                        padding = padding,
-                        colorsSize = colors.size,
-                        opacity = config.opacity
-                    )
-                    val blocksCount = params.blocksCount
-                    val offset = colors.size - blocksCount
-                    val bitmap = bitmapCreator(
-                        width = width,
-                        height = height,
-                        params = params,
-                        colors = IntArray(blocksCount) { colors[it + offset] }
-                    )
-                    Image(
-                        provider = ImageProvider(bitmap),
-                        contentDescription = "blocks",
-                        modifier = GlanceModifier
-                            .fillMaxSize()
-                            .clickable(
-                                actionStartActivity<MainActivity>(
-                                    parameters = actionParametersOf(
-                                        DESTINATION_USER_KEY to username,
-                                        DESTINATION_WIDGET_ID_KEY to widgetId
-                                    )
-                                )
-                            )
-                    )
-
-                    if (BuildConfig.DEBUG) {
-                        val time = LocalDateTime.now().format(
-                            DateTimeFormatterBuilder()
-                                .appendValue(ChronoField.HOUR_OF_DAY, 2)
-                                .appendLiteral(':')
-                                .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-                                .optionalStart()
-                                .appendLiteral(':')
-                                .appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter()
-                        )
-                        val count by get<DevRepository>().widgetUpdateCount().collectAsState(initial = 0)
-
-                        Text(
-                            modifier = GlanceModifier.padding(6.dp).background(Color.White),
-                            text = "${count}: $time"
-                        )
-                    }
+                    Content(userName = username, widgetId = widgetId, config = config, colors = colors)
                 }
+            } else {
+                Loading()
             }
         }
     }
@@ -158,6 +184,9 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
     companion object {
         val USER_NAME_KEY = stringPreferencesKey("username")
         val WIDGET_ID_KEY = intPreferencesKey("widgetId")
+        val CONFIG_KEY = stringPreferencesKey("config")
+        val COLORS_KEY = stringPreferencesKey("colors")
+
         const val DESTINATION_USER = "DESTINATION_USER"
         const val DESTINATION_WIDGET_ID = "DESTINATION_WIDGET_ID"
         val DESTINATION_USER_KEY = ActionParameters.Key<String>(DESTINATION_USER)

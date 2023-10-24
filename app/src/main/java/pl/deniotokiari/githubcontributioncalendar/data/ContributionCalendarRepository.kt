@@ -26,13 +26,15 @@ class ContributionCalendarRepository(
         gitHubLocalDataSource.removeContributionsForUser(userName)
     }
 
-    suspend fun updateContributionsForUser(userName: String) = withContext(io.dispatcher) {
+    suspend fun updateContributionsForUser(userName: String): List<Int> = withContext(io.dispatcher) {
         mutex.withLock {
             val remoteItems = gitHubRemoteDataSource.getUserContribution(userName).map { it.toColorInt() }
 
             if (remoteItems.isNotEmpty()) {
                 gitHubLocalDataSource.addContributionsForUser(userName, remoteItems)
             }
+
+            remoteItems
         }
     }
 

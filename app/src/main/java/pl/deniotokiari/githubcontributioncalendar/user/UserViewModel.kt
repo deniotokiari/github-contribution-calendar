@@ -18,7 +18,7 @@ import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateWidgetByU
 class UserViewModel(
     private val user: String,
     private val widgetId: Int,
-    private val contributionCalendarRepository: ContributionCalendarRepository,
+    contributionCalendarRepository: ContributionCalendarRepository,
     configurationRepository: WidgetConfigurationRepository,
     private val setWidgetConfigUseCase: SetWidgetConfigUseCase,
     private val updateWidgetByUserNameAndWidgetIdUseCase: UpdateWidgetByUserNameAndWidgetIdUseCase,
@@ -55,7 +55,6 @@ class UserViewModel(
         viewModelScope.launch {
             _refreshing.value = true
 
-            contributionCalendarRepository.updateContributionsForUser(user)
             updateWidgetByUserNameAndWidgetIdUseCase(
                 UpdateWidgetByUserNameAndWidgetIdUseCase.Params(
                     widgetId = widgetId,

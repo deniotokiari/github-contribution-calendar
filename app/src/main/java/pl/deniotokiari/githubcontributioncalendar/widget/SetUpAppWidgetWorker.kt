@@ -18,6 +18,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.data.encode
 import java.util.concurrent.TimeUnit
 
 class SetUpAppWidgetWorker(
@@ -37,13 +38,17 @@ class SetUpAppWidgetWorker(
         val glanceAppWidgetManager = GlanceAppWidgetManager(context)
         val glanceId: GlanceId = glanceAppWidgetManager.getGlanceIdBy(widgetId)
 
+        val config = WidgetConfiguration.default()
+        val colors = contributionCalendarRepository.updateContributionsForUser(userName)
+
+        widgetConfigurationRepository.addConfiguration(widgetId, userName, config)
+
         updateAppWidgetState(context, glanceId) {
             it[AppWidget.USER_NAME_KEY] = userName
             it[AppWidget.WIDGET_ID_KEY] = widgetId
+            it[AppWidget.CONFIG_KEY] = config.encode()
+            it[AppWidget.COLORS_KEY] = colors.encode()
         }
-
-        contributionCalendarRepository.updateContributionsForUser(userName)
-        widgetConfigurationRepository.addConfiguration(widgetId, userName, WidgetConfiguration.default())
 
         AppWidget().update(context, glanceId)
     }.fold(

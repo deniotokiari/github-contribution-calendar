@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.getAppWidgetState
+import androidx.glance.appwidget.state.updateAppWidgetState
 import pl.deniotokiari.githubcontributioncalendar.core.UseCase
 import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
@@ -22,9 +23,13 @@ class SetWidgetConfigUseCase(
         manager.getGlanceIds(AppWidget::class.java).forEach {
             val preferences = appWidget.getAppWidgetState<Preferences>(context, it)
             val widgetId = preferences[AppWidget.WIDGET_ID_KEY]
-            val userName: String? by lazy { preferences[AppWidget.USER_NAME_KEY] }
+            val userName: String? = preferences[AppWidget.USER_NAME_KEY]
 
             if (widgetId == params.widgetId && userName == params.userName) {
+                updateAppWidgetState(context, it) { prefs ->
+                    prefs[AppWidget.CONFIG_KEY] = params.config.encode()
+                }
+
                 appWidget.update(context, it)
 
                 return

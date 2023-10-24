@@ -2,7 +2,6 @@ package pl.deniotokiari.githubcontributioncalendar.widget
 
 import android.content.Context
 import android.util.Log
-import androidx.glance.appwidget.updateAll
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -14,25 +13,26 @@ import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.awaitCancellation
 import pl.deniotokiari.githubcontributioncalendar.DevRepository
-import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidgetsUseCase
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class UpdateAppWidgetWorker(
     private val context: Context,
-    private val contributionCalendarRepository: ContributionCalendarRepository,
     private val devRepository: DevRepository,
+    private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase,
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
         devRepository.incrementWidgetUpdateCount()
         val start = System.currentTimeMillis()
+
         Log.d("LOG", "update all widget worker start")
 
         val updatedCount =
             try {
-                contributionCalendarRepository.updateAllContributions()
+                updateAllWidgetsUseCase(Unit)
             } catch (e: Exception) {
                 Log.d("LOG", e.message.toString())
 
@@ -47,10 +47,7 @@ class UpdateAppWidgetWorker(
                 )
             }"
         )
-
-        if (updatedCount > 0) {
-            AppWidget().updateAll(context)
-        } else if (updatedCount == 0) {
+        if (updatedCount == 0) {
             cancel(context)
 
             awaitCancellation()

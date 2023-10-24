@@ -50,8 +50,8 @@ class GitHubLocalDataSource(
             it.remove(key)
         }
     }
-
-    private fun String?.decode(): List<Int> = this?.split(SEPARATOR)?.map { it.toInt() } ?: emptyList()
-
-    private fun List<Int>.encode(): String = this.joinToString(SEPARATOR)
 }
+
+fun String?.decode(): List<Int> = this?.split(SEPARATOR)?.map { it.toInt() } ?: emptyList()
+
+fun List<Int>.encode(): String = this.joinToString(SEPARATOR)

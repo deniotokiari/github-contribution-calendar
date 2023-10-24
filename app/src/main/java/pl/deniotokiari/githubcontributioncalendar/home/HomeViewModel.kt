@@ -60,9 +60,7 @@ class HomeViewModel(
         viewModelScope.launch {
             _refreshing.value = true
 
-            val size = contributionCalendarRepository.updateAllContributions()
-
-            updateAllWidgetsUseCase(Unit)
+            val size = updateAllWidgetsUseCase(Unit)
 
             appAnalytics.trackHomeRefresh(size)
 
