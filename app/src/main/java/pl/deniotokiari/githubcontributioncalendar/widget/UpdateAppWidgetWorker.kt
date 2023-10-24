@@ -13,6 +13,7 @@ import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.awaitCancellation
 import pl.deniotokiari.githubcontributioncalendar.DevRepository
+import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidgetsUseCase
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
@@ -22,6 +23,7 @@ class UpdateAppWidgetWorker(
     private val context: Context,
     private val devRepository: DevRepository,
     private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase,
+    private val appAnalytics: AppAnalytics,
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
@@ -39,14 +41,18 @@ class UpdateAppWidgetWorker(
                 -1
             }
 
+        val time = (System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)
+
         Log.d(
             "LOG",
-            "${updatedCount}: update all widget worker end ${
-                (System.currentTimeMillis() - start).toDuration(
-                    DurationUnit.MILLISECONDS
-                )
-            }"
+            "${updatedCount}: update all widget worker end $time"
         )
+
+        appAnalytics.trackWidgetUpdate(
+            count = updatedCount,
+            time = time.inWholeMilliseconds
+        )
+
         if (updatedCount == 0) {
             cancel(context)
 

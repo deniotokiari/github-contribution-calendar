@@ -20,6 +20,7 @@ class FirebaseAnalyticsImpl(
                         is String -> putString(key, value)
                         is Float -> putFloat(key, value)
                         is Boolean -> putBoolean(key, value)
+                        is Long -> putLong(key, value)
                     }
                 }
             }

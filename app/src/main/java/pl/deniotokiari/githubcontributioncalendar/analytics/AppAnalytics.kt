@@ -52,4 +52,8 @@ class AppAnalytics(
     fun trackIsIgnoringBatteryOptimizations(value: Boolean) {
         analytics.track("is_ignoring_battery_optimizations", mapOf("ignoring" to value))
     }
+
+    fun trackWidgetUpdate(count: Int, time: Long) {
+        analytics.track("widget_update", mapOf("count" to count, "time" to time))
+    }
 }
