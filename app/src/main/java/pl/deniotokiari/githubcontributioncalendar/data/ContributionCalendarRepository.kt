@@ -8,10 +8,12 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import pl.deniotokiari.githubcontributioncalendar.AppDispatchers
+import pl.deniotokiari.githubcontributioncalendar.prefs.GetYearsUseCase
 
 class ContributionCalendarRepository(
     private val gitHubLocalDataSource: GitHubLocalDataSource,
     private val gitHubRemoteDataSource: GitHubRemoteDataSource,
+    private val getYearsUseCase: GetYearsUseCase,
     private val io: AppDispatchers.IO
 ) {
     private val mutex: Mutex by lazy { Mutex() }
@@ -28,7 +30,10 @@ class ContributionCalendarRepository(
 
     suspend fun updateContributionsForUser(userName: String): List<Int> = withContext(io.dispatcher) {
         mutex.withLock {
-            val remoteItems = gitHubRemoteDataSource.getUserContribution(userName).map { it.toColorInt() }
+            val remoteItems = gitHubRemoteDataSource.getUserContribution(
+                userName,
+                getYearsUseCase(Unit)
+            ).map { it.toColorInt() }
 
             if (remoteItems.isNotEmpty()) {
                 gitHubLocalDataSource.addContributionsForUser(userName, remoteItems)
@@ -44,7 +49,10 @@ class ContributionCalendarRepository(
 
             users.forEach {
                 launch {
-                    val items = gitHubRemoteDataSource.getUserContribution(it).map { it.toColorInt() }
+                    val items = gitHubRemoteDataSource.getUserContribution(
+                        it,
+                        getYearsUseCase(Unit)
+                    ).map { it.toColorInt() }
 
                     if (items.isNotEmpty()) {
                         gitHubLocalDataSource.addContributionsForUser(it, items)

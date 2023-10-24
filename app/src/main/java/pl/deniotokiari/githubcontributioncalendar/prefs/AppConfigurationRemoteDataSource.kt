@@ -29,4 +29,6 @@ class AppConfigurationRemoteDataSource(
     fun getRepeatInterval(): Long = remoteConfig.getLong("repeat_interval")
 
     fun getSupportEmail(): String = remoteConfig.getString("support_email")
+
+    fun getYears(): Int = remoteConfig.getLong("years").toInt()
 }

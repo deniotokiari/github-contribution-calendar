@@ -6,4 +6,6 @@ class AppConfigurationRepository(
     fun getRepeatInterval(): Long = appConfigurationRemoteDataSource.getRepeatInterval()
 
     fun getSupportEmail(): String = appConfigurationRemoteDataSource.getSupportEmail()
+
+    fun getYears(): Int = appConfigurationRemoteDataSource.getYears()
 }

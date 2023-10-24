@@ -9,4 +9,5 @@ val prefsModule = module {
     singleOf(::AppConfigurationRepository)
     factoryOf(::GetRepeatIntervalUseCase)
     factoryOf(::GetSupportEmailUseCase)
+    factoryOf(::GetYearsUseCase)
 }
