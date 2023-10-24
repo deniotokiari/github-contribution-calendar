@@ -52,6 +52,12 @@ class GitHubLocalDataSource(
     }
 }
 
-fun String?.decode(): List<Int> = this?.split(SEPARATOR)?.map { it.toInt() } ?: emptyList()
+fun String?.decode(): List<Int> {
+    return if (isNullOrEmpty()) {
+        emptyList()
+    } else {
+        this.split(SEPARATOR).map { it.toInt() }
+    }
+}
 
 fun List<Int>.encode(): String = this.joinToString(SEPARATOR)

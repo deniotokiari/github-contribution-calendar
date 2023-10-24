@@ -15,7 +15,7 @@ import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepo
 import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidgetsUseCase
 
 class HomeViewModel(
-    private val contributionCalendarRepository: ContributionCalendarRepository,
+    contributionCalendarRepository: ContributionCalendarRepository,
     widgetConfigurationRepository: WidgetConfigurationRepository,
     private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase,
     private val appAnalytics: AppAnalytics
@@ -31,16 +31,19 @@ class HomeViewModel(
             repeat(configurations.size) { index ->
                 val (widgetIdAndUserName, config) = configurations[index]
                 val (widgetId, userName) = widgetIdAndUserName
-                val (_, colors) = contributions.first { (user, _) -> user == userName }
+                val result = contributions.firstOrNull { (user, _) -> user == userName }
+                val colors = result?.second
 
-                items.add(
-                    UiState.User(
-                        name = userName,
-                        widgetId = widgetId,
-                        config = config,
-                        colors = colors.toIntArray()
+                if (colors != null) {
+                    items.add(
+                        UiState.User(
+                            name = userName,
+                            widgetId = widgetId,
+                            config = config,
+                            colors = colors.toIntArray()
+                        )
                     )
-                )
+                }
             }
         }
 

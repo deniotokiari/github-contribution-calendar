@@ -10,4 +10,8 @@
     <string name="add_widget">Add widget</string>
     <string name="contact_via_email">Contact via email</string>
     <string name="support">Support by watching a fullscreen advertisement</string>
+    <string name="block_size">Block size</string>
+    <string name="padding">Padding</string>
+    <string name="opacity">Opacity</string>
+    <string name="no_data_for">No data for %1$s</string>
 </resources>
