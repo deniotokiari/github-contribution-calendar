@@ -48,7 +48,7 @@ class UpdateAppWidgetWorker(
             "${updatedCount}: update all widget worker end $time"
         )
 
-        appAnalytics.trackWidgetUpdate(
+        appAnalytics.trackAllWidgetsUpdate(
             count = updatedCount,
             time = time.inWholeMilliseconds
         )
