@@ -27,11 +27,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import pl.deniotokiari.githubcontributioncalendar.BuildConfig
+import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.prefs.AppConfigurationRepository
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
@@ -88,7 +91,8 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                 var username by remember { mutableStateOf("") }
 
                 Column(
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OutlinedTextField(
                         value = username,
@@ -138,9 +142,10 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                             enabled = username.isNotEmpty() && okEnabled
                         ) {
                             Text(text = stringResource(id = android.R.string.ok))
-
                         }
                     }
+
+                    AddBanner(adUnitId = BuildConfig.CONFIGURE_WIDGET_AD_ID)
                 }
             }
         }
