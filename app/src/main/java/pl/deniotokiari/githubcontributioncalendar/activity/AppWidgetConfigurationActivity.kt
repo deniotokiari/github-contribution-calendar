@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -87,7 +87,7 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
     @Composable
     private fun MainContent() {
         GitHubContributionCalendarTheme {
-            Surface(modifier = Modifier.wrapContentSize(), color = MaterialTheme.colorScheme.background) {
+            Surface(modifier = Modifier.wrapContentHeight().fillMaxWidth(), color = MaterialTheme.colorScheme.background) {
                 var username by remember { mutableStateOf("") }
 
                 Column(

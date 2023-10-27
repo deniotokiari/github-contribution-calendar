@@ -2,5 +2,8 @@
 <resources>
 
     <style name="Theme.GitHubContributionCalendar" parent="android:Theme.Material.Light.NoActionBar" />
-    <style name="Theme.GitHubContributionCalendarWidgetConfiguration" parent="android:Theme.Material.Light.Dialog.NoActionBar" />
+
+    <style name="Theme.GitHubContributionCalendarWidgetConfiguration" parent="android:Theme.Material.Light.Dialog.NoActionBar">
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
 </resources>
