@@ -130,8 +130,10 @@ class BlocksBitmapCreator {
     companion object {
         const val BLOCK_SIZE_MIN = 20
         const val BLOCK_SIZE_MAX = 60
+
         const val PADDING_MIN = 0
         const val PADDING_MAX = 4
+
         const val OPACITY_MIN = 90
         const val OPACITY_MAX = 255
 

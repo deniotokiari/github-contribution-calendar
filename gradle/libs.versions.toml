@@ -18,6 +18,9 @@ google-services = "4.4.0"
 firebase-bom = "32.4.0"
 firebase-crashlytics = "2.9.9"
 play-services-ads = "22.4.0"
+kotlinx-coroutines-test = "1.7.3"
+mockito-core = "5.6.0"
+mockito-kotlin = "4.1.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -49,6 +52,9 @@ firebase-analytics-ktx = { group = "com.google.firebase", name = "firebase-analy
 firebase-crashlytics-ktx = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
 firebase-config = { group = "com.google.firebase", name = "firebase-config" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "play-services-ads" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines-test" }
+mockito-core = { group = "org.mockito", name = "mockito-core", version.ref = "mockito-core" }
+mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", version.ref = "mockito-kotlin" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
@@ -60,4 +66,5 @@ com-google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", vers
 [bundles]
 glance = ["glance-appwidget", "glance-material3"]
 koin = ["koin-android", "koin-compose", "koin-workmanager"]
+mockito = ["mockito-core", "mockito-kotlin"]
 

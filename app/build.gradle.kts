@@ -9,15 +9,17 @@ plugins {
     alias(libs.plugins.com.google.firebase.crashlytics)
 }
 
+val appId = "pl.deniotokiari.githubcontributioncalendar"
+
 android {
-    namespace = "pl.deniotokiari.githubcontributioncalendar"
+    namespace = appId
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "pl.deniotokiari.githubcontributioncalendar"
+        applicationId = appId
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
+        versionCode = 5
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -97,6 +99,8 @@ dependencies {
     implementation(libs.firebase.config)
 
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.bundles.mockito)
 
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -109,6 +113,6 @@ dependencies {
 
 apollo {
     service("github") {
-        packageName.set("pl.deniotokiari.githubcontributioncalendar.service.github")
+        packageName.set("$appId.service.github")
     }
 }
