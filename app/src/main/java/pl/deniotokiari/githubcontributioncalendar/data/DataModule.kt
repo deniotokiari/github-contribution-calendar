@@ -20,4 +20,5 @@ val dataModule = module {
     //////
     factoryOf(::AndroidBitmapDataSource) bind BitmapDataSource::class
     factoryOf(::AndroidBitmapRepository) bind BitmapRepository::class
+    //factoryOf(::GitHubRemoteDataSource)
 }

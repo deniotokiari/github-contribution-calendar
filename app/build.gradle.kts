@@ -19,8 +19,8 @@ android {
         applicationId = appId
         minSdk = 26
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.0"
+        versionCode = 6
+        versionName = "1.0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -44,15 +44,6 @@ android {
             isShrinkResources = true
             isDebuggable = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    flavorDimensions += "blocksGeneration"
-    productFlavors {
-        create("random") {
-            dimension = "blocksGeneration"
-        }
-        create("github") {
-            dimension = "blocksGeneration"
         }
     }
     compileOptions {

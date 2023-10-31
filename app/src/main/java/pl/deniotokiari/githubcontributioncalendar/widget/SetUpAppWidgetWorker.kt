@@ -13,7 +13,6 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
@@ -78,8 +77,7 @@ class SetUpAppWidgetWorker(
                     BackoffPolicy.LINEAR,
                     WorkRequest.MIN_BACKOFF_MILLIS,
                     TimeUnit.MILLISECONDS
-                ).setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .setInputData(
+                ).setInputData(
                     Data
                         .Builder()
                         .putInt(WIDGET_ID_KEY, widgetId)

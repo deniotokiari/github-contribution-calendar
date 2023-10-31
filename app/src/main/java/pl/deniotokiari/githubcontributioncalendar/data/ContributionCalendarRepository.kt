@@ -3,7 +3,6 @@ package pl.deniotokiari.githubcontributioncalendar.data
 import androidx.core.graphics.toColorInt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -40,27 +39,6 @@ class ContributionCalendarRepository(
             }
 
             remoteItems
-        }
-    }
-
-    suspend fun updateAllContributions(): Int = withContext(io.dispatcher) {
-        mutex.withLock {
-            val users = gitHubLocalDataSource.getAllUsers()
-
-            users.forEach {
-                launch {
-                    val items = gitHubRemoteDataSource.getUserContribution(
-                        it,
-                        getYearsUseCase(Unit)
-                    ).map { it.toColorInt() }
-
-                    if (items.isNotEmpty()) {
-                        gitHubLocalDataSource.addContributionsForUser(it, items)
-                    }
-                }
-            }
-
-            users.size
         }
     }
 }

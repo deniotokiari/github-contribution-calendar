@@ -33,8 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import pl.deniotokiari.githubcontributioncalendar.BuildConfig
-import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.prefs.AppConfigurationRepository
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
@@ -145,7 +143,7 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                         }
                     }
 
-                    AddBanner(adUnitId = BuildConfig.CONFIGURE_WIDGET_AD_ID)
+                    //AddBanner(adUnitId = BuildConfig.CONFIGURE_WIDGET_AD_ID)
                 }
             }
         }

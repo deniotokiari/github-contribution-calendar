@@ -5,7 +5,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private const val SEPARATOR = ","
@@ -13,10 +12,6 @@ private const val SEPARATOR = ","
 class GitHubLocalDataSource(
     private val dataStore: DataStore<Preferences>
 ) {
-    suspend fun getAllUsers(): List<String> {
-        return dataStore.data.first().asMap().keys.map { it.name }
-    }
-
     fun allContributions(): Flow<List<Pair<String, List<Int>>>> = dataStore.data
         .map { prefs ->
             prefs.asMap().map { (key, item) ->
