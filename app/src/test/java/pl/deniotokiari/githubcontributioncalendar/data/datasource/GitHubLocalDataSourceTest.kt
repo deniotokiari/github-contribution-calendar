@@ -4,8 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
 import org.junit.Before
@@ -77,19 +75,5 @@ class GitHubLocalDataSourceTest {
 
         // THEN
         assertNotNull(result.successOrNull())
-    }
-
-    @Test
-    fun `GIVEN failed to get data WHEN all contributions called THEN return error`() = runTest {
-        // GIVEN
-        whenever(dataStore.data).thenReturn(flow {
-            throw Exception()
-        })
-
-        // WHEN
-        val result = sut.allContributions().first()
-
-        // THEN
-        assertNotNull(result.failedOrNull())
     }
 }

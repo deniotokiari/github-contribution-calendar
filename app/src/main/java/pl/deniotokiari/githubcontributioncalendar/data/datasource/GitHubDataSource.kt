@@ -11,6 +11,8 @@ import pl.deniotokiari.githubcontributioncalendar.core.Result
 import pl.deniotokiari.githubcontributioncalendar.core.Success
 import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
 import pl.deniotokiari.githubcontributioncalendar.data.model.ContributionsError
+import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
+import pl.deniotokiari.githubcontributioncalendar.data.model.Year
 import pl.deniotokiari.githubcontributioncalendar.network.GitHubService
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -22,13 +24,13 @@ class GitHubRemoteDataSource(
     private val gitHubService: GitHubService
 ) {
     fun getDateRangesFor(
-        years: Int,
+        years: Year,
         now: LocalDateTime = LocalDateTime.now()
     ): Result<List<Pair<LocalDateTime, LocalDateTime>>, ContributionsError> =
         runCatching {
-            Array<Pair<LocalDateTime, LocalDateTime>>(years) {
-                val from = now.plusYears(-(years - it - 1).toLong()).withDayOfYear(1).with(LocalTime.MIN)
-                val to = if (it + 1 == years) {
+            Array<Pair<LocalDateTime, LocalDateTime>>(years.value) {
+                val from = now.plusYears(-(years.value - it - 1).toLong()).withDayOfYear(1).with(LocalTime.MIN)
+                val to = if (it + 1 == years.value) {
                     now
                 } else {
                     from.plusYears(1).with(LocalTime.MAX).plusDays(-1)
@@ -42,12 +44,12 @@ class GitHubRemoteDataSource(
         )
 
     suspend fun getUserContributions(
-        userName: String,
+        userName: UserName,
         dateRanges: List<Pair<LocalDateTime, LocalDateTime>>
     ): Result<Contributions, ContributionsError> = runCatching {
         dateRanges.map { (from, to) ->
             val result = gitHubService.queryUserContribution(
-                username = userName,
+                username = userName.value,
                 from = formatter.format(from),
                 to = formatter.format(to)
             )
@@ -78,26 +80,26 @@ class GitHubLocalDataSource(
             )
         }
 
-    fun contributions(userName: String): Flow<Result<Contributions, ContributionsError>> = dataStore.data.map {
-        runCatching { Contributions.fromLocalModel(it[stringPreferencesKey(userName)]) }.fold(
+    fun contributions(userName: UserName): Flow<Result<Contributions, ContributionsError>> = dataStore.data.map {
+        runCatching { Contributions.fromLocalModel(it[stringPreferencesKey(userName.toString())]) }.fold(
             onSuccess = { Success(it) },
             onFailure = { Failed(ContributionsError(it)) }
         )
     }
 
-    suspend fun addContributions(userName: String, contributions: Contributions): Result<Unit, ContributionsError> =
+    suspend fun addContributions(userName: UserName, contributions: Contributions): Result<Unit, ContributionsError> =
         runCatching {
             dataStore.edit {
-                it[stringPreferencesKey(userName)] = contributions.toLocalModel()
+                it[stringPreferencesKey(userName.value)] = contributions.toLocalModel()
             }
         }.fold(
             onSuccess = { Success(Unit) },
             onFailure = { Failed(ContributionsError(it)) }
         )
 
-    suspend fun removeContributions(userName: String): Result<Unit, ContributionsError> = runCatching {
+    suspend fun removeContributions(userName: UserName): Result<Unit, ContributionsError> = runCatching {
         dataStore.edit {
-            it.remove(stringPreferencesKey(userName))
+            it.remove(stringPreferencesKey(userName.value))
         }
     }.fold(
         onSuccess = { Success(Unit) },

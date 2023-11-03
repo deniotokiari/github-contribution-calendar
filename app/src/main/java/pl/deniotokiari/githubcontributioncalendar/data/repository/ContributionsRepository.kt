@@ -8,23 +8,24 @@ import pl.deniotokiari.githubcontributioncalendar.data.datasource.GitHubLocalDat
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.GitHubRemoteDataSource
 import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
 import pl.deniotokiari.githubcontributioncalendar.data.model.ContributionsError
+import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
+import pl.deniotokiari.githubcontributioncalendar.data.model.Year
 
 class ContributionsRepository(
     private val gitHubRemoteDataSource: GitHubRemoteDataSource,
-    private val gitHubLocalDataSource: GitHubLocalDataSource,
-    private val years: () -> Int
+    private val gitHubLocalDataSource: GitHubLocalDataSource
 ) {
     fun allContributions(): Flow<Result<List<Pair<String, Contributions>>, ContributionsError>> =
         gitHubLocalDataSource.allContributions()
 
-    fun contributions(userName: String): Flow<Result<Contributions, ContributionsError>> =
+    fun contributions(userName: UserName): Flow<Result<Contributions, ContributionsError>> =
         gitHubLocalDataSource.contributions(userName)
 
-    suspend fun removeContributions(userName: String): Result<Unit, ContributionsError> =
+    suspend fun removeContributions(userName: UserName): Result<Unit, ContributionsError> =
         gitHubLocalDataSource.removeContributions(userName)
 
-    suspend fun updateContributions(userName: String): Result<Contributions, ContributionsError> =
-        gitHubRemoteDataSource.getDateRangesFor(years()).flatMap {
+    suspend fun updateContributions(userName: UserName, years: Year): Result<Contributions, ContributionsError> =
+        gitHubRemoteDataSource.getDateRangesFor(years).flatMap {
             gitHubRemoteDataSource.getUserContributions(userName, it)
         }.mapSuccess { contributions ->
             if (contributions.colors.isNotEmpty()) {

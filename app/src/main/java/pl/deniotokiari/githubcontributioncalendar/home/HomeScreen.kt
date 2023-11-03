@@ -48,12 +48,7 @@ import pl.deniotokiari.githubcontributioncalendar.widget.AppWidgetReceiver
 fun HomeScreen(
     viewModel: HomeViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
     val navController = LocalNavController.current
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = uiState.refreshing,
-        onRefresh = { viewModel.refreshUsersContributions() }
-    )
     val context = LocalContext.current
 
     Column(
@@ -88,6 +83,12 @@ fun HomeScreen(
                 )
             }
         }
+
+        val uiState by viewModel.uiState.collectAsState()
+        val pullRefreshState = rememberPullRefreshState(
+            refreshing = uiState.refreshing,
+            onRefresh = { viewModel.refreshUsersContributions() }
+        )
 
         Box(
             modifier = Modifier
