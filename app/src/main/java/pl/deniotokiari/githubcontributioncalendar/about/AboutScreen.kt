@@ -2,6 +2,7 @@ package pl.deniotokiari.githubcontributioncalendar.about
 
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -119,9 +120,15 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
                                 putExtra(Intent.EXTRA_EMAIL, arrayOf(state.email))
                             }
 
-                            activity.startActivity(intent)
+                            runCatching { activity.startActivity(intent) }
+                                .onSuccess {
+                                    viewModel.onSupportEmailClicked()
+                                }
+                                .onFailure {
+                                    viewModel.onSupportEmailClickFailed()
 
-                            viewModel.onSupportEmailClicked()
+                                    Toast.makeText(activity, "Failed to find email client", Toast.LENGTH_LONG).show()
+                                }
                         }) {
                             Text(
                                 modifier = Modifier.padding(2.dp),

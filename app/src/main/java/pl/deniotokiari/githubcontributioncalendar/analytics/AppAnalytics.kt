@@ -49,6 +49,10 @@ class AppAnalytics(
         analytics.track("support_email", mapOf())
     }
 
+    fun trackOpenSupportEmailFailed() {
+        analytics.track("support_email_failed", mapOf())
+    }
+
     fun trackIsIgnoringBatteryOptimizations(value: Boolean) {
         analytics.track("is_ignoring_battery_optimizations", mapOf("ignoring" to value))
     }

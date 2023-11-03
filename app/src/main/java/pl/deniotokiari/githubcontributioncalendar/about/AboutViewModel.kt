@@ -32,6 +32,10 @@ class AboutViewModel(
         appAnalytics.trackOpenSupportEmail()
     }
 
+    fun onSupportEmailClickFailed() {
+        appAnalytics.trackOpenSupportEmailFailed()
+    }
+
     sealed class UiState {
         object Loading : UiState()
         data class Idle(
