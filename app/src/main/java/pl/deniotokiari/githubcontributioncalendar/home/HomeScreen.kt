@@ -3,6 +3,7 @@ package pl.deniotokiari.githubcontributioncalendar.home
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -52,6 +54,7 @@ fun HomeScreen(
         refreshing = uiState.refreshing,
         onRefresh = { viewModel.refreshUsersContributions() }
     )
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -75,6 +78,15 @@ fun HomeScreen(
                     textAlign = TextAlign.Center
                 )
             )
+
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                onClick = { addWidget(context) }) {
+                Icon(
+                    imageVector = Icons.Outlined.Add,
+                    contentDescription = stringResource(id = R.string.add_widget_button_description)
+                )
+            }
         }
 
         Box(
@@ -124,26 +136,9 @@ fun HomeScreen(
                 )
             }
 
-            val context = LocalContext.current
-
             if (uiState.items.isEmpty()) {
                 TextButton(onClick = {
-                    val manager = AppWidgetManager.getInstance(context)
-
-                    if (manager.isRequestPinAppWidgetSupported) {
-                        manager.requestPinAppWidget(
-                            ComponentName(context, AppWidgetReceiver::class.java),
-                            null,
-                            PendingIntent.getBroadcast(
-                                context,
-                                0,
-                                Intent(context, AppWidgetReceiver::class.java).apply {
-                                    action = AppWidgetReceiver.ACTION_CONFIGURE_LATEST
-                                },
-                                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                            )
-                        )
-                    }
+                    addWidget(context)
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add,
@@ -163,5 +158,24 @@ fun HomeScreen(
                 modifier = Modifier.align(Alignment.TopCenter)
             )
         }
+    }
+}
+
+private fun addWidget(context: Context) {
+    val manager = AppWidgetManager.getInstance(context)
+
+    if (manager.isRequestPinAppWidgetSupported) {
+        manager.requestPinAppWidget(
+            ComponentName(context, AppWidgetReceiver::class.java),
+            null,
+            PendingIntent.getBroadcast(
+                context,
+                0,
+                Intent(context, AppWidgetReceiver::class.java).apply {
+                    action = AppWidgetReceiver.ACTION_CONFIGURE_LATEST
+                },
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        )
     }
 }
