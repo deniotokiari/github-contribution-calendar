@@ -10,6 +10,12 @@ value class ContributionsError(val throwable: Throwable)
 value class WidgetConfigurationError(val throwable: Throwable)
 
 @JvmInline
+value class WidgetError(val throwable: Throwable)
+
+@JvmInline
+value class AppConfigurationError(val throwable: Throwable)
+
+@JvmInline
 value class UserName(val value: String)
 
 @JvmInline
@@ -46,6 +52,19 @@ data class WidgetConfiguration(
     fun toLocalModel(): String = "${padding.value}:${opacity.value}:${blockSize.value}"
 
     companion object {
+        const val BLOCK_SIZE_MIN = 20
+        const val BLOCK_SIZE_MAX = 60
+
+        const val PADDING_MIN = 0
+        const val PADDING_MAX = 4
+
+        const val OPACITY_MIN = 90
+        const val OPACITY_MAX = 255
+
+        const val DEFAULT_BLOCK_SIZE = 40
+        const val DEFAULT_PADDING = 2
+        const val DEFAULT_OPACITY = 255
+
         fun fromLocalModel(model: Any?): WidgetConfiguration = model.let { it as String }.let { item ->
             item.split(":").let {
                 WidgetConfiguration(
@@ -55,5 +74,11 @@ data class WidgetConfiguration(
                 )
             }
         }
+
+        fun default(): WidgetConfiguration = WidgetConfiguration(
+            padding = Padding(DEFAULT_PADDING),
+            opacity = Opacity(DEFAULT_OPACITY),
+            blockSize = BlockSize(DEFAULT_BLOCK_SIZE)
+        )
     }
 }

@@ -1,11 +1,8 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.work
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.util.Log
-import androidx.glance.GlanceId
-import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.work.BackoffPolicy
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
@@ -16,15 +13,17 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
-import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
-import pl.deniotokiari.githubcontributioncalendar.data.encode
+import pl.deniotokiari.githubcontributioncalendar.core.mapFailure
+import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
+import pl.deniotokiari.githubcontributioncalendar.domain.model.WidgetIdentifiers
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.SetUpWidgetUseCase
 import java.util.concurrent.TimeUnit
 
 class SetUpAppWidgetWorker(
     private val context: Context,
     private val parameters: WorkerParameters,
-    private val contributionCalendarRepository: ContributionCalendarRepository,
-    private val widgetConfigurationRepository: WidgetConfigurationRepository
+    private val setUpWidgetUseCase: SetUpWidgetUseCase
 ) : CoroutineWorker(
     context, parameters
 ) {
@@ -34,24 +33,16 @@ class SetUpAppWidgetWorker(
         }
         val userName = requireNotNull(parameters.inputData.getString(USER_NAME_KEY))
 
-        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
-        val glanceId: GlanceId = glanceAppWidgetManager.getGlanceIdBy(widgetId)
-
-        val config = WidgetConfiguration.default()
-        val colors = contributionCalendarRepository.updateContributionsForUser(userName)
-
-        widgetConfigurationRepository.addConfiguration(widgetId, userName, config)
-
-        updateAppWidgetState(context, glanceId) {
-            it[AppWidget.USER_NAME_KEY] = userName
-            it[AppWidget.WIDGET_ID_KEY] = widgetId
-            it[AppWidget.CONFIG_KEY] = config.encode()
-            it[AppWidget.COLORS_KEY] = colors.encode()
-        }
-
-        AppWidget().update(context, glanceId)
+        setUpWidgetUseCase(
+            WidgetIdentifiers(
+                widgetId = WidgetId(widgetId),
+                userName = UserName(userName)
+            )
+        ).mapFailure { throw it.throwable }
     }.fold(
-        onSuccess = { Result.success() },
+        onSuccess = {
+            Result.success()
+        },
         onFailure = {
             Log.d("LOG", "SetUpAppWidgetWorker ${it.message}")
 

@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.work
 
 import android.content.Context
 import android.util.Log
@@ -11,10 +11,10 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
-import kotlinx.coroutines.awaitCancellation
 import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
-import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidgetsUseCase
+import pl.deniotokiari.githubcontributioncalendar.core.fold
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateAllWidgetsUseCase
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -27,19 +27,14 @@ class UpdateAppWidgetWorker(
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
+        Log.d("LOG", "update all widget worker start")
         devRepository.incrementWidgetUpdateCount()
         val start = System.currentTimeMillis()
 
-        Log.d("LOG", "update all widget worker start")
-
-        val updatedCount =
-            try {
-                updateAllWidgetsUseCase(Unit)
-            } catch (e: Exception) {
-                Log.d("LOG", e.message.toString())
-
-                -1
-            }
+        val updatedCount = updateAllWidgetsUseCase(Unit).fold(
+            success = { it.value },
+            failed = { 0 }
+        )
 
         val time = (System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)
 
@@ -52,12 +47,6 @@ class UpdateAppWidgetWorker(
             count = updatedCount,
             time = time.inWholeMilliseconds
         )
-
-        if (updatedCount == 0) {
-            cancel(context)
-
-            awaitCancellation()
-        }
 
         return Result.success()
     }

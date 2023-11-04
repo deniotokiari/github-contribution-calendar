@@ -36,8 +36,8 @@ import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.prefs.AppConfigurationRepository
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
-import pl.deniotokiari.githubcontributioncalendar.widget.SetUpAppWidgetWorker
-import pl.deniotokiari.githubcontributioncalendar.widget.UpdateAppWidgetWorker
+import pl.deniotokiari.githubcontributioncalendar.work.SetUpAppWidgetWorker
+import pl.deniotokiari.githubcontributioncalendar.work.UpdateAppWidgetWorker
 
 
 class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
@@ -143,6 +143,7 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                         }
                     }
 
+                    // TODO think about make it fit all screens
                     //AddBanner(adUnitId = BuildConfig.CONFIGURE_WIDGET_AD_ID)
                 }
             }

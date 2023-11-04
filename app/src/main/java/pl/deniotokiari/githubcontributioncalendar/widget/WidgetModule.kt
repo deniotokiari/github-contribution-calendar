@@ -13,7 +13,6 @@ import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateWidgetByU
 
 val widgetModule = module {
     workerOf(::UpdateAppWidgetWorker)
-    workerOf(::SetUpAppWidgetWorker)
     single { WidgetConfigurationRepository(get(qualifier = named("widgetConfiguration")), get<AppDispatchers.IO>()) }
     factoryOf(::RemoveWidgetByUserNameAndWidgetIdUseCase)
     singleOf(::SetWidgetConfigUseCase)

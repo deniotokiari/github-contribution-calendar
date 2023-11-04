@@ -69,6 +69,7 @@ class WidgetConfigurationDataStore(
             onFailure = { Failed(WidgetConfigurationError(it)) }
         )
 
+    fun defaultConfiguration(): WidgetConfiguration = WidgetConfiguration.default()
 
     private fun configurationKey(userName: UserName, widgetId: WidgetId) =
         stringPreferencesKey("${userName.value}:${widgetId.value}")
