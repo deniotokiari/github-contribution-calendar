@@ -2,7 +2,7 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/glance_default_loading_layout"
     android:resizeMode="horizontal|vertical"
-    android:configure="pl.deniotokiari.githubcontributioncalendar.activity.AppWidgetConfigurationActivity"
+    android:configure="pl.deniotokiari.githubcontributioncalendar.ui.activity.AppWidgetConfigurationActivity"
     android:updatePeriodMillis="0"
     android:previewImage="@mipmap/img"
     android:widgetCategory="home_screen" />

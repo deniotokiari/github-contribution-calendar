@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.about
+package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
 import android.app.Activity
 import android.content.Intent
@@ -33,10 +33,8 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
-import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
-import pl.deniotokiari.githubcontributioncalendar.ad.AdInterstitial
-import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
-import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
+import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
+import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.AboutViewModel
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Pink40
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Pink80
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Purple40

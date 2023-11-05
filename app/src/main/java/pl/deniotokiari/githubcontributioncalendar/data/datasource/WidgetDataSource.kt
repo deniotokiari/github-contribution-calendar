@@ -14,7 +14,7 @@ import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetError
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
-import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
+import pl.deniotokiari.githubcontributioncalendar.ui.widget.AppWidget
 
 class WidgetDataSource(
     private val context: Context,

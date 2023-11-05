@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.ad
+package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

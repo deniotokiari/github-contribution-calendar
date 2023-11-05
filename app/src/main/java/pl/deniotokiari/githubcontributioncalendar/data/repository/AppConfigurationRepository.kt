@@ -16,4 +16,11 @@ class AppConfigurationRepository(
         onSuccess = { Success(it) },
         onFailure = { Failed(AppConfigurationError(it)) }
     )
+
+    fun getUpdateInterval(): Result<Long, AppConfigurationError> = runCatching {
+        appConfigurationRemoteDataSource.getRepeatInterval()
+    }.fold(
+        onSuccess = { Success(it) },
+        onFailure = { Failed(AppConfigurationError(it)) }
+    )
 }

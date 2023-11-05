@@ -1,6 +1,6 @@
 package pl.deniotokiari.githubcontributioncalendar.analytics
 
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 
 class AppAnalytics(
     private val analytics: Analytics

@@ -55,7 +55,7 @@ class SetUpAppWidgetWorker(
         private const val USER_NAME_KEY = "USER_NAME_KEY"
         private const val WIDGET_ID_KEY = "WIDGET_ID_KEY"
 
-        fun start(context: Context, widgetId: Int, userName: String) {
+        fun start(workManager: WorkManager, widgetId: Int, userName: String) {
             val request = OneTimeWorkRequestBuilder<SetUpAppWidgetWorker>()
                 .setConstraints(
                     Constraints
@@ -77,7 +77,7 @@ class SetUpAppWidgetWorker(
                 )
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.APPEND, request)
+            workManager.enqueueUniqueWork(WORK_NAME, ExistingWorkPolicy.APPEND, request)
         }
     }
 }

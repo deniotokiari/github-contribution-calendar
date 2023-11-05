@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.ui.widget
 
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import org.koin.core.component.KoinComponent
-import pl.deniotokiari.githubcontributioncalendar.activity.AppWidgetConfigurationActivity
+import pl.deniotokiari.githubcontributioncalendar.ui.activity.AppWidgetConfigurationActivity
 
 class AppWidgetReceiver : GlanceAppWidgetReceiver(), KoinComponent {
     override val glanceAppWidget: GlanceAppWidget = AppWidget()

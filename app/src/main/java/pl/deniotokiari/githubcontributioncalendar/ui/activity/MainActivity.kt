@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.activity
+package pl.deniotokiari.githubcontributioncalendar.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -19,11 +19,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.android.gms.ads.MobileAds
-import pl.deniotokiari.githubcontributioncalendar.about.AboutScreen
-import pl.deniotokiari.githubcontributioncalendar.home.HomeScreen
+import pl.deniotokiari.githubcontributioncalendar.ui.compose.AboutScreen
+import pl.deniotokiari.githubcontributioncalendar.ui.compose.HomeScreen
+import pl.deniotokiari.githubcontributioncalendar.ui.compose.UserScreen
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
-import pl.deniotokiari.githubcontributioncalendar.user.UserScreen
-import pl.deniotokiari.githubcontributioncalendar.widget.AppWidget
+import pl.deniotokiari.githubcontributioncalendar.ui.widget.AppWidget
 
 val LocalNavController = compositionLocalOf<NavHostController> { error("no default navController") }
 

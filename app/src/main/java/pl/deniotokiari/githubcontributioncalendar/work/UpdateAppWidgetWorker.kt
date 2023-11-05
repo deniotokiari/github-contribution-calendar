@@ -11,7 +11,6 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
-import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.fold
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateAllWidgetsUseCase
@@ -20,17 +19,15 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class UpdateAppWidgetWorker(
-    private val context: Context,
-    private val devRepository: DevRepository,
+    context: Context,
     private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase,
     private val appAnalytics: AppAnalytics,
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
         Log.d("LOG", "update all widget worker start")
-        devRepository.incrementWidgetUpdateCount()
-        val start = System.currentTimeMillis()
 
+        val start = System.currentTimeMillis()
         val updatedCount = updateAllWidgetsUseCase(Unit).fold(
             success = { it.value },
             failed = { 0 }
@@ -54,11 +51,7 @@ class UpdateAppWidgetWorker(
     companion object {
         private const val WORK_NAME = "UpdateAppWidgetWorker"
 
-        fun cancel(context: Context) {
-            WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
-        }
-
-        fun start(context: Context, repeatInterval: Long) {
+        fun start(workManager: WorkManager, repeatInterval: Long) {
             val request = PeriodicWorkRequestBuilder<UpdateAppWidgetWorker>(
                 repeatInterval = repeatInterval,
                 repeatIntervalTimeUnit = TimeUnit.HOURS
@@ -78,7 +71,7 @@ class UpdateAppWidgetWorker(
                 .setInitialDelay(15, TimeUnit.MINUTES)
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            workManager.enqueueUniquePeriodicWork(
                 WORK_NAME,
                 ExistingPeriodicWorkPolicy.UPDATE,
                 request

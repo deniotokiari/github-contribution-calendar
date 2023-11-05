@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.activity
+package pl.deniotokiari.githubcontributioncalendar.ui.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -6,11 +6,11 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,17 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
-import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
-import pl.deniotokiari.githubcontributioncalendar.prefs.AppConfigurationRepository
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
-import pl.deniotokiari.githubcontributioncalendar.work.SetUpAppWidgetWorker
-import pl.deniotokiari.githubcontributioncalendar.work.UpdateAppWidgetWorker
+import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.AppWidgetConfigurationViewModel
 
 
 class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
-    private val appAnalytics: AppAnalytics by inject()
-    private val appConfigurationRepository: AppConfigurationRepository by inject()
+    private val viewModel: AppWidgetConfigurationViewModel by viewModels()
     private val appWidgetId by lazy {
         intent?.extras?.getInt(
             AppWidgetManager.EXTRA_APPWIDGET_ID,
@@ -51,11 +46,7 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
     }
 
     private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        appAnalytics.trackIsIgnoringBatteryOptimizations(
-            (getSystemService(POWER_SERVICE) as? PowerManager)?.isIgnoringBatteryOptimizations(
-                packageName
-            ) == true
-        )
+        viewModel.trackIsIgnoringBatteryOptimizations()
 
         setContent { MainContent() }
     }
@@ -70,10 +61,9 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
             finish()
         }
 
-        val powerManager = getSystemService(POWER_SERVICE) as? PowerManager
+        if (viewModel.isIgnoringBatteryOptimizations()) {
+            viewModel.trackIsIgnoringBatteryOptimizations()
 
-        if (powerManager?.isIgnoringBatteryOptimizations(packageName) == true) {
-            appAnalytics.trackIsIgnoringBatteryOptimizations(true)
             setContent { MainContent() }
         } else {
             launcher.launch(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
@@ -85,7 +75,12 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
     @Composable
     private fun MainContent() {
         GitHubContributionCalendarTheme {
-            Surface(modifier = Modifier.wrapContentHeight().fillMaxWidth(), color = MaterialTheme.colorScheme.background) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth(),
+                color = MaterialTheme.colorScheme.background
+            ) {
                 var username by remember { mutableStateOf("") }
 
                 Column(
@@ -117,18 +112,13 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                             onClick = {
                                 okEnabled = false
 
-                                SetUpAppWidgetWorker.start(
-                                    context = this@AppWidgetConfigurationActivity,
-                                    widgetId = appWidgetId,
-                                    userName = username
-                                )
+                                viewModel.setUpWidget(appWidgetId, username)
 
-                                UpdateAppWidgetWorker.start(
-                                    this@AppWidgetConfigurationActivity,
-                                    appConfigurationRepository.getRepeatInterval()
-                                )
-
-                                appAnalytics.trackWidgetAdd(username)
+                                with(viewModel) {
+                                    setUpWidget(appWidgetId, username)
+                                    startUpdateWidget()
+                                    trackWidgetAdd(username)
+                                }
 
                                 setResult(
                                     Activity.RESULT_OK,

@@ -22,7 +22,7 @@
             android:value="${admobAppId}" />
 
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/Theme.GitHubContributionCalendar">
@@ -34,7 +34,7 @@
         </activity>
 
         <activity
-            android:name=".activity.AppWidgetConfigurationActivity"
+            android:name=".ui.activity.AppWidgetConfigurationActivity"
             android:exported="true"
             android:theme="@style/Theme.GitHubContributionCalendarWidgetConfiguration">
             <intent-filter>
@@ -43,7 +43,7 @@
         </activity>
 
         <receiver
-            android:name=".widget.AppWidgetReceiver"
+            android:name=".ui.widget.AppWidgetReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>

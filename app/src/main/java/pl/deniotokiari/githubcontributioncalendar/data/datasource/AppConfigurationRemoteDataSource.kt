@@ -5,7 +5,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 
 class AppConfigurationRemoteDataSource(
-    private val remoteConfig: FirebaseRemoteConfig = FirebaseRemoteConfig.getInstance()
+    private val remoteConfig: FirebaseRemoteConfig
 ) {
     init {
         remoteConfig.setConfigSettingsAsync(

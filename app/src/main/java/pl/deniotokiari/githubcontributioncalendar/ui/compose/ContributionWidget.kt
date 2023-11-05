@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.contribution
+package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

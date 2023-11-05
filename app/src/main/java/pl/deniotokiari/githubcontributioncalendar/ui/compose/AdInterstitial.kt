@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.ad
+package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
 import android.app.Activity
 import com.google.android.gms.ads.AdRequest

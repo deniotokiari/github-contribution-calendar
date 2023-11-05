@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.widget
+package pl.deniotokiari.githubcontributioncalendar.ui.widget
 
 import android.content.Context
 import android.util.Log
@@ -42,7 +42,7 @@ import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.R
-import pl.deniotokiari.githubcontributioncalendar.activity.MainActivity
+import pl.deniotokiari.githubcontributioncalendar.ui.activity.MainActivity
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.data.decode

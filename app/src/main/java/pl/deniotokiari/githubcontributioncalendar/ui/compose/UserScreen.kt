@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.user
+package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,10 +29,9 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
-import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
-import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
-import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
+import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
+import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.UserViewModel
 import kotlin.math.roundToInt
 
 @Composable

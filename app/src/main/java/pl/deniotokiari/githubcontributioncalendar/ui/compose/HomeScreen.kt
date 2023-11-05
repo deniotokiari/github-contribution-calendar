@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.home
+package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -39,10 +39,9 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
-import pl.deniotokiari.githubcontributioncalendar.activity.LocalNavController
-import pl.deniotokiari.githubcontributioncalendar.ad.AddBanner
-import pl.deniotokiari.githubcontributioncalendar.contribution.ContributionWidget
-import pl.deniotokiari.githubcontributioncalendar.widget.AppWidgetReceiver
+import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
+import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.HomeViewModel
+import pl.deniotokiari.githubcontributioncalendar.ui.widget.AppWidgetReceiver
 
 @Composable
 fun HomeScreen(

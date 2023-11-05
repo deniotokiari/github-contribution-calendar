@@ -1,4 +1,4 @@
-package pl.deniotokiari.githubcontributioncalendar.about
+package pl.deniotokiari.githubcontributioncalendar.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
