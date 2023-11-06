@@ -10,6 +10,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
 import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidgetsUseCase
@@ -80,31 +82,8 @@ class HomeViewModel(
             val name: String,
             val widgetId: Int,
             val config: WidgetConfiguration,
-            val colors: IntArray
-        ) {
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-
-                other as User
-
-                if (name != other.name) return false
-                if (widgetId != other.widgetId) return false
-                if (config != other.config) return false
-                if (!colors.contentEquals(other.colors)) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = name.hashCode()
-                result = 31 * result + widgetId
-                result = 31 * result + config.hashCode()
-                result = 31 * result + colors.contentHashCode()
-
-                return result
-            }
-        }
+            val contributions: Contributions
+        )
 
         companion object {
             fun default() = UiState(
