@@ -1,5 +1,7 @@
 package pl.deniotokiari.githubcontributioncalendar.core
 
+import pl.deniotokiari.githubcontributioncalendar.R
+
 sealed interface Result<out V, out E>
 
 data class Success<out V>(val value: V) : Result<V, Nothing>
@@ -36,3 +38,10 @@ inline fun <V, E, R> Result<V, E>.mapFailure(block: (E) -> R): Result<V, R> = if
 fun <V, E> Result<V, E>.successOrNull(): V? = (this as? Success)?.value
 
 fun <V, E> Result<V, E>.failedOrNull(): E? = (this as? Failed)?.value
+
+fun <R, V1, V2, E> combineResult(a: Result<V1, E>, b: Result<V2, E>, transform: (V1, V2) -> R): Result<R, E> =
+    a.flatMap { r0 -> b.mapSuccess { r1 -> transform(r0, r1) } }
+
+fun <V> V.success(): Success<V> = Success(this)
+
+fun <V> V.failed(): Failed<V> = Failed(this)

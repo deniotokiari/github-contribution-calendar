@@ -21,6 +21,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
 

@@ -1,13 +1,13 @@
 package pl.deniotokiari.githubcontributioncalendar.domain.usecase
 
-import pl.deniotokiari.githubcontributioncalendar.core.Failed
 import pl.deniotokiari.githubcontributioncalendar.core.Result
-import pl.deniotokiari.githubcontributioncalendar.core.Success
 import pl.deniotokiari.githubcontributioncalendar.core.UseCase
+import pl.deniotokiari.githubcontributioncalendar.core.failed
 import pl.deniotokiari.githubcontributioncalendar.core.flatMap
 import pl.deniotokiari.githubcontributioncalendar.core.fold
 import pl.deniotokiari.githubcontributioncalendar.core.mapFailure
 import pl.deniotokiari.githubcontributioncalendar.core.mapSuccess
+import pl.deniotokiari.githubcontributioncalendar.core.success
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.WidgetConfigurationDataStore
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.WidgetDataSource
 import pl.deniotokiari.githubcontributioncalendar.data.repository.AppConfigurationRepository
@@ -46,7 +46,7 @@ class SetUpWidgetUseCase(
             }
             .flatMap { glanceId -> widgetDataSource.updateWidget(glanceId).mapFailure { it.throwable } }
             .fold(
-                success = { Success(Unit) },
-                failed = { Failed(SetUpWidgetError(it)) }
+                success = { Unit.success() },
+                failed = { SetUpWidgetError(it).failed() }
             )
 }

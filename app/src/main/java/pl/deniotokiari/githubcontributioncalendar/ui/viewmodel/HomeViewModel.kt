@@ -9,53 +9,35 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
-import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
+import pl.deniotokiari.githubcontributioncalendar.core.fold
+import pl.deniotokiari.githubcontributioncalendar.core.successOrNull
 import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
-import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateAllWidgetsUseCase
+import pl.deniotokiari.githubcontributioncalendar.domain.model.WidgetConfigurationWithContributions
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetAllWidgetsConfigurationsWithContributionsUseCase
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateAllWidgetsUseCase
 
 class HomeViewModel(
-    contributionCalendarRepository: ContributionCalendarRepository,
-    widgetConfigurationRepository: WidgetConfigurationRepository,
+    getAllWidgetsConfigurationsWithContributionsUseCase: GetAllWidgetsConfigurationsWithContributionsUseCase,
     private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase,
     private val appAnalytics: AppAnalytics
 ) : ViewModel() {
     private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val uiState: StateFlow<UiState> = combine(
-        widgetConfigurationRepository.configurations(),
-        contributionCalendarRepository.allContributions()
-    ) { configurations, contributions ->
-        val items = mutableListOf<UiState.User>()
-
-        if (contributions.isNotEmpty()) {
-            repeat(configurations.size) { index ->
-                val (widgetIdAndUserName, config) = configurations[index]
-                val (widgetId, userName) = widgetIdAndUserName
-                val result = contributions.firstOrNull { (user, _) -> user == userName }
-                val colors = result?.second
-
-                if (colors != null) {
-                    items.add(
-                        UiState.User(
-                            name = userName,
-                            widgetId = widgetId,
-                            config = config,
-                            colors = colors.toIntArray()
-                        )
+    val uiState: StateFlow<UiState> =
+        getAllWidgetsConfigurationsWithContributionsUseCase(Unit).combine(_refreshing) { contributionsResult, refreshing ->
+            contributionsResult.fold(
+                success = {
+                    UiState(
+                        items = it.map(UiState.User::fromWidgetConfigurationWithContributions),
+                        loading = false,
+                        refreshing = refreshing
                     )
+                },
+                failed = {
+                    UiState.default().copy(refreshing = refreshing)
                 }
-            }
-        }
-
-        UiState(
-            items = items,
-            loading = false,
-            refreshing = false
-        )
-    }.combine(_refreshing) { state, refreshing -> state.copy(refreshing = refreshing) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
+            )
+        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
 
     init {
         appAnalytics.trackHomeView()
@@ -65,9 +47,9 @@ class HomeViewModel(
         viewModelScope.launch {
             _refreshing.value = true
 
-            val size = updateAllWidgetsUseCase(Unit)
+            val size = updateAllWidgetsUseCase(Unit).successOrNull()?.value
 
-            appAnalytics.trackHomeRefresh(size)
+            appAnalytics.trackHomeRefresh(size ?: 0)
 
             _refreshing.value = false
         }
@@ -83,7 +65,16 @@ class HomeViewModel(
             val widgetId: Int,
             val config: WidgetConfiguration,
             val contributions: Contributions
-        )
+        ) {
+            companion object {
+                fun fromWidgetConfigurationWithContributions(item: WidgetConfigurationWithContributions): User = User(
+                    name = item.userName.value,
+                    widgetId = item.widgetId.value,
+                    config = item.configuration,
+                    contributions = item.contributions
+                )
+            }
+        }
 
         companion object {
             fun default() = UiState(
