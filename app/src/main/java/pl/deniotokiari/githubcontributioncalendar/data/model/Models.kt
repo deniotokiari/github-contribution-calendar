@@ -1,5 +1,7 @@
 package pl.deniotokiari.githubcontributioncalendar.data.model
 
+import android.graphics.Color
+
 @JvmInline
 value class BitmapError(val throwable: Throwable)
 
@@ -26,6 +28,10 @@ value class WidgetId(val value: Int)
 
 @JvmInline
 value class Contributions(val colors: List<String>) {
+    fun isEmpty(): Boolean = colors.isEmpty()
+
+    fun asIntColors(): List<Int> = colors.map(Color::parseColor)
+
     fun toLocalModel(): String = colors.joinToString(separator = ",")
 
     companion object {

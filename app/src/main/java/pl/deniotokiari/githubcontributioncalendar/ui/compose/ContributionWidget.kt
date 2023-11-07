@@ -21,19 +21,20 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
+import pl.deniotokiari.githubcontributioncalendar.core.successOrNull
+import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
-import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
+import pl.deniotokiari.githubcontributioncalendar.data.repository.BitmapRepository
 
 @Composable
 fun ContributionWidget(
     user: String,
-    colors: IntArray,
+    contributions: Contributions,
     config: WidgetConfiguration,
     modifier: Modifier = Modifier,
     onClicked: ((String) -> Unit)? = null,
     content: (@Composable BoxScope.() -> Unit)? = null,
-    blocksBitmapCreator: BlocksBitmapCreator = koinInject()
+    bitmapRepository: BitmapRepository = koinInject()
 ) {
     var size: IntSize by remember(user) { mutableStateOf(IntSize.Zero) }
 
@@ -55,7 +56,7 @@ fun ContributionWidget(
                 }
             }
     ) {
-        if (size == IntSize.Zero || colors.isEmpty()) {
+        if (size == IntSize.Zero || contributions.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -63,20 +64,22 @@ fun ContributionWidget(
                 CircularProgressIndicator()
             }
         } else {
-            val bitmap = blocksBitmapCreator(
+            val bitmap = bitmapRepository.getBitmap(
                 width = size.width,
                 height = size.height,
-                squareSize = config.blockSize,
-                padding = config.padding,
-                colors = colors,
-                opacity = config.opacity
-            )
+                padding = config.padding.value,
+                colors = contributions.asIntColors(),
+                opacity = config.opacity.value,
+                blockSize = config.blockSize.value
+            ).successOrNull()
 
-            Image(
-                bitmap = bitmap.asImageBitmap(),
-                contentDescription = "blocks",
-                modifier = Modifier.fillMaxSize()
-            )
+            bitmap?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = "blocks",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             content?.invoke(this)
         }
