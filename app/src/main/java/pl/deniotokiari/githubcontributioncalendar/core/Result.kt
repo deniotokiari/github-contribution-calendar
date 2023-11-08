@@ -45,3 +45,5 @@ fun <R, V1, V2, E> combineResult(a: Result<V1, E>, b: Result<V2, E>, transform: 
 fun <V> V.success(): Success<V> = Success(this)
 
 fun <V> V.failed(): Failed<V> = Failed(this)
+
+fun <P> Throwable.asFailed(constructor: (Throwable) -> P): Failed<P> = Failed(constructor(this))

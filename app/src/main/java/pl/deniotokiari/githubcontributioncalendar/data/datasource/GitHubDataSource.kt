@@ -6,11 +6,11 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import pl.deniotokiari.githubcontributioncalendar.core.Failed
 import pl.deniotokiari.githubcontributioncalendar.core.Result
-import pl.deniotokiari.githubcontributioncalendar.core.Success
+import pl.deniotokiari.githubcontributioncalendar.core.asFailed
+import pl.deniotokiari.githubcontributioncalendar.core.success
 import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
-import pl.deniotokiari.githubcontributioncalendar.data.model.ContributionsError
+import pl.deniotokiari.githubcontributioncalendar.data.model.DataError
 import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
 import pl.deniotokiari.githubcontributioncalendar.data.model.Year
 import pl.deniotokiari.githubcontributioncalendar.network.GitHubService
@@ -26,7 +26,7 @@ class GitHubRemoteDataSource(
     fun getDateRangesFor(
         years: Year,
         now: LocalDateTime = LocalDateTime.now()
-    ): Result<List<Pair<LocalDateTime, LocalDateTime>>, ContributionsError> =
+    ): Result<List<Pair<LocalDateTime, LocalDateTime>>, DataError> =
         runCatching {
             Array<Pair<LocalDateTime, LocalDateTime>>(years.value) {
                 val from = now.plusYears(-(years.value - it - 1).toLong()).withDayOfYear(1).with(LocalTime.MIN)
@@ -39,14 +39,14 @@ class GitHubRemoteDataSource(
                 Pair(from, to)
             }
         }.fold(
-            onSuccess = { Success(it.toList()) },
-            onFailure = { Failed(ContributionsError(it)) }
+            onSuccess = { it.toList().success() },
+            onFailure = { it.asFailed(::DataError) }
         )
 
     suspend fun getUserContributions(
         userName: UserName,
         dateRanges: List<Pair<LocalDateTime, LocalDateTime>>
-    ): Result<Contributions, ContributionsError> = runCatching {
+    ): Result<Contributions, DataError> = runCatching {
         dateRanges.map { (from, to) ->
             val result = gitHubService.queryUserContribution(
                 username = userName.value,
@@ -57,15 +57,15 @@ class GitHubRemoteDataSource(
             result ?: throw Exception("Null response from git hub service $from - $to")
         }.flatten()
     }.fold(
-        onSuccess = { Success(Contributions(it)) },
-        onFailure = { Failed(ContributionsError(it)) }
+        onSuccess = { Contributions(it).success() },
+        onFailure = { it.asFailed(::DataError) }
     )
 }
 
 class GitHubLocalDataSource(
     private val dataStore: DataStore<Preferences>
 ) {
-    fun allContributions(): Flow<Result<List<Pair<String, Contributions>>, ContributionsError>> =
+    fun allContributions(): Flow<Result<List<Pair<String, Contributions>>, DataError>> =
         dataStore.data.map { prefs ->
             runCatching {
                 prefs.asMap().map { (key, item) ->
@@ -75,34 +75,34 @@ class GitHubLocalDataSource(
                     userName to contributions
                 }
             }.fold(
-                onSuccess = { Success(it) },
-                onFailure = { Failed(ContributionsError(it)) }
+                onSuccess = { it.success() },
+                onFailure = { it.asFailed(::DataError) }
             )
         }
 
-    fun contributions(userName: UserName): Flow<Result<Contributions, ContributionsError>> = dataStore.data.map {
+    fun contributions(userName: UserName): Flow<Result<Contributions, DataError>> = dataStore.data.map {
         runCatching { Contributions.fromLocalModel(it[stringPreferencesKey(userName.toString())]) }.fold(
-            onSuccess = { Success(it) },
-            onFailure = { Failed(ContributionsError(it)) }
+            onSuccess = { it.success() },
+            onFailure = { it.asFailed(::DataError) }
         )
     }
 
-    suspend fun addContributions(userName: UserName, contributions: Contributions): Result<Unit, ContributionsError> =
+    suspend fun addContributions(userName: UserName, contributions: Contributions): Result<Unit, DataError> =
         runCatching {
             dataStore.edit {
                 it[stringPreferencesKey(userName.value)] = contributions.toLocalModel()
             }
         }.fold(
-            onSuccess = { Success(Unit) },
-            onFailure = { Failed(ContributionsError(it)) }
+            onSuccess = { Unit.success() },
+            onFailure = { it.asFailed(::DataError) }
         )
 
-    suspend fun removeContributions(userName: UserName): Result<Unit, ContributionsError> = runCatching {
+    suspend fun removeContributions(userName: UserName): Result<Unit, DataError> = runCatching {
         dataStore.edit {
             it.remove(stringPreferencesKey(userName.value))
         }
     }.fold(
-        onSuccess = { Success(Unit) },
-        onFailure = { Failed(ContributionsError(it)) }
+        onSuccess = { Unit.success() },
+        onFailure = { it.asFailed(::DataError) }
     )
 }

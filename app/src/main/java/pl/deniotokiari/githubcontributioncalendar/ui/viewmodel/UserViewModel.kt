@@ -6,46 +6,53 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
-import pl.deniotokiari.githubcontributioncalendar.data.ContributionCalendarRepository
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfigurationRepository
-import pl.deniotokiari.githubcontributioncalendar.widget.usecase.SetWidgetConfigUseCase
-import pl.deniotokiari.githubcontributioncalendar.widget.usecase.UpdateWidgetByUserNameAndWidgetIdUseCase
+import pl.deniotokiari.githubcontributioncalendar.core.fold
+import pl.deniotokiari.githubcontributioncalendar.data.model.BlockSize
+import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
+import pl.deniotokiari.githubcontributioncalendar.data.model.Opacity
+import pl.deniotokiari.githubcontributioncalendar.data.model.Padding
+import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
+import pl.deniotokiari.githubcontributioncalendar.domain.model.WidgetIdentifiers
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetWidgetsConfigurationsWithContributionsUseCase
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateWidgetConfigurationUseCase
 
 class UserViewModel(
     private val user: String,
     private val widgetId: Int,
-    contributionCalendarRepository: ContributionCalendarRepository,
-    configurationRepository: WidgetConfigurationRepository,
-    private val setWidgetConfigUseCase: SetWidgetConfigUseCase,
-    private val updateWidgetByUserNameAndWidgetIdUseCase: UpdateWidgetByUserNameAndWidgetIdUseCase,
-    private val appAnalytics: AppAnalytics
+    private val appAnalytics: AppAnalytics,
+    private val updateWidgetConfigurationUseCase: UpdateWidgetConfigurationUseCase,
+    getWidgetsConfigurationsWithContributionsUseCase: GetWidgetsConfigurationsWithContributionsUseCase
 ) : ViewModel() {
     private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val uiState: StateFlow<UiState> = combine(
-        configurationRepository.configurationByWidgetIdAndUserName(widgetId = widgetId, userName = user),
-        contributionCalendarRepository.contributionsByUser(user = user)
-    ) { config, contributions ->
-        if (contributions.isNotEmpty()) {
-            UiState(
-                user = UiState.User(
-                    user = user,
-                    colors = contributions.toIntArray()
-                ),
-                loading = false,
-                config = config,
-                refreshing = false
-            )
-        } else {
-            UiState.default(user = user)
-        }
+    val uiState: StateFlow<UiState> = getWidgetsConfigurationsWithContributionsUseCase(
+        WidgetIdentifiers(
+            userName = UserName(user),
+            widgetId = WidgetId(widgetId)
+        )
+    ).map {
+        it.fold(
+            success = { model ->
+                UiState(
+                    userName = UserName(user),
+                    contributions = model.contributions,
+                    loading = false,
+                    config = model.configuration,
+                    refreshing = false
+                )
+            },
+            failed = {
+                UiState.default(user)
+            }
+        )
     }.combine(_refreshing) { state, refreshing ->
         state.copy(refreshing = refreshing)
-    }
-        .stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
+    }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
 
     init {
         appAnalytics.trackUserView(user)
@@ -62,94 +69,50 @@ class UserViewModel(
                 )
             )
 
-            appAnalytics.trackUserRefresh()
+            appAnalytics.trackUserRefresh(user)
 
             _refreshing.value = false
         }
     }
 
     fun updateOpacity(value: Int) {
-        viewModelScope.launch {
-            val config = uiState.value.config.copy(opacity = value)
-
-            setWidgetConfigUseCase(
-                SetWidgetConfigUseCase.Params(
-                    widgetId = widgetId,
-                    userName = user,
-                    config = config
-                )
-            )
-        }
+        updateWidgetConfiguration(uiState.value.config.copy(opacity = Opacity(value)))
     }
 
     fun updatePadding(value: Int) {
-        viewModelScope.launch {
-            val config = uiState.value.config.copy(padding = value)
-
-            setWidgetConfigUseCase(
-                SetWidgetConfigUseCase.Params(
-                    widgetId = widgetId,
-                    userName = user,
-                    config = config
-                )
-            )
-
-            appAnalytics.trackWidgetConfigUpdate(user, config)
-        }
+        updateWidgetConfiguration(uiState.value.config.copy(padding = Padding(value)))
     }
 
     fun updateBlockSize(value: Int) {
-        viewModelScope.launch {
-            val config = uiState.value.config.copy(blockSize = value)
+        updateWidgetConfiguration(uiState.value.config.copy(blockSize = BlockSize(value)))
+    }
 
-            setWidgetConfigUseCase(
-                SetWidgetConfigUseCase.Params(
-                    widgetId = widgetId,
-                    userName = user,
-                    config = config
+    private fun updateWidgetConfiguration(configuration: WidgetConfiguration) {
+        viewModelScope.launch {
+            updateWidgetConfigurationUseCase(
+                UpdateWidgetConfigurationUseCase.Params(
+                    widgetId = WidgetId(widgetId),
+                    widgetConfiguration = configuration
                 )
             )
 
-            appAnalytics.trackWidgetConfigUpdate(user, config)
+            appAnalytics.trackWidgetConfigUpdate(user, configuration)
         }
     }
 
     data class UiState(
-        val user: User,
+        val userName: UserName,
+        val contributions: Contributions,
         val loading: Boolean,
         val config: WidgetConfiguration,
         val refreshing: Boolean
     ) {
-        data class User(
-            val user: String,
-            val colors: IntArray
-        ) {
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
 
-                other as User
-
-                if (user != other.user) return false
-                if (!colors.contentEquals(other.colors)) return false
-
-                return true
-            }
-
-            override fun hashCode(): Int {
-                var result = user.hashCode()
-                result = 31 * result + colors.contentHashCode()
-
-                return result
-            }
-        }
 
         companion object {
             fun default(user: String) = UiState(
-                user = User(
-                    user = user,
-                    colors = IntArray(0)
-                ),
+                userName = UserName(user),
+                contributions = Contributions(emptyList()),
                 loading = false,
                 config = WidgetConfiguration.default(),
                 refreshing = false

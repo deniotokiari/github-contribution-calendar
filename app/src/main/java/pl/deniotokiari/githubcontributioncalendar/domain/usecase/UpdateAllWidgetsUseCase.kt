@@ -1,28 +1,27 @@
 package pl.deniotokiari.githubcontributioncalendar.domain.usecase
 
 import pl.deniotokiari.githubcontributioncalendar.core.Result
-import pl.deniotokiari.githubcontributioncalendar.core.Success
 import pl.deniotokiari.githubcontributioncalendar.core.UseCase
 import pl.deniotokiari.githubcontributioncalendar.core.flatMap
 import pl.deniotokiari.githubcontributioncalendar.core.mapFailure
 import pl.deniotokiari.githubcontributioncalendar.core.mapSuccess
+import pl.deniotokiari.githubcontributioncalendar.core.success
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.WidgetDataSource
 import pl.deniotokiari.githubcontributioncalendar.data.repository.AppConfigurationRepository
 import pl.deniotokiari.githubcontributioncalendar.data.repository.ContributionsRepository
 import pl.deniotokiari.githubcontributioncalendar.domain.model.Count
-import pl.deniotokiari.githubcontributioncalendar.domain.model.UpdateAllWidgetsError
+import pl.deniotokiari.githubcontributioncalendar.domain.model.DomainError
 
 class UpdateAllWidgetsUseCase(
     private val widgetDataSource: WidgetDataSource,
     private val appConfigurationRepository: AppConfigurationRepository,
     private val contributionsRepository: ContributionsRepository
-) : UseCase<Unit, Result<Count, UpdateAllWidgetsError>> {
-    override suspend fun invoke(params: Unit): Result<Count, UpdateAllWidgetsError> =
-        widgetDataSource.getAllGlanceIds().mapFailure { it.throwable }
+) : UseCase<Unit, Result<Count, DomainError>> {
+    override suspend fun invoke(params: Unit): Result<Count, DomainError> =
+        widgetDataSource.getAllGlanceIds()
             .flatMap { ids ->
                 appConfigurationRepository.getYears()
                     .mapSuccess { years -> ids to years }
-                    .mapFailure { it.throwable }
             }
             .flatMap { (ids, years) ->
                 var count = 0
@@ -42,8 +41,8 @@ class UpdateAllWidgetsUseCase(
                         }
                 }
 
-                Success(Count(count))
-            }
-            .mapFailure { UpdateAllWidgetsError(it) }
+                Count(count).success()
+            }.flatMap { count -> widgetDataSource.updateAllWidgets().mapSuccess { count } }
+            .mapFailure { DomainError(it.throwable) }
 
 }

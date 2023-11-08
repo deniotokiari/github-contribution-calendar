@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
@@ -24,20 +25,23 @@ class HomeViewModel(
 ) : ViewModel() {
     private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val uiState: StateFlow<UiState> =
-        getAllWidgetsConfigurationsWithContributionsUseCase(Unit).combine(_refreshing) { contributionsResult, refreshing ->
-            contributionsResult.fold(
-                success = {
-                    UiState(
-                        items = it.map(UiState.User::fromWidgetConfigurationWithContributions),
-                        loading = false,
-                        refreshing = refreshing
-                    )
-                },
-                failed = {
-                    UiState.default().copy(refreshing = refreshing)
-                }
-            )
-        }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
+        getAllWidgetsConfigurationsWithContributionsUseCase(Unit)
+            .map { contributionsResult ->
+                contributionsResult.fold(
+                    success = {
+                        UiState(
+                            items = it.map(UiState.User::fromWidgetConfigurationWithContributions),
+                            loading = false,
+                            refreshing = false
+                        )
+                    },
+                    failed = {
+                        UiState.default()
+                    }
+                )
+            }.combine(_refreshing) { state, refreshing ->
+                state.copy(refreshing = refreshing)
+            }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default().copy(loading = true))
 
     init {
         appAnalytics.trackHomeView()

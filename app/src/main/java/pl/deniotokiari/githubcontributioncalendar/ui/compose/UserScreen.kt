@@ -29,8 +29,8 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
-import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
 import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.UserViewModel
 import kotlin.math.roundToInt
 
@@ -62,7 +62,7 @@ fun UserScreen(
                 )
             }
             Text(
-                text = uiState.user.user,
+                text = uiState.userName.value,
                 modifier = Modifier.align(Alignment.Center),
                 style = TextStyle(
                     fontSize = 18.sp,
@@ -86,39 +86,39 @@ fun UserScreen(
                 ) {
                     item {
                         ContributionWidget(
-                            user = uiState.user.user,
-                            colors = uiState.user.colors,
+                            user = uiState.userName.value,
+                            colors = uiState.contributions.asIntColors(),
                             config = uiState.config
                         )
 
                         Text(text = stringResource(id = R.string.block_size), modifier = Modifier.padding(8.dp))
                         Slider(
-                            value = uiState.config.blockSize.toFloat(),
+                            value = uiState.config.blockSize.value.toFloat(),
                             onValueChange = {
                                 viewModel.updateBlockSize(it.roundToInt())
                             },
-                            valueRange = BlocksBitmapCreator.BLOCK_SIZE_MIN.toFloat()..BlocksBitmapCreator.BLOCK_SIZE_MAX.toFloat(),
-                            steps = BlocksBitmapCreator.BLOCK_SIZE_MAX - BlocksBitmapCreator.BLOCK_SIZE_MIN - 1
+                            valueRange = WidgetConfiguration.BLOCK_SIZE_MIN.toFloat()..WidgetConfiguration.BLOCK_SIZE_MAX.toFloat(),
+                            steps = WidgetConfiguration.BLOCK_SIZE_MAX - WidgetConfiguration.BLOCK_SIZE_MIN - 1
                         )
 
                         Text(text = stringResource(id = R.string.padding), modifier = Modifier.padding(8.dp))
                         Slider(
-                            value = uiState.config.padding.toFloat(),
+                            value = uiState.config.padding.value.toFloat(),
                             onValueChange = {
                                 viewModel.updatePadding(it.roundToInt())
                             },
-                            valueRange = BlocksBitmapCreator.PADDING_MIN.toFloat()..BlocksBitmapCreator.PADDING_MAX.toFloat(),
-                            steps = BlocksBitmapCreator.PADDING_MAX - BlocksBitmapCreator.PADDING_MIN - 1
+                            valueRange = WidgetConfiguration.PADDING_MIN.toFloat()..WidgetConfiguration.PADDING_MAX.toFloat(),
+                            steps = WidgetConfiguration.PADDING_MAX - WidgetConfiguration.PADDING_MIN - 1
                         )
 
                         Text(text = stringResource(id = R.string.opacity), modifier = Modifier.padding(8.dp))
                         Slider(
-                            value = uiState.config.opacity.toFloat(),
+                            value = uiState.config.opacity.value.toFloat(),
                             onValueChange = {
                                 viewModel.updateOpacity(it.roundToInt())
                             },
-                            valueRange = BlocksBitmapCreator.OPACITY_MIN.toFloat()..BlocksBitmapCreator.OPACITY_MAX.toFloat(),
-                            steps = BlocksBitmapCreator.OPACITY_MAX - BlocksBitmapCreator.OPACITY_MIN - 1
+                            valueRange = WidgetConfiguration.OPACITY_MIN.toFloat()..WidgetConfiguration.OPACITY_MAX.toFloat(),
+                            steps = WidgetConfiguration.OPACITY_MAX - WidgetConfiguration.OPACITY_MIN - 1
                         )
                     }
                 }

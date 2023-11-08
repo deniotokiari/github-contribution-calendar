@@ -8,15 +8,15 @@ import pl.deniotokiari.githubcontributioncalendar.core.combineResult
 import pl.deniotokiari.githubcontributioncalendar.core.mapFailure
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.WidgetConfigurationDataStore
 import pl.deniotokiari.githubcontributioncalendar.data.repository.ContributionsRepository
-import pl.deniotokiari.githubcontributioncalendar.domain.model.GetAllWidgetsConfigurationsWithContributionsError
+import pl.deniotokiari.githubcontributioncalendar.domain.model.DomainError
 import pl.deniotokiari.githubcontributioncalendar.domain.model.WidgetConfigurationWithContributions
 
 class GetAllWidgetsConfigurationsWithContributionsUseCase(
     private val widgetConfigurationDataStore: WidgetConfigurationDataStore,
     private val contributionsRepository: ContributionsRepository
 ) :
-    FlowUseCase<Unit, Result<List<WidgetConfigurationWithContributions>, GetAllWidgetsConfigurationsWithContributionsError>> {
-    override fun invoke(params: Unit): Flow<Result<List<WidgetConfigurationWithContributions>, GetAllWidgetsConfigurationsWithContributionsError>> =
+    FlowUseCase<Unit, Result<List<WidgetConfigurationWithContributions>, DomainError>> {
+    override fun invoke(params: Unit): Flow<Result<List<WidgetConfigurationWithContributions>, DomainError>> =
         combine(
             widgetConfigurationDataStore.allConfigurations(),
             contributionsRepository.allContributions()
@@ -39,6 +39,6 @@ class GetAllWidgetsConfigurationsWithContributionsUseCase(
                         )
                     }
                 }
-            }.mapFailure { GetAllWidgetsConfigurationsWithContributionsError(it) }
+            }.mapFailure { DomainError(it) }
         }
 }

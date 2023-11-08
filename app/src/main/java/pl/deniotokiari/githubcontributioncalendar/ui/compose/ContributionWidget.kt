@@ -22,14 +22,13 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import pl.deniotokiari.githubcontributioncalendar.core.successOrNull
-import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.data.repository.BitmapRepository
 
 @Composable
 fun ContributionWidget(
     user: String,
-    contributions: Contributions,
+    colors: List<Int>,
     config: WidgetConfiguration,
     modifier: Modifier = Modifier,
     onClicked: ((String) -> Unit)? = null,
@@ -56,7 +55,7 @@ fun ContributionWidget(
                 }
             }
     ) {
-        if (size == IntSize.Zero || contributions.isEmpty()) {
+        if (size == IntSize.Zero || colors.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
@@ -68,7 +67,7 @@ fun ContributionWidget(
                 width = size.width,
                 height = size.height,
                 padding = config.padding.value,
-                colors = contributions.asIntColors(),
+                colors = colors,
                 opacity = config.opacity.value,
                 blockSize = config.blockSize.value
             ).successOrNull()

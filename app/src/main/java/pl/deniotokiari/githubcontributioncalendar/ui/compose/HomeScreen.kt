@@ -107,7 +107,7 @@ fun HomeScreen(
                         item {
                             ContributionWidget(
                                 user = userName,
-                                contributions = items,
+                                colors = items.asIntColors(),
                                 config = config,
                                 onClicked = {
                                     navController.navigate("user/${userName}/${widgetId}")

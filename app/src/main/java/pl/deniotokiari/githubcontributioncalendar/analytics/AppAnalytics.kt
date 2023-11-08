@@ -29,8 +29,8 @@ class AppAnalytics(
         analytics.track("refresh_home", mapOf("size" to size))
     }
 
-    fun trackUserRefresh() {
-        analytics.track("refresh_user", mapOf())
+    fun trackUserRefresh(user: String) {
+        analytics.track("refresh_user", mapOf("user" to user))
     }
 
     fun trackHomeView() {

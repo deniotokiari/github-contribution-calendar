@@ -7,7 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
-import pl.deniotokiari.githubcontributioncalendar.prefs.GetSupportEmailUseCase
+import pl.deniotokiari.githubcontributioncalendar.core.mapSuccess
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetSupportEmailUseCase
 
 class AboutViewModel(
     private val appAnalytics: AppAnalytics,
@@ -20,10 +21,10 @@ class AboutViewModel(
         appAnalytics.trackAboutView()
 
         viewModelScope.launch {
-            val email = getSupportEmailUseCase(Unit)
-
-            _uiState.update {
-                UiState.Idle(email = email)
+            getSupportEmailUseCase(Unit).mapSuccess { email ->
+                _uiState.update {
+                    UiState.Idle(email = email.value)
+                }
             }
         }
     }

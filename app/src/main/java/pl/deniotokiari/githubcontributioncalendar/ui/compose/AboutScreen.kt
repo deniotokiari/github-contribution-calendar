@@ -33,17 +33,15 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
-import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.AboutViewModel
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Pink40
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Pink80
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Purple40
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Purple80
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.PurpleGrey40
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.PurpleGrey80
-import pl.deniotokiari.githubcontributioncalendar.widget.WidgetConfiguration
-import kotlin.random.Random
-
+import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.AboutViewModel
 
 @Composable
 fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
@@ -98,7 +96,7 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
 
                 ContributionWidget(
                     user = "",
-                    colors = IntArray(100) { colors[Random.nextInt(colors.size)] },
+                    colors = colors,
                     config = WidgetConfiguration.default(),
                     modifier = Modifier
                         .fillMaxWidth()

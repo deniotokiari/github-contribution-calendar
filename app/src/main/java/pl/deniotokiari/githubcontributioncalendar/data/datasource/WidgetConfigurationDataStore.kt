@@ -6,18 +6,18 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import pl.deniotokiari.githubcontributioncalendar.core.Failed
 import pl.deniotokiari.githubcontributioncalendar.core.Result
-import pl.deniotokiari.githubcontributioncalendar.core.Success
+import pl.deniotokiari.githubcontributioncalendar.core.asFailed
+import pl.deniotokiari.githubcontributioncalendar.core.success
+import pl.deniotokiari.githubcontributioncalendar.data.model.DataError
 import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
-import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfigurationError
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
 
 class WidgetConfigurationDataStore(
     private val dataStore: DataStore<Preferences>
 ) {
-    fun allConfigurations(): Flow<Result<List<Pair<Pair<UserName, WidgetId>, WidgetConfiguration>>, WidgetConfigurationError>> =
+    fun allConfigurations(): Flow<Result<List<Pair<Pair<UserName, WidgetId>, WidgetConfiguration>>, DataError>> =
         dataStore.data.map {
             runCatching {
                 it.asMap().map { (key, value) ->
@@ -26,22 +26,22 @@ class WidgetConfigurationDataStore(
                     (UserName(userName) to WidgetId(widgetId.toInt())) to WidgetConfiguration.fromLocalModel(value)
                 }
             }.fold(
-                onSuccess = { Success(it) },
-                onFailure = { Failed(WidgetConfigurationError(it)) }
+                onSuccess = { it.success() },
+                onFailure = { it.asFailed(::DataError) }
             )
         }
 
     fun configuration(
         userName: UserName,
         widgetId: WidgetId
-    ): Flow<Result<WidgetConfiguration, WidgetConfigurationError>> = dataStore.data.map {
+    ): Flow<Result<WidgetConfiguration, DataError>> = dataStore.data.map {
         runCatching {
             it[configurationKey(userName, widgetId)].let {
                 WidgetConfiguration.fromLocalModel(it)
             }
         }.fold(
-            onSuccess = { Success(it) },
-            onFailure = { Failed(WidgetConfigurationError(it)) }
+            onSuccess = { it.success() },
+            onFailure = { it.asFailed(::DataError) }
         )
     }
 
@@ -49,24 +49,24 @@ class WidgetConfigurationDataStore(
         userName: UserName,
         widgetId: WidgetId,
         configuration: WidgetConfiguration
-    ): Result<Unit, WidgetConfigurationError> =
+    ): Result<Unit, DataError> =
         runCatching {
             dataStore.edit {
                 it[configurationKey(userName, widgetId)] = configuration.toLocalModel()
             }
         }.fold(
-            onSuccess = { Success(Unit) },
-            onFailure = { Failed(WidgetConfigurationError(it)) }
+            onSuccess = { Unit.success() },
+            onFailure = { it.asFailed(::DataError) }
         )
 
-    suspend fun removeConfiguration(userName: UserName, widgetId: WidgetId): Result<Unit, WidgetConfigurationError> =
+    suspend fun removeConfiguration(userName: UserName, widgetId: WidgetId): Result<Unit, DataError> =
         runCatching {
             dataStore.edit {
                 it.remove(configurationKey(userName, widgetId))
             }
         }.fold(
-            onSuccess = { Success(Unit) },
-            onFailure = { Failed(WidgetConfigurationError(it)) }
+            onSuccess = { Unit.success() },
+            onFailure = { it.asFailed(::DataError) }
         )
 
     fun defaultConfiguration(): WidgetConfiguration = WidgetConfiguration.default()

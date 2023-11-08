@@ -4,10 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import pl.deniotokiari.githubcontributioncalendar.core.Failed
 import pl.deniotokiari.githubcontributioncalendar.core.Result
-import pl.deniotokiari.githubcontributioncalendar.core.Success
-import pl.deniotokiari.githubcontributioncalendar.data.model.BitmapError
+import pl.deniotokiari.githubcontributioncalendar.core.asFailed
+import pl.deniotokiari.githubcontributioncalendar.core.success
+import pl.deniotokiari.githubcontributioncalendar.data.model.DataError
 import java.lang.Integer.max
 import java.lang.Integer.min
 
@@ -20,14 +20,14 @@ interface BitmapDataSource {
         padding: Int,
         colors: List<Int>,
         opacity: Int
-    ): Result<Bitmap, BitmapError>
+    ): Result<Bitmap, DataError>
 
     fun calculateMetaData(
         width: Int,
         height: Int,
         blockSize: Int,
         colorsSize: Int
-    ): Result<MetaData, BitmapError>
+    ): Result<MetaData, DataError>
 
     data class MetaData(
         val hCount: Int,
@@ -46,7 +46,7 @@ class AndroidBitmapDataSource : BitmapDataSource {
         padding: Int,
         colors: List<Int>,
         opacity: Int
-    ): Result<Bitmap, BitmapError> = runCatching {
+    ): Result<Bitmap, DataError> = runCatching {
         val bitmap = Bitmap.createBitmap(
             width,
             height,
@@ -94,8 +94,8 @@ class AndroidBitmapDataSource : BitmapDataSource {
 
         bitmap
     }.fold(
-        onSuccess = { Success(it) },
-        onFailure = { Failed(BitmapError(it)) }
+        onSuccess = { it.success() },
+        onFailure = { it.asFailed(::DataError) }
     )
 
     override fun calculateMetaData(
@@ -103,7 +103,7 @@ class AndroidBitmapDataSource : BitmapDataSource {
         height: Int,
         blockSize: Int,
         colorsSize: Int
-    ): Result<BitmapDataSource.MetaData, BitmapError> = runCatching {
+    ): Result<BitmapDataSource.MetaData, DataError> = runCatching {
         if (width <= 0 || height <= 0 || blockSize <= 0 || colorsSize <= 0) {
             return@runCatching BitmapDataSource.MetaData(
                 hCount = 0,
@@ -130,7 +130,7 @@ class AndroidBitmapDataSource : BitmapDataSource {
             wOffset = wOffset
         )
     }.fold(
-        onSuccess = { Success(it) },
-        onFailure = { Failed(BitmapError(it)) }
+        onSuccess = { it.success() },
+        onFailure = { it.asFailed(::DataError) }
     )
 }

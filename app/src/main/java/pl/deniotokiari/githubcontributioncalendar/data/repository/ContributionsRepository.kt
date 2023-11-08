@@ -7,7 +7,7 @@ import pl.deniotokiari.githubcontributioncalendar.core.mapSuccess
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.GitHubLocalDataSource
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.GitHubRemoteDataSource
 import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
-import pl.deniotokiari.githubcontributioncalendar.data.model.ContributionsError
+import pl.deniotokiari.githubcontributioncalendar.data.model.DataError
 import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
 import pl.deniotokiari.githubcontributioncalendar.data.model.Year
 
@@ -15,16 +15,16 @@ class ContributionsRepository(
     private val gitHubRemoteDataSource: GitHubRemoteDataSource,
     private val gitHubLocalDataSource: GitHubLocalDataSource
 ) {
-    fun allContributions(): Flow<Result<List<Pair<String, Contributions>>, ContributionsError>> =
+    fun allContributions(): Flow<Result<List<Pair<String, Contributions>>, DataError>> =
         gitHubLocalDataSource.allContributions()
 
-    fun contributions(userName: UserName): Flow<Result<Contributions, ContributionsError>> =
+    fun contributions(userName: UserName): Flow<Result<Contributions, DataError>> =
         gitHubLocalDataSource.contributions(userName)
 
-    suspend fun removeContributions(userName: UserName): Result<Unit, ContributionsError> =
+    suspend fun removeContributions(userName: UserName): Result<Unit, DataError> =
         gitHubLocalDataSource.removeContributions(userName)
 
-    suspend fun updateContributions(userName: UserName, years: Year): Result<Contributions, ContributionsError> =
+    suspend fun updateContributions(userName: UserName, years: Year): Result<Contributions, DataError> =
         gitHubRemoteDataSource.getDateRangesFor(years).flatMap {
             gitHubRemoteDataSource.getUserContributions(userName, it)
         }.mapSuccess { contributions ->

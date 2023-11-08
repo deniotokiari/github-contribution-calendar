@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import pl.deniotokiari.githubcontributioncalendar.core.Result
 import pl.deniotokiari.githubcontributioncalendar.core.flatMap
 import pl.deniotokiari.githubcontributioncalendar.data.datasource.BitmapDataSource
-import pl.deniotokiari.githubcontributioncalendar.data.model.BitmapError
+import pl.deniotokiari.githubcontributioncalendar.data.model.DataError
 
 interface BitmapRepository {
     fun getMetaData(
@@ -12,7 +12,7 @@ interface BitmapRepository {
         height: Int,
         blockSize: Int,
         colorsSize: Int
-    ): Result<BitmapDataSource.MetaData, BitmapError>
+    ): Result<BitmapDataSource.MetaData, DataError>
 
     fun getBitmap(
         width: Int,
@@ -21,7 +21,7 @@ interface BitmapRepository {
         padding: Int,
         colors: List<Int>,
         opacity: Int
-    ): Result<Bitmap, BitmapError>
+    ): Result<Bitmap, DataError>
 }
 
 class AndroidBitmapRepository(
@@ -32,7 +32,7 @@ class AndroidBitmapRepository(
         height: Int,
         blockSize: Int,
         colorsSize: Int
-    ): Result<BitmapDataSource.MetaData, BitmapError> = bitmapDataSource.calculateMetaData(
+    ): Result<BitmapDataSource.MetaData, DataError> = bitmapDataSource.calculateMetaData(
         width = width,
         height = height,
         blockSize = blockSize,
@@ -46,7 +46,7 @@ class AndroidBitmapRepository(
         padding: Int,
         colors: List<Int>,
         opacity: Int
-    ): Result<Bitmap, BitmapError> = bitmapDataSource.calculateMetaData(
+    ): Result<Bitmap, DataError> = bitmapDataSource.calculateMetaData(
         width = width,
         height = height,
         blockSize = blockSize,

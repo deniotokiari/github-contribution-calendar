@@ -3,19 +3,7 @@ package pl.deniotokiari.githubcontributioncalendar.data.model
 import android.graphics.Color
 
 @JvmInline
-value class BitmapError(val throwable: Throwable)
-
-@JvmInline
-value class ContributionsError(val throwable: Throwable)
-
-@JvmInline
-value class WidgetConfigurationError(val throwable: Throwable)
-
-@JvmInline
-value class WidgetError(val throwable: Throwable)
-
-@JvmInline
-value class AppConfigurationError(val throwable: Throwable)
+value class DataError(val throwable: Throwable)
 
 @JvmInline
 value class UserName(val value: String)

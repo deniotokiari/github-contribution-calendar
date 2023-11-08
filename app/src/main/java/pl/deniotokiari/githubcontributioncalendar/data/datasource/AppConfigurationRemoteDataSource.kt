@@ -20,9 +20,7 @@ class AppConfigurationRemoteDataSource(
                 )
                 .build()
         )
-    }
 
-    fun init() {
         remoteConfig.fetchAndActivate()
     }
 
