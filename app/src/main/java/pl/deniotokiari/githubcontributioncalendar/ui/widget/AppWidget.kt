@@ -4,18 +4,13 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceComposable
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
-import androidx.glance.GlanceTheme.colors
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -33,25 +28,24 @@ import androidx.glance.currentState
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.padding
 import androidx.glance.text.Text
 import androidx.glance.text.TextAlign
 import androidx.glance.text.TextDefaults
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
-import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
-import pl.deniotokiari.githubcontributioncalendar.ui.activity.MainActivity
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.px
 import pl.deniotokiari.githubcontributioncalendar.core.successOrNull
 import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
+import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
 import pl.deniotokiari.githubcontributioncalendar.data.repository.BitmapRepository
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatterBuilder
-import java.time.temporal.ChronoField
+import pl.deniotokiari.githubcontributioncalendar.domain.model.WidgetIdentifiers
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.RemoveWidgetDataUseCase
+import pl.deniotokiari.githubcontributioncalendar.ui.activity.MainActivity
 import kotlin.math.roundToInt
 
 class AppWidget : GlanceAppWidget(), KoinComponent {
@@ -63,12 +57,12 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
         val widgetId = prefs[WIDGET_ID_KEY]
 
         if (username != null && widgetId != null) {
-            val removeWidgetByUserNameAndWidgetIdUseCase: RemoveWidgetByUserNameAndWidgetIdUseCase by inject()
+            val removeWidgetDataUseCase: RemoveWidgetDataUseCase by inject()
 
-            removeWidgetByUserNameAndWidgetIdUseCase(
-                RemoveWidgetByUserNameAndWidgetIdUseCase.Params(
-                    widgetId = widgetId,
-                    userName = username
+            removeWidgetDataUseCase(
+                WidgetIdentifiers(
+                    userName = UserName(username),
+                    widgetId = WidgetId(widgetId)
                 )
             )
 
