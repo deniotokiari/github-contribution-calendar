@@ -15,6 +15,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.GlanceComposable
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme.colors
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalSize
@@ -40,14 +41,14 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
-import pl.deniotokiari.githubcontributioncalendar.DevRepository
 import pl.deniotokiari.githubcontributioncalendar.R
 import pl.deniotokiari.githubcontributioncalendar.ui.activity.MainActivity
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.px
-import pl.deniotokiari.githubcontributioncalendar.data.decode
-import pl.deniotokiari.githubcontributioncalendar.etc.BlocksBitmapCreator
-import pl.deniotokiari.githubcontributioncalendar.widget.usecase.RemoveWidgetByUserNameAndWidgetIdUseCase
+import pl.deniotokiari.githubcontributioncalendar.core.successOrNull
+import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
+import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
+import pl.deniotokiari.githubcontributioncalendar.data.repository.BitmapRepository
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
@@ -108,30 +109,30 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
         userName: String,
         widgetId: Int,
         config: WidgetConfiguration,
-        colors: List<Int>
+        colors: List<Int>,
+        bitmapRepository: BitmapRepository
     ) {
-        val bitmapCreator: BlocksBitmapCreator by inject()
         val blockSize = config.blockSize
         val padding = config.padding
         val size = LocalSize.current
         val width = size.width.value.roundToInt().px
         val height = size.height.value.roundToInt().px
-        val params = bitmapCreator.getParamsForBitmap(
+        val params = bitmapRepository.getMetaData(
             width = width,
             height = height,
-            squareSize = blockSize,
-            padding = padding,
+            blockSize = blockSize.value,
             colorsSize = colors.size,
-            opacity = config.opacity
-        )
-        val blocksCount = params.blocksCount
+        ).successOrNull() ?: return
+        val blocksCount = params.hCount * params.wCount
         val offset = colors.size - blocksCount
-        val bitmap = bitmapCreator(
+        val bitmap = bitmapRepository.getBitmap(
             width = width,
             height = height,
-            params = params,
-            colors = IntArray(blocksCount) { colors[it + offset] }
-        )
+            colors = IntArray(blocksCount) { colors[it + offset] }.toList(),
+            blockSize = blockSize.value,
+            padding = padding.value,
+            opacity = config.opacity.value
+        ).successOrNull() ?: return
         Image(
             provider = ImageProvider(bitmap),
             contentDescription = "blocks",
@@ -146,24 +147,6 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
                     )
                 )
         )
-
-        if (BuildConfig.DEBUG) {
-            val time = LocalDateTime.now().format(
-                DateTimeFormatterBuilder()
-                    .appendValue(ChronoField.HOUR_OF_DAY, 2)
-                    .appendLiteral(':')
-                    .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
-                    .optionalStart()
-                    .appendLiteral(':')
-                    .appendValue(ChronoField.SECOND_OF_MINUTE, 2).toFormatter()
-            )
-            val count by get<DevRepository>().widgetUpdateCount().collectAsState(initial = 0)
-
-            Text(
-                modifier = GlanceModifier.padding(6.dp).background(Color.White),
-                text = "${count}: $time"
-            )
-        }
     }
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -172,16 +155,22 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
         provideContent {
             val username = currentState(key = USER_NAME_KEY)
             val widgetId = currentState(key = WIDGET_ID_KEY)
-            val config = currentState(key = CONFIG_KEY)?.let(WidgetConfiguration::decode)
-            val colors = currentState(key = COLORS_KEY)?.let { it.decode() }
+            val config = currentState(key = CONFIG_KEY)?.let(WidgetConfiguration::fromLocalModel)
+            val contributions = currentState(key = COLORS_KEY)?.let(Contributions::fromLocalModel)
 
-            if (username != null && widgetId != null && config != null && colors != null) {
-                Log.d("LOG", "provideContent for $username $id colors => ${colors.size}")
+            if (username != null && widgetId != null && config != null && contributions != null) {
+                Log.d("LOG", "provideContent for $username $id colors => ${contributions.colors.size}")
 
-                if (colors.isEmpty()) {
+                if (contributions.colors.isEmpty()) {
                     Empty(userName = username)
                 } else {
-                    Content(userName = username, widgetId = widgetId, config = config, colors = colors)
+                    Content(
+                        userName = username,
+                        widgetId = widgetId,
+                        config = config,
+                        colors = contributions.asIntColors(),
+                        bitmapRepository = get()
+                    )
                 }
             } else {
                 Loading()

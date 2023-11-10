@@ -8,6 +8,7 @@ import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetWidgetsConfi
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.SetUpWidgetUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateAllWidgetsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateWidgetConfigurationUseCase
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateWidgetContributionUseCase
 
 val domainModule = module {
     factoryOf(::SetUpWidgetUseCase)
@@ -16,4 +17,5 @@ val domainModule = module {
     factoryOf(::GetSupportEmailUseCase)
     factoryOf(::GetWidgetsConfigurationsWithContributionsUseCase)
     factoryOf(::UpdateWidgetConfigurationUseCase)
+    factoryOf(::UpdateWidgetContributionUseCase)
 }

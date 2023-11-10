@@ -31,14 +31,17 @@ class SetUpWidgetUseCase(
                     .mapSuccess { contributions -> glanceId to contributions }
             }
             .flatMap { (glanceId, contributions) ->
+                val configuration = widgetConfigurationDataStore.defaultConfiguration()
+
                 widgetDataSource.setWidgetData(
                     glanceId = glanceId,
                     userName = params.userName,
                     widgetId = params.widgetId,
-                    widgetConfiguration = widgetConfigurationDataStore.defaultConfiguration(),
+                    widgetConfiguration = configuration,
                     contributions = contributions
-                )
-                    .mapSuccess { glanceId }
+                ).flatMap {
+                    widgetConfigurationDataStore.addConfiguration(params.userName, params.widgetId, configuration)
+                }.mapSuccess { glanceId }
             }
             .flatMap { glanceId -> widgetDataSource.updateWidget(glanceId) }
             .fold(

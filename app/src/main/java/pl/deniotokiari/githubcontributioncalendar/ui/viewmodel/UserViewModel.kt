@@ -21,12 +21,14 @@ import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
 import pl.deniotokiari.githubcontributioncalendar.domain.model.WidgetIdentifiers
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetWidgetsConfigurationsWithContributionsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateWidgetConfigurationUseCase
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateWidgetContributionUseCase
 
 class UserViewModel(
     private val user: String,
     private val widgetId: Int,
     private val appAnalytics: AppAnalytics,
     private val updateWidgetConfigurationUseCase: UpdateWidgetConfigurationUseCase,
+    private val updateWidgetContributionUseCase: UpdateWidgetContributionUseCase,
     getWidgetsConfigurationsWithContributionsUseCase: GetWidgetsConfigurationsWithContributionsUseCase
 ) : ViewModel() {
     private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -62,12 +64,7 @@ class UserViewModel(
         viewModelScope.launch {
             _refreshing.value = true
 
-            updateWidgetByUserNameAndWidgetIdUseCase(
-                UpdateWidgetByUserNameAndWidgetIdUseCase.Params(
-                    widgetId = widgetId,
-                    userName = user
-                )
-            )
+            updateWidgetContributionUseCase(UserName(user))
 
             appAnalytics.trackUserRefresh(user)
 
