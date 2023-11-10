@@ -88,7 +88,7 @@ class UserViewModel(
         viewModelScope.launch {
             updateWidgetConfigurationUseCase(
                 UpdateWidgetConfigurationUseCase.Params(
-                    widgetId = WidgetId(widgetId),
+                    widgetIdentifiers = WidgetIdentifiers(userName = UserName(user), widgetId = WidgetId(widgetId)),
                     widgetConfiguration = configuration
                 )
             )

@@ -18,7 +18,9 @@ import pl.deniotokiari.githubcontributioncalendar.data.repository.ContributionsR
 
 val dataModule = module {
     // dataSource
-    factoryOf(::AppConfigurationRemoteDataSource)
+    single {
+        AppConfigurationRemoteDataSource(get())
+    }
     factoryOf(::AndroidBitmapDataSource) bind BitmapDataSource::class
     factoryOf(::GitHubRemoteDataSource)
     factory { GitHubLocalDataSource(get(named("contribution"))) }

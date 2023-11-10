@@ -152,11 +152,13 @@ fun HomeScreen(
                 CircularProgressIndicator()
             }
 
-            PullRefreshIndicator(
-                refreshing = uiState.refreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
+            if (uiState.items.isNotEmpty()) {
+                PullRefreshIndicator(
+                    refreshing = uiState.refreshing,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            }
         }
     }
 }

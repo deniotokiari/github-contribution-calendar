@@ -1,8 +1,8 @@
 package pl.deniotokiari.githubcontributioncalendar.data.datasource
 
+import com.google.firebase.remoteconfig.BuildConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
-import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 
 class AppConfigurationRemoteDataSource(
     private val remoteConfig: FirebaseRemoteConfig
