@@ -1,7 +1,5 @@
 package pl.deniotokiari.githubcontributioncalendar.core
 
-import pl.deniotokiari.githubcontributioncalendar.R
-
 sealed interface Result<out V, out E>
 
 data class Success<out V>(val value: V) : Result<V, Nothing>

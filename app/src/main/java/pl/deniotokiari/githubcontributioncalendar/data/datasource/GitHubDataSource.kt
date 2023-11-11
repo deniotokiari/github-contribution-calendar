@@ -81,7 +81,7 @@ class GitHubLocalDataSource(
         }
 
     fun contributions(userName: UserName): Flow<Result<Contributions, DataError>> = dataStore.data.map {
-        runCatching { Contributions.fromLocalModel(it[stringPreferencesKey(userName.toString())]) }.fold(
+        runCatching { Contributions.fromLocalModel(it[stringPreferencesKey(userName.value)]) }.fold(
             onSuccess = { it.success() },
             onFailure = { it.asFailed(::DataError) }
         )

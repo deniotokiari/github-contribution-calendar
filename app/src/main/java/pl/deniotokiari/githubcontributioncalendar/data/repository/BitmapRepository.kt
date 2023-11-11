@@ -52,13 +52,16 @@ class AndroidBitmapRepository(
         blockSize = blockSize,
         colorsSize = colors.size
     ).flatMap { metaData ->
+        val blocksCount = metaData.blocksCount
+        val offset = colors.size - blocksCount
+
         bitmapDataSource.getBitmap(
             metaData = metaData,
             width = width,
             height = height,
             blockSize = blockSize,
             padding = padding,
-            colors = colors,
+            colors = IntArray(blocksCount) { colors[it + offset] }.toList(),
             opacity = opacity
         )
     }

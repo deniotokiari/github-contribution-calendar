@@ -111,18 +111,10 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
         val size = LocalSize.current
         val width = size.width.value.roundToInt().px
         val height = size.height.value.roundToInt().px
-        val params = bitmapRepository.getMetaData(
-            width = width,
-            height = height,
-            blockSize = blockSize.value,
-            colorsSize = colors.size,
-        ).successOrNull() ?: return
-        val blocksCount = params.hCount * params.wCount
-        val offset = colors.size - blocksCount
         val bitmap = bitmapRepository.getBitmap(
             width = width,
             height = height,
-            colors = IntArray(blocksCount) { colors[it + offset] }.toList(),
+            colors = colors,
             blockSize = blockSize.value,
             padding = padding.value,
             opacity = config.opacity.value

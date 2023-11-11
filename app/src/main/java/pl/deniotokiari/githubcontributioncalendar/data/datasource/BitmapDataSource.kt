@@ -34,7 +34,9 @@ interface BitmapDataSource {
         val wCount: Int,
         val hOffset: Int,
         val wOffset: Int
-    )
+    ) {
+        val blocksCount: Int = hCount * wCount
+    }
 }
 
 class AndroidBitmapDataSource : BitmapDataSource {
