@@ -18,7 +18,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.android.gms.ads.MobileAds
 import pl.deniotokiari.githubcontributioncalendar.ui.compose.AboutScreen
 import pl.deniotokiari.githubcontributioncalendar.ui.compose.HomeScreen
 import pl.deniotokiari.githubcontributioncalendar.ui.compose.UserScreen
@@ -30,8 +29,6 @@ val LocalNavController = compositionLocalOf<NavHostController> { error("no defau
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        MobileAds.initialize(this)
 
         setContent {
             GitHubContributionCalendarTheme {

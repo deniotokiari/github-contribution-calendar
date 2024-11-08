@@ -131,9 +131,6 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                             Text(text = stringResource(id = android.R.string.ok))
                         }
                     }
-
-                    // TODO think about make it fit all screens
-                    //AddBanner(adUnitId = BuildConfig.CONFIGURE_WIDGET_AD_ID)
                 }
             }
         }

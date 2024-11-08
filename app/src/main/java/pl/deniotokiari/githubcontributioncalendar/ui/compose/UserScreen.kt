@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
-import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
@@ -122,11 +121,6 @@ fun UserScreen(
                         )
                     }
                 }
-
-                AddBanner(
-                    modifier = Modifier.fillMaxWidth(),
-                    adUnitId = BuildConfig.USER_SCREEN_AD_ID
-                )
             }
 
             PullRefreshIndicator(

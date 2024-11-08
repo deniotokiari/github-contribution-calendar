@@ -138,16 +138,6 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
 
                     AboutViewModel.UiState.Loading -> Unit
                 }
-
-                TextButton(onClick = { AdInterstitial.show(BuildConfig.SUPPORT_AD_ID, activity) }) {
-                    Text(
-                        modifier = Modifier.padding(2.dp),
-                        text = stringResource(id = R.string.support),
-                        style = TextStyle(
-                            fontSize = 16.sp,
-                        )
-                    )
-                }
             }
 
             Text(
@@ -160,11 +150,6 @@ fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
                 style = LocalTextStyle.current.copy(
                     color = PurpleGrey40
                 )
-            )
-
-            AddBanner(
-                modifier = Modifier.fillMaxWidth(),
-                adUnitId = BuildConfig.ABOUT_SCREEN_AD_ID
             )
         }
     }

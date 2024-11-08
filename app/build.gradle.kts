@@ -19,8 +19,8 @@ android {
         applicationId = appId
         minSdk = 26
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.0.2"
+        versionCode = 10
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -29,13 +29,6 @@ android {
 
         buildConfigField("String", "GITHUB_TOKEN", "\"${gradleLocalProperties(rootDir).getProperty("github.token")}\"")
         buildConfigField("String", "GITHUB_URL", "\"${gradleLocalProperties(rootDir).getProperty("github.url")}\"")
-        buildConfigField("String", "HOME_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("homeScreenAdId")}\"")
-        buildConfigField("String", "USER_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("userScreenAdId")}\"")
-        buildConfigField("String", "ABOUT_SCREEN_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("aboutScreenAdId")}\"")
-        buildConfigField("String", "SUPPORT_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("supportAdId")}\"")
-        buildConfigField("String", "CONFIGURE_WIDGET_AD_ID", "\"${gradleLocalProperties(rootDir).getProperty("configureWidgetAdId")}\"")
-
-        manifestPlaceholders["admobAppId"] = gradleLocalProperties(rootDir).getProperty("admobAppId")
     }
 
     buildTypes {
@@ -86,7 +79,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics.ktx)
     implementation(libs.firebase.crashlytics.ktx)
-    implementation(libs.play.services.ads)
     implementation(libs.firebase.config)
 
     testImplementation(libs.junit)
