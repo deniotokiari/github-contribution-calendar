@@ -48,7 +48,9 @@ import pl.deniotokiari.githubcontributioncalendar.domain.usecase.RemoveWidgetDat
 import pl.deniotokiari.githubcontributioncalendar.ui.activity.MainActivity
 import kotlin.math.roundToInt
 
-class AppWidget : GlanceAppWidget(), KoinComponent {
+class AppWidget : GlanceAppWidget(
+    errorUiLayout = R.layout.widget_error,
+), KoinComponent {
     override val sizeMode: SizeMode = SizeMode.Exact
 
     override suspend fun onDelete(context: Context, glanceId: GlanceId) {
@@ -87,7 +89,8 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
     @Composable
     private fun Empty(userName: String) {
         Box(
-            modifier = GlanceModifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+            modifier = GlanceModifier.fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -145,7 +148,10 @@ class AppWidget : GlanceAppWidget(), KoinComponent {
             val contributions = currentState(key = COLORS_KEY)?.let(Contributions::fromLocalModel)
 
             if (username != null && widgetId != null && config != null && contributions != null) {
-                Log.d("LOG", "provideContent for $username $id colors => ${contributions.colors.size}")
+                Log.d(
+                    "LOG",
+                    "provideContent for $username $id colors => ${contributions.colors.size}"
+                )
 
                 if (contributions.colors.isEmpty()) {
                     Empty(userName = username)
