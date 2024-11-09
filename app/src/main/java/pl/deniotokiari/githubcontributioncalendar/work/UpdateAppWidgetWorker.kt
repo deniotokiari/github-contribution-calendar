@@ -12,6 +12,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
+import pl.deniotokiari.githubcontributioncalendar.core.Logger
 import pl.deniotokiari.githubcontributioncalendar.core.fold
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateAllWidgetsUseCase
 import java.util.concurrent.TimeUnit
@@ -22,6 +23,7 @@ class UpdateAppWidgetWorker(
     context: Context,
     private val updateAllWidgetsUseCase: UpdateAllWidgetsUseCase,
     private val appAnalytics: AppAnalytics,
+    private val logger: Logger,
     parameters: WorkerParameters
 ) : CoroutineWorker(context, parameters) {
     override suspend fun doWork(): Result {
@@ -30,7 +32,11 @@ class UpdateAppWidgetWorker(
         val start = System.currentTimeMillis()
         val updatedCount = updateAllWidgetsUseCase(Unit).fold(
             success = { it.value },
-            failed = { 0 }
+            failed = { error ->
+                logger.error(error.throwable)
+
+                0
+            }
         )
 
         val time = (System.currentTimeMillis() - start).toDuration(DurationUnit.MILLISECONDS)
