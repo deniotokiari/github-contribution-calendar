@@ -5,5 +5,6 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android) apply false
     alias(libs.plugins.com.google.gms.google.services) apply false
     alias(libs.plugins.com.google.firebase.crashlytics) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }
 true // Needed to make the Suppress annotation work for the plugins block

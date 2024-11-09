@@ -5,7 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -88,8 +88,6 @@ fun HomeScreen(
             refreshing = uiState.refreshing,
             onRefresh = { viewModel.refreshUsersContributions() }
         )
-
-        Log.d("LOG", "compose items => ${uiState.items}")
 
         Box(
             modifier = Modifier
@@ -176,5 +174,7 @@ private fun addWidget(context: Context) {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
+    } else {
+        Toast.makeText(context, R.string.add_widget_on_home_screen, Toast.LENGTH_LONG).show()
     }
 }

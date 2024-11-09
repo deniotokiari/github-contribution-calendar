@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.com.apollographql.apollo3)
     alias(libs.plugins.com.google.gms.google.services)
     alias(libs.plugins.com.google.firebase.crashlytics)
+    alias(libs.plugins.compose.compiler)
 }
 
 val appId = "pl.deniotokiari.githubcontributioncalendar"
@@ -49,9 +50,6 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
     }
     packaging {
         resources {

@@ -14,4 +14,5 @@
     <string name="opacity">Opacity</string>
     <string name="no_data_for">No data for %1$s</string>
     <string name="widget_error">Reduce widget size</string>
+    <string name="add_widget_on_home_screen">You should add widget via home screen</string>
 </resources>
