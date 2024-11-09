@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -87,6 +88,8 @@ fun HomeScreen(
             refreshing = uiState.refreshing,
             onRefresh = { viewModel.refreshUsersContributions() }
         )
+
+        Log.d("LOG", "compose items => ${uiState.items}")
 
         Box(
             modifier = Modifier

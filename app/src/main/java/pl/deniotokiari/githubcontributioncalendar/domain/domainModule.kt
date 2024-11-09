@@ -2,7 +2,9 @@ package pl.deniotokiari.githubcontributioncalendar.domain
 
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetAllWidgetsConfigurationsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetAllWidgetsConfigurationsWithContributionsUseCase
+import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetAllContributionsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetSupportEmailUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetWidgetsConfigurationsWithContributionsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.RemoveWidgetDataUseCase
@@ -20,4 +22,6 @@ val domainModule = module {
     factoryOf(::UpdateWidgetConfigurationUseCase)
     factoryOf(::UpdateWidgetContributionUseCase)
     factoryOf(::RemoveWidgetDataUseCase)
+    factoryOf(::GetAllWidgetsConfigurationsUseCase)
+    factoryOf(::GetAllContributionsUseCase)
 }

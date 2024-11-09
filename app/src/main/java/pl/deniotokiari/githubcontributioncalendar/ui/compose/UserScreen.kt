@@ -90,7 +90,10 @@ fun UserScreen(
                             config = uiState.config
                         )
 
-                        Text(text = stringResource(id = R.string.block_size), modifier = Modifier.padding(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.block_size),
+                            modifier = Modifier.padding(8.dp)
+                        )
                         Slider(
                             value = uiState.config.blockSize.value.toFloat(),
                             onValueChange = {
@@ -100,7 +103,10 @@ fun UserScreen(
                             steps = WidgetConfiguration.BLOCK_SIZE_MAX - WidgetConfiguration.BLOCK_SIZE_MIN - 1
                         )
 
-                        Text(text = stringResource(id = R.string.padding), modifier = Modifier.padding(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.padding),
+                            modifier = Modifier.padding(8.dp)
+                        )
                         Slider(
                             value = uiState.config.padding.value.toFloat(),
                             onValueChange = {
@@ -110,7 +116,10 @@ fun UserScreen(
                             steps = WidgetConfiguration.PADDING_MAX - WidgetConfiguration.PADDING_MIN - 1
                         )
 
-                        Text(text = stringResource(id = R.string.opacity), modifier = Modifier.padding(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.opacity),
+                            modifier = Modifier.padding(8.dp)
+                        )
                         Slider(
                             value = uiState.config.opacity.value.toFloat(),
                             onValueChange = {

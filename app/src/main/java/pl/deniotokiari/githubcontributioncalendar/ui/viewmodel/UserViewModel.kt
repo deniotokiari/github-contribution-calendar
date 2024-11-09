@@ -2,6 +2,7 @@ package pl.deniotokiari.githubcontributioncalendar.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -61,7 +62,7 @@ class UserViewModel(
     }
 
     fun refreshUserContribution() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             _refreshing.value = true
 
             updateWidgetContributionUseCase(UserName(user))
@@ -85,7 +86,7 @@ class UserViewModel(
     }
 
     private fun updateWidgetConfiguration(configuration: WidgetConfiguration) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             updateWidgetConfigurationUseCase(
                 UpdateWidgetConfigurationUseCase.Params(
                     widgetIdentifiers = WidgetIdentifiers(userName = UserName(user), widgetId = WidgetId(widgetId)),

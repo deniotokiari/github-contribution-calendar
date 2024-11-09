@@ -57,7 +57,7 @@ fun ContributionWidget(
     ) {
         if (size == IntSize.Zero || colors.isEmpty()) {
             Box(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
