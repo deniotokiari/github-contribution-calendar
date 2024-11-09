@@ -13,6 +13,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
+import pl.deniotokiari.githubcontributioncalendar.core.Logger
 import pl.deniotokiari.githubcontributioncalendar.core.mapFailure
 import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
@@ -21,16 +22,18 @@ import pl.deniotokiari.githubcontributioncalendar.domain.usecase.SetUpWidgetUseC
 import java.util.concurrent.TimeUnit
 
 class SetUpAppWidgetWorker(
-    private val context: Context,
+    context: Context,
     private val parameters: WorkerParameters,
-    private val setUpWidgetUseCase: SetUpWidgetUseCase
+    private val setUpWidgetUseCase: SetUpWidgetUseCase,
+    private val logger: Logger,
 ) : CoroutineWorker(
     context, parameters
 ) {
     override suspend fun doWork(): Result = runCatching {
-        val widgetId = parameters.inputData.getInt(WIDGET_ID_KEY, AppWidgetManager.INVALID_APPWIDGET_ID).also {
-            require(it != AppWidgetManager.INVALID_APPWIDGET_ID)
-        }
+        val widgetId = parameters
+            .inputData
+            .getInt(WIDGET_ID_KEY, AppWidgetManager.INVALID_APPWIDGET_ID)
+            .also { require(it != AppWidgetManager.INVALID_APPWIDGET_ID) }
         val userName = requireNotNull(parameters.inputData.getString(USER_NAME_KEY))
 
         setUpWidgetUseCase(
@@ -45,6 +48,7 @@ class SetUpAppWidgetWorker(
         },
         onFailure = {
             Log.d("LOG", "SetUpAppWidgetWorker ${it.message}")
+            logger.error(it)
 
             Result.failure()
         }

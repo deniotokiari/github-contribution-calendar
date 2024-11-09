@@ -14,14 +14,21 @@ import pl.deniotokiari.githubcontributioncalendar.data.model.UserName
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
 
+private const val KEY_DELIMITER = ":"
+
 class WidgetConfigurationDataStore(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) {
     fun allConfigurations(): Flow<Result<List<Pair<Pair<UserName, WidgetId>, WidgetConfiguration>>, DataError>> =
         dataStore.data.map {
             runCatching {
                 it.asMap().map { (key, value) ->
-                    val (userName, widgetId) = key.name.split(":")
+                    val userName = key.name.substringBefore(KEY_DELIMITER)
+                    val widgetId = key.name.substringAfter(KEY_DELIMITER)
+
+                    if (widgetId.toIntOrNull() == null) {
+                        throw Exception("Invalid widget id: $widgetId, key: ${key.name}, value: $value")
+                    }
 
                     (UserName(userName) to WidgetId(widgetId.toInt())) to WidgetConfiguration.fromLocalModel(value)
                 }
@@ -59,7 +66,10 @@ class WidgetConfigurationDataStore(
             onFailure = { it.asFailed(::DataError) }
         )
 
-    suspend fun removeConfiguration(userName: UserName, widgetId: WidgetId): Result<Unit, DataError> =
+    suspend fun removeConfiguration(
+        userName: UserName,
+        widgetId: WidgetId
+    ): Result<Unit, DataError> =
         runCatching {
             dataStore.edit {
                 it.remove(configurationKey(userName, widgetId))
@@ -72,5 +82,5 @@ class WidgetConfigurationDataStore(
     fun defaultConfiguration(): WidgetConfiguration = WidgetConfiguration.default()
 
     private fun configurationKey(userName: UserName, widgetId: WidgetId) =
-        stringPreferencesKey("${userName.value}:${widgetId.value}")
+        stringPreferencesKey("${userName.value}$KEY_DELIMITER${widgetId.value}")
 }

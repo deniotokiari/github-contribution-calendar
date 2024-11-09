@@ -5,12 +5,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -32,7 +34,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             GitHubContributionCalendarTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier.fillMaxSize().padding(top = 16.dp),
+                    color = MaterialTheme.colorScheme.background,
+                ) {
                     CompositionLocalProvider(LocalNavController provides rememberNavController()) {
                         NavHost(
                             navController = LocalNavController.current,

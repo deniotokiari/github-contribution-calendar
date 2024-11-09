@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
+import pl.deniotokiari.githubcontributioncalendar.core.Logger
 import pl.deniotokiari.githubcontributioncalendar.core.fold
+import pl.deniotokiari.githubcontributioncalendar.core.mapFailure
 import pl.deniotokiari.githubcontributioncalendar.data.model.BlockSize
 import pl.deniotokiari.githubcontributioncalendar.data.model.Contributions
 import pl.deniotokiari.githubcontributioncalendar.data.model.Opacity
@@ -30,7 +32,8 @@ class UserViewModel(
     private val appAnalytics: AppAnalytics,
     private val updateWidgetConfigurationUseCase: UpdateWidgetConfigurationUseCase,
     private val updateWidgetContributionUseCase: UpdateWidgetContributionUseCase,
-    getWidgetsConfigurationsWithContributionsUseCase: GetWidgetsConfigurationsWithContributionsUseCase
+    getWidgetsConfigurationsWithContributionsUseCase: GetWidgetsConfigurationsWithContributionsUseCase,
+    private val logger: Logger,
 ) : ViewModel() {
     private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val uiState: StateFlow<UiState> = getWidgetsConfigurationsWithContributionsUseCase(
@@ -50,12 +53,18 @@ class UserViewModel(
                 )
             },
             failed = {
+                logger.error(it.throwable)
+
                 UiState.default(user)
             }
         )
     }.combine(_refreshing) { state, refreshing ->
         state.copy(refreshing = refreshing)
-    }.stateIn(viewModelScope, SharingStarted.Lazily, initialValue = UiState.default(user).copy(loading = true))
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.Lazily,
+        initialValue = UiState.default(user).copy(loading = true)
+    )
 
     init {
         appAnalytics.trackUserView(user)
@@ -65,7 +74,7 @@ class UserViewModel(
         viewModelScope.launch(Dispatchers.Default) {
             _refreshing.value = true
 
-            updateWidgetContributionUseCase(UserName(user))
+            updateWidgetContributionUseCase(UserName(user)).mapFailure { logger.error(it.throwable) }
 
             appAnalytics.trackUserRefresh(user)
 
@@ -89,10 +98,13 @@ class UserViewModel(
         viewModelScope.launch(Dispatchers.Default) {
             updateWidgetConfigurationUseCase(
                 UpdateWidgetConfigurationUseCase.Params(
-                    widgetIdentifiers = WidgetIdentifiers(userName = UserName(user), widgetId = WidgetId(widgetId)),
+                    widgetIdentifiers = WidgetIdentifiers(
+                        userName = UserName(user),
+                        widgetId = WidgetId(widgetId)
+                    ),
                     widgetConfiguration = configuration
                 )
-            )
+            ).mapFailure { logger.error(it.throwable) }
 
             appAnalytics.trackWidgetConfigUpdate(user, configuration)
         }
