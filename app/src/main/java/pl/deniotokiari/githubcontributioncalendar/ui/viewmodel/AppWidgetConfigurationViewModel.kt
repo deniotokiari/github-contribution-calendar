@@ -15,7 +15,7 @@ class AppWidgetConfigurationViewModel(
     private val packageName: PackageName,
     private val appAnalytics: AppAnalytics,
     private val workManager: WorkManager,
-    private val appConfigurationRepository: AppConfigurationRepository
+    private val appConfigurationRepository: AppConfigurationRepository,
 ) : ViewModel() {
     fun isIgnoringBatteryOptimizations(): Boolean =
         powerManager?.isIgnoringBatteryOptimizations(packageName.value) == true

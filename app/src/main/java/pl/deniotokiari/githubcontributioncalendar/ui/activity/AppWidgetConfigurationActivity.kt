@@ -103,6 +103,9 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                         var okEnabled by remember { mutableStateOf(true) }
 
                         TextButton(onClick = {
+                            setResult(
+                                Activity.RESULT_CANCELED,
+                            )
                             finish()
                         }) {
                             Text(text = stringResource(id = android.R.string.cancel))

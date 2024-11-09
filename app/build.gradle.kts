@@ -13,12 +13,12 @@ val appId = "pl.deniotokiari.githubcontributioncalendar"
 
 android {
     namespace = appId
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = appId
         minSdk = 26
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 10
         versionName = "1.0.4"
 
@@ -27,8 +27,8 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "GITHUB_TOKEN", "\"${gradleLocalProperties(rootDir).getProperty("github.token")}\"")
-        buildConfigField("String", "GITHUB_URL", "\"${gradleLocalProperties(rootDir).getProperty("github.url")}\"")
+        buildConfigField("String", "GITHUB_TOKEN", "\"${gradleLocalProperties(rootDir, providers).getProperty("github.token")}\"")
+        buildConfigField("String", "GITHUB_URL", "\"${gradleLocalProperties(rootDir, providers).getProperty("github.url")}\"")
     }
 
     buildTypes {
@@ -40,11 +40,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
