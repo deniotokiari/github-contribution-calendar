@@ -114,11 +114,7 @@ class AppWidgetConfigurationActivity : ComponentActivity(), KoinComponent {
                             onClick = {
                                 okEnabled = false
 
-                                with(viewModel) {
-                                    setUpWidget(appWidgetId, username)
-                                    startUpdateWidget()
-                                    trackWidgetAdd(username)
-                                }
+                                viewModel.setUpWidget(appWidgetId, username)
 
                                 setResult(
                                     Activity.RESULT_OK,
