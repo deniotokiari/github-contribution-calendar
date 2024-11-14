@@ -3,6 +3,8 @@ package pl.deniotokiari.githubcontributioncalendar.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -35,6 +37,7 @@ class UserViewModel(
     private val _uiState = MutableStateFlow(UiState.default(user = user))
     val uiState: StateFlow<UiState>
         get() = _uiState
+    private var updateWidgetConfigurationJob: Job? = null
 
     init {
         appAnalytics.trackUserView(user)
@@ -57,6 +60,8 @@ class UserViewModel(
                     },
                     failed = { error ->
                         logger.error(error.throwable)
+
+                        _uiState.update { it.copy(refreshing = false) }
                     },
                 )
             }
@@ -88,18 +93,24 @@ class UserViewModel(
     }
 
     private fun updateWidgetConfiguration(configuration: WidgetConfiguration) {
-        viewModelScope.launch(Dispatchers.Default) {
+        _uiState.value = _uiState.value.copy(config = configuration)
+
+        updateWidgetConfigurationJob?.cancel()
+
+        updateWidgetConfigurationJob = viewModelScope.launch(Dispatchers.Default) {
+            delay(300L)
+
             updateWidgetConfigurationUseCase(
                 UpdateWidgetConfigurationUseCase.Params(
                     widgetIdentifiers = WidgetIdentifiers(
                         userName = UserName(user),
                         widgetId = WidgetId(widgetId)
                     ),
-                    widgetConfiguration = configuration
+                    widgetConfiguration = _uiState.value.config
                 )
             ).mapFailure { logger.error(it.throwable) }
 
-            appAnalytics.trackWidgetConfigUpdate(user, configuration)
+            appAnalytics.trackWidgetConfigUpdate(user, _uiState.value.config)
         }
     }
 
