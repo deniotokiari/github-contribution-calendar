@@ -12,7 +12,7 @@ work = "2.10.0"
 koin = "3.5.6"
 navigation = "2.7.4"
 google-services = "4.4.0"
-firebase-bom = "32.4.0"
+firebase-bom = "33.5.1"
 firebase-crashlytics = "2.9.9"
 
 [libraries]
