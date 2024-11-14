@@ -2,7 +2,7 @@ package pl.deniotokiari.githubcontributioncalendar
 
 import android.content.Context
 import android.os.PowerManager
-import androidx.activity.ComponentActivity
+import androidx.core.content.getSystemService
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -40,7 +40,7 @@ val appModule = module {
     factory { AppWidget() }
     single { WorkManager.getInstance(get()) }
     single { PackageName(get<Context>().packageName) }
-    single { get<Context>().getSystemService(ComponentActivity.POWER_SERVICE) as? PowerManager }
+    single<PowerManager?> { get<Context>().getSystemService<PowerManager>() }
 
     single<Logger> {
         Logger(
