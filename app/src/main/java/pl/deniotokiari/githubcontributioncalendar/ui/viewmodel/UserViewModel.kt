@@ -4,11 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.Logger
@@ -35,50 +32,46 @@ class UserViewModel(
     getWidgetsConfigurationsWithContributionsUseCase: GetWidgetsConfigurationsWithContributionsUseCase,
     private val logger: Logger,
 ) : ViewModel() {
-    private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val uiState: StateFlow<UiState> = getWidgetsConfigurationsWithContributionsUseCase(
-        WidgetIdentifiers(
-            userName = UserName(user),
-            widgetId = WidgetId(widgetId)
-        )
-    ).map {
-        it.fold(
-            success = { model ->
-                UiState(
-                    userName = UserName(user),
-                    contributions = model.contributions,
-                    loading = false,
-                    config = model.configuration,
-                    refreshing = false
-                )
-            },
-            failed = {
-                logger.error(it.throwable)
-
-                UiState.default(user)
-            }
-        )
-    }.combine(_refreshing) { state, refreshing ->
-        state.copy(refreshing = refreshing)
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.Lazily,
-        initialValue = UiState.default(user).copy(loading = true)
-    )
+    private val _uiState = MutableStateFlow(UiState.default(user = user))
+    val uiState: StateFlow<UiState>
+        get() = _uiState
 
     init {
         appAnalytics.trackUserView(user)
+
+        viewModelScope.launch(Dispatchers.Default) {
+            getWidgetsConfigurationsWithContributionsUseCase(
+                WidgetIdentifiers(
+                    userName = UserName(user),
+                    widgetId = WidgetId(widgetId),
+                ),
+            ).collect { result ->
+                result.fold(
+                    success = { configurationWithContributions ->
+                        _uiState.update { state ->
+                            state.copy(
+                                contributions = configurationWithContributions.contributions,
+                                config = configurationWithContributions.configuration,
+                            )
+                        }
+                    },
+                    failed = { error ->
+                        logger.error(error.throwable)
+                    },
+                )
+            }
+        }
     }
 
     fun refreshUserContribution() {
         viewModelScope.launch(Dispatchers.Default) {
-            _refreshing.value = true
+           _uiState.update { it.copy(refreshing = true) }
 
             updateWidgetContributionUseCase(UserName(user)).mapFailure { logger.error(it.throwable) }
 
             appAnalytics.trackUserRefresh(user)
 
-            _refreshing.value = false
+            _uiState.update { it.copy(refreshing = false) }
         }
     }
 
@@ -113,7 +106,6 @@ class UserViewModel(
     data class UiState(
         val userName: UserName,
         val contributions: Contributions,
-        val loading: Boolean,
         val config: WidgetConfiguration,
         val refreshing: Boolean
     ) {
@@ -123,7 +115,6 @@ class UserViewModel(
             fun default(user: String) = UiState(
                 userName = UserName(user),
                 contributions = Contributions(emptyList()),
-                loading = false,
                 config = WidgetConfiguration.default(),
                 refreshing = false
             )
