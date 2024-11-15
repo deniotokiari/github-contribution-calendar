@@ -16,7 +16,7 @@ class GitHubContributionCalendarApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        Firebase.crashlytics.setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
+        Firebase.crashlytics.isCrashlyticsCollectionEnabled = !BuildConfig.DEBUG
         Firebase.analytics.setAnalyticsCollectionEnabled(!BuildConfig.DEBUG)
 
         startKoin {

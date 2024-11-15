@@ -15,14 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import androidx.navigation.NavHostController
-import androidx.navigation.NavType
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import pl.deniotokiari.githubcontributioncalendar.ui.compose.AboutScreen
 import pl.deniotokiari.githubcontributioncalendar.ui.compose.HomeScreen
 import pl.deniotokiari.githubcontributioncalendar.ui.compose.UserScreen
+import pl.deniotokiari.githubcontributioncalendar.ui.navigation.AboutRoute
+import pl.deniotokiari.githubcontributioncalendar.ui.navigation.HomeRoute
+import pl.deniotokiari.githubcontributioncalendar.ui.navigation.UserRoute
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.GitHubContributionCalendarTheme
 import pl.deniotokiari.githubcontributioncalendar.ui.widget.AppWidget
 
@@ -35,28 +38,23 @@ class MainActivity : ComponentActivity() {
         setContent {
             GitHubContributionCalendarTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize().padding(top = 16.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 16.dp),
                     color = MaterialTheme.colorScheme.background,
                 ) {
                     CompositionLocalProvider(LocalNavController provides rememberNavController()) {
                         NavHost(
                             navController = LocalNavController.current,
-                            startDestination = "home"
+                            startDestination = HomeRoute,
                         ) {
-                            composable("home") { HomeScreen() }
-                            composable(
-                                "user/{user}/{widgetId}",
-                                arguments = listOf(
-                                    navArgument("user") { type = NavType.StringType },
-                                    navArgument("widgetId") { type = NavType.IntType }
-                                )
-                            ) {
-                                val user = requireNotNull(it.arguments?.getString("user"))
-                                val widgetId = requireNotNull(it.arguments?.getInt("widgetId"))
+                            composable<HomeRoute> { HomeScreen() }
+                            composable<UserRoute> {
+                                val route = it.toRoute<UserRoute>()
 
-                                UserScreen(user = user, widgetId = widgetId)
+                                UserScreen(user = route.user, widgetId = route.widgetId)
                             }
-                            composable("about") { AboutScreen() }
+                            composable<AboutRoute> { AboutScreen() }
                         }
 
                         val navHostController = LocalNavController.current
@@ -83,8 +81,15 @@ class MainActivity : ComponentActivity() {
         val widgetId = intent?.extras?.getInt(AppWidget.DESTINATION_WIDGET_ID)
 
         if (user != null && widgetId != null) {
-            navHostController.popBackStack("home", inclusive = false)
-            navHostController.navigate("user/${user}/${widgetId}")
+            navHostController.navigate(
+                route = UserRoute(user = user, widgetId = widgetId),
+                navOptions = NavOptions
+                    .Builder()
+                    .apply {
+                        setPopUpTo<HomeRoute>(inclusive = false)
+                    }
+                    .build(),
+            )
         }
     }
 }

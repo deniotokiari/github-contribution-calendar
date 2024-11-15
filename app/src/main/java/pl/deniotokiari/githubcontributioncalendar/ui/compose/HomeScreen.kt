@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.R
 import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
+import pl.deniotokiari.githubcontributioncalendar.ui.navigation.AboutRoute
+import pl.deniotokiari.githubcontributioncalendar.ui.navigation.UserRoute
 import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.HomeViewModel
 import pl.deniotokiari.githubcontributioncalendar.ui.widget.AppWidgetReceiver
 
@@ -58,7 +60,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier.fillMaxWidth()
         ) {
-            IconButton(onClick = { navController.navigate("about") }) {
+            IconButton(onClick = { navController.navigate(AboutRoute) }) {
                 Icon(
                     imageVector = Icons.Outlined.Info,
                     contentDescription = stringResource(id = R.string.about_button_description)
@@ -110,7 +112,12 @@ fun HomeScreen(
                                 colors = items.asIntColors(),
                                 config = config,
                                 onClicked = {
-                                    navController.navigate("user/${userName}/${widgetId}")
+                                    navController.navigate(
+                                        UserRoute(
+                                            user = userName,
+                                            widgetId = widgetId,
+                                        ),
+                                    )
                                 },
                                 content = {
                                     Box(

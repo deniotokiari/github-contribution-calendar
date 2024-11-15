@@ -38,7 +38,7 @@ class AboutViewModel(
     }
 
     sealed class UiState {
-        object Loading : UiState()
+        data object Loading : UiState()
         data class Idle(
             val email: String
         ) : UiState()

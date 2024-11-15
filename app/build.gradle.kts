@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.com.google.gms.google.services)
     alias(libs.plugins.com.google.firebase.crashlytics)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val appId = "pl.deniotokiari.githubcontributioncalendar"
@@ -58,28 +59,29 @@ android {
 }
 
 dependencies {
-    implementation(libs.core.ktx)
-    implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
-    implementation(platform(libs.compose.bom))
+    implementation(libs.androidx.work.runtime.ktx)
+    implementation(libs.apollo.runtime)
+    implementation(libs.bundles.glance)
+    implementation(libs.bundles.koin)
+    implementation(libs.core.ktx)
+    implementation(libs.data.store)
+    implementation(libs.firebase.analytics.ktx)
+    implementation(libs.firebase.config)
+    implementation(libs.firebase.crashlytics.ktx)
+    implementation(libs.kotlin.serialization)
+    implementation(libs.lifecycle.runtime.ktx)
+    implementation(libs.material3)
+    implementation(libs.navigation.compose)
     implementation(libs.ui)
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
-    implementation(libs.apollo.runtime)
-    implementation(libs.bundles.glance)
-    implementation(libs.data.store)
     implementation(libs.work)
-    implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.bundles.koin)
-    implementation(libs.navigation.compose)
+    implementation(platform(libs.compose.bom))
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.analytics.ktx)
-    implementation(libs.firebase.crashlytics.ktx)
-    implementation(libs.firebase.config)
 
-    debugImplementation(libs.ui.tooling)
     debugImplementation(libs.ui.test.manifest)
+    debugImplementation(libs.ui.tooling)
 }
 
 apollo {
