@@ -34,21 +34,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.R
-import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
+import pl.deniotokiari.githubcontributioncalendar.core.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.ui.navigation.AboutRoute
 import pl.deniotokiari.githubcontributioncalendar.ui.navigation.UserRoute
 import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.HomeViewModel
+import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.HomeViewModel.UiState.Empty.items
 import pl.deniotokiari.githubcontributioncalendar.ui.widget.AppWidgetReceiver
 
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = koinViewModel()
-) {
+fun HomeScreen() {
+    val viewModel: HomeViewModel = koinViewModel()
     val navController = LocalNavController.current
     val context = LocalContext.current
 
@@ -57,111 +57,135 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            IconButton(onClick = { navController.navigate(AboutRoute) }) {
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = stringResource(id = R.string.about_button_description)
-                )
-            }
-            Text(
-                text = stringResource(id = R.string.app_name),
-                modifier = Modifier.align(Alignment.Center),
-                style = TextStyle(
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center
-                )
-            )
-
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                onClick = { addWidget(context) }) {
-                Icon(
-                    imageVector = Icons.Outlined.Add,
-                    contentDescription = stringResource(id = R.string.add_widget_button_description)
-                )
-            }
-        }
-
         val uiState by viewModel.uiState.collectAsState()
-        val pullRefreshState = rememberPullRefreshState(
-            refreshing = uiState.refreshing,
-            onRefresh = { viewModel.refreshUsersContributions() }
-        )
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .pullRefresh(pullRefreshState),
-            contentAlignment = Alignment.Center
+        HomeContent(
+            uiState = uiState,
+            onAddWidgetClick = { addWidget(context) },
+            onStartActionClick = { navController.navigate(AboutRoute) },
+            onEndActionClick = { addWidget(context) },
+            onRefresh = { viewModel.refreshUsersContributions() },
+            onWidgetClick = { user, widgetId ->
+                navController.navigate(UserRoute(user = user, widgetId = widgetId))
+            }
+        )
+    }
+}
+
+@Composable
+private fun HomeEmpty(
+    onAddWidgetClick: () -> Unit,
+) = TextButton(onClick = { onAddWidgetClick() }) {
+    Icon(
+        imageVector = Icons.Filled.Add,
+        contentDescription = stringResource(id = R.string.add_widget_button_description)
+    )
+
+    Text(text = stringResource(id = R.string.add_widget))
+}
+
+@Composable
+private fun HomeItems(
+    uiState: HomeViewModel.UiState.Content,
+    onRefresh: () -> Unit,
+    onWidgetClick: (String, Int) -> Unit,
+) {
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.refreshing,
+        onRefresh = { onRefresh() }
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1F),
             ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1F),
-                ) {
-                    uiState.items.forEach { (userName, widgetId, config, items) ->
-                        item {
-                            ContributionWidget(
-                                user = userName,
-                                colors = items.asIntColors(),
-                                config = config,
-                                onClicked = {
-                                    navController.navigate(
-                                        UserRoute(
-                                            user = userName,
-                                            widgetId = widgetId,
+                uiState.items.forEach { (userName, widgetId, config, items) ->
+                    item {
+                        ContributionWidget(
+                            user = userName,
+                            colors = items.asIntColors(),
+                            config = config,
+                            onClicked = {
+                                onWidgetClick(userName, widgetId)
+                            },
+                            content = {
+                                Box(
+                                    modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                                ) {
+                                    Text(
+                                        text = userName,
+                                        style = TextStyle(
+                                            fontSize = 18.sp,
                                         ),
+                                        modifier = Modifier.padding(4.dp)
                                     )
-                                },
-                                content = {
-                                    Box(
-                                        modifier = Modifier.background(MaterialTheme.colorScheme.background)
-                                    ) {
-                                        Text(
-                                            text = userName,
-                                            style = TextStyle(
-                                                fontSize = 18.sp,
-                                            ),
-                                            modifier = Modifier.padding(4.dp)
-                                        )
-                                    }
                                 }
-                            )
-                        }
+                            }
+                        )
                     }
                 }
             }
-
-            if (uiState.items.isEmpty()) {
-                TextButton(onClick = {
-                    addWidget(context)
-                }) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = stringResource(id = R.string.add_widget_button_description)
-                    )
-                    Text(text = stringResource(id = R.string.add_widget))
-                }
-            }
-
-            if (uiState.loading) {
-                CircularProgressIndicator()
-            }
-
-            if (uiState.items.isNotEmpty()) {
-                PullRefreshIndicator(
-                    refreshing = uiState.refreshing,
-                    state = pullRefreshState,
-                    modifier = Modifier.align(Alignment.TopCenter)
-                )
-            }
         }
+
+        if (uiState.items.isNotEmpty()) {
+            PullRefreshIndicator(
+                refreshing = uiState.refreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomeContent(
+    uiState: HomeViewModel.UiState,
+    onAddWidgetClick: () -> Unit,
+    onStartActionClick: () -> Unit,
+    onEndActionClick: () -> Unit,
+    onRefresh: () -> Unit,
+    onWidgetClick: (String, Int) -> Unit,
+) = AppTopBar(
+    title = stringResource(id = R.string.app_name),
+    startAction = {
+        IconButton(onClick = { onStartActionClick() }) {
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = stringResource(id = R.string.about_button_description),
+            )
+        }
+    },
+    endAction = {
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            onClick = { onEndActionClick() }) {
+            Icon(
+                imageVector = Icons.Outlined.Add,
+                contentDescription = stringResource(id = R.string.add_widget_button_description),
+            )
+        }
+    },
+) {
+    when (uiState) {
+        is HomeViewModel.UiState.Content -> HomeItems(
+            uiState = uiState,
+            onRefresh = onRefresh,
+            onWidgetClick = onWidgetClick,
+        )
+
+        HomeViewModel.UiState.Empty -> HomeEmpty(onAddWidgetClick = onAddWidgetClick)
+        HomeViewModel.UiState.Loading -> CircularProgressIndicator()
     }
 }
 
@@ -185,3 +209,25 @@ private fun addWidget(context: Context) {
         Toast.makeText(context, R.string.add_widget_on_home_screen, Toast.LENGTH_LONG).show()
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeScreenLoadingPreview() = HomeContent(
+    uiState = HomeViewModel.UiState.Loading,
+    onAddWidgetClick = {},
+    onStartActionClick = {},
+    onEndActionClick = {},
+    onRefresh = {},
+    onWidgetClick = { _, _ -> }
+)
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeScreenEmptyPreview() = HomeContent(
+    uiState = HomeViewModel.UiState.Empty,
+    onAddWidgetClick = {},
+    onStartActionClick = {},
+    onEndActionClick = {},
+    onRefresh = {},
+    onWidgetClick = { _, _ -> }
+)

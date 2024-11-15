@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import pl.deniotokiari.githubcontributioncalendar.BuildConfig
 import pl.deniotokiari.githubcontributioncalendar.R
+import pl.deniotokiari.githubcontributioncalendar.core.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
-import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Pink40
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Pink80
 import pl.deniotokiari.githubcontributioncalendar.ui.theme.Purple40

@@ -28,8 +28,8 @@ import androidx.compose.ui.unit.sp
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import pl.deniotokiari.githubcontributioncalendar.R
+import pl.deniotokiari.githubcontributioncalendar.core.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
-import pl.deniotokiari.githubcontributioncalendar.ui.activity.LocalNavController
 import pl.deniotokiari.githubcontributioncalendar.ui.viewmodel.UserViewModel
 import kotlin.math.roundToInt
 

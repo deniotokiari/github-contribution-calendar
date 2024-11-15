@@ -1,5 +1,6 @@
 package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
+import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,11 +19,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import org.koin.compose.koinInject
 import pl.deniotokiari.githubcontributioncalendar.core.successOrNull
+import pl.deniotokiari.githubcontributioncalendar.data.datasource.AndroidBitmapDataSource
 import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetConfiguration
+import pl.deniotokiari.githubcontributioncalendar.data.repository.AndroidBitmapRepository
 import pl.deniotokiari.githubcontributioncalendar.data.repository.BitmapRepository
 
 @Composable
@@ -83,4 +87,56 @@ fun ContributionWidget(
             content?.invoke(this)
         }
     }
+}
+
+@Preview(showBackground = false)
+@Composable
+fun ContributionWidgetLoadingPreview() = ContributionWidget(
+    user = "deniotokiari",
+    colors = listOf(),
+    config = WidgetConfiguration.default(),
+    modifier = Modifier,
+    onClicked = {},
+    content = {},
+    bitmapRepository = AndroidBitmapRepository(AndroidBitmapDataSource())
+)
+
+@Preview(showBackground = false)
+@Composable
+fun ContributionWidgetColorsPreview() = Box {
+    fun generate(): List<Int> = run {
+        val list = mutableListOf<Int>()
+
+        repeat(1000) {
+            listOf(
+                Color.BLACK,
+                Color.DKGRAY,
+                Color.GRAY,
+                Color.LTGRAY,
+                Color.WHITE,
+                Color.RED,
+                Color.GREEN,
+                Color.BLUE,
+                Color.YELLOW,
+                Color.CYAN,
+                Color.MAGENTA,
+            ).random().let(list::add)
+        }
+
+        list
+    }
+
+    var colors by remember { mutableStateOf(generate()) }
+
+    ContributionWidget(
+        user = "deniotokiari",
+        colors = colors,
+        config = WidgetConfiguration.default(),
+        modifier = Modifier,
+        onClicked = {
+            colors = generate()
+        },
+        content = {},
+        bitmapRepository = AndroidBitmapRepository(AndroidBitmapDataSource())
+    )
 }

@@ -26,8 +26,7 @@ class HomeViewModel(
     private val appAnalytics: AppAnalytics,
     private val logger: Logger,
 ) : ViewModel() {
-    private val _refreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val _uiState = MutableStateFlow(UiState.default().copy(loading = true))
+    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState>
         get() = _uiState
 
@@ -38,19 +37,24 @@ class HomeViewModel(
             getAllWidgetsConfigurationsUseCase(Unit).collect { result ->
                 result.fold(
                     success = { items ->
+                        val configurations = items.associate { (userName, widgetId, config) ->
+                            (widgetId to userName) to config
+                        }
+
                         _uiState.update { state ->
-                            state.copy(
-                                loading = false,
-                                configurations = items.associate { (userName, widgetId, config) ->
-                                    (widgetId to userName) to config
-                                },
+                            (state as? UiState.Content)?.copy(
+                                configurations = configurations,
+                            ) ?: UiState.Content(
+                                configurations = configurations,
+                                contributions = emptyMap(),
+                                refreshing = false,
                             )
                         }
                     },
                     failed = { error ->
                         logger.error(error.throwable)
 
-                        _uiState.update { UiState.default() }
+                        _uiState.update { UiState.Empty }
                     },
                 )
             }
@@ -60,19 +64,24 @@ class HomeViewModel(
             getAllContributionsUseCase(Unit).collect { result ->
                 result.fold(
                     success = { items ->
+                        val contributions = items.associate { (userName, contributions) ->
+                            userName to contributions
+                        }
+
                         _uiState.update { state ->
-                            state.copy(
-                                loading = false,
-                                contributions = items.associate { (userName, contributions) ->
-                                    userName to contributions
-                                }
+                            (state as? UiState.Content)?.copy(
+                                contributions = contributions,
+                            ) ?: UiState.Content(
+                                contributions = contributions,
+                                configurations = emptyMap(),
+                                refreshing = false,
                             )
                         }
                     },
                     failed = { error ->
                         logger.error(error.throwable)
 
-                        _uiState.update { state -> state.copy(loading = false) }
+                        _uiState.update { UiState.Empty }
                     },
                 )
             }
@@ -81,22 +90,30 @@ class HomeViewModel(
 
     fun refreshUsersContributions() {
         viewModelScope.launch(Dispatchers.Default) {
-            _refreshing.value = true
+            _uiState.update { state ->
+                (state as? UiState.Content)?.copy(refreshing = true) ?: state
+            }
 
             val size = updateAllWidgetsUseCase(Unit).successOrNull()?.value
 
             appAnalytics.trackHomeRefresh(size ?: 0)
 
-            _refreshing.value = false
+            _uiState.update { state ->
+                (state as? UiState.Content)?.copy(refreshing = true) ?: state
+            }
+
         }
     }
 
-    data class UiState(
-        val configurations: Map<Pair<WidgetId, UserName>, WidgetConfiguration>,
-        val contributions: Map<UserName, Contributions>,
-        val loading: Boolean,
-        val refreshing: Boolean,
-    ) {
+    sealed interface UiState {
+        data object Loading : UiState
+        data object Empty : UiState
+        data class Content(
+            val configurations: Map<Pair<WidgetId, UserName>, WidgetConfiguration>,
+            val contributions: Map<UserName, Contributions>,
+            val refreshing: Boolean,
+        ) : UiState
+
         data class Widget(
             val name: String,
             val widgetId: Int,
@@ -104,7 +121,7 @@ class HomeViewModel(
             val contributions: Contributions
         )
 
-        val items: List<Widget>
+        val Content.items: List<Widget>
             get() = configurations.map { (key, value) ->
                 val (widgetId, userName) = key
                 val contributions = contributions[userName]
@@ -117,13 +134,5 @@ class HomeViewModel(
                 )
             }
 
-        companion object {
-            fun default() = UiState(
-                configurations = emptyMap(),
-                contributions = emptyMap(),
-                loading = false,
-                refreshing = false
-            )
-        }
     }
 }
