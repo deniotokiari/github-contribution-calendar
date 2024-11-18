@@ -90,7 +90,6 @@ private fun HomeItems(
     onRefresh: () -> Unit,
     onWidgetClick: (String, Int) -> Unit,
 ) {
-
     val pullRefreshState = rememberPullRefreshState(
         refreshing = uiState.refreshing,
         onRefresh = { onRefresh() }
