@@ -52,30 +52,27 @@ fun HomeScreen() {
     val navController = LocalNavController.current
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        val uiState by viewModel.uiState.collectAsState()
 
-        HomeContent(
-            uiState = uiState,
-            onAddWidgetClick = { addWidget(context) },
-            onStartActionClick = { navController.navigate(AboutRoute) },
-            onEndActionClick = { addWidget(context) },
-            onRefresh = { viewModel.refreshUsersContributions() },
-            onWidgetClick = { user, widgetId ->
-                navController.navigate(UserRoute(user = user, widgetId = widgetId))
-            }
-        )
-    }
+    val uiState by viewModel.uiState.collectAsState()
+
+    HomeContent(
+        uiState = uiState,
+        onAddWidgetClick = { addWidget(context) },
+        onStartActionClick = { navController.navigate(AboutRoute) },
+        onEndActionClick = { addWidget(context) },
+        onRefresh = { viewModel.refreshUsersContributions() },
+        onWidgetClick = { user, widgetId ->
+            navController.navigate(UserRoute(user = user, widgetId = widgetId))
+        }
+    )
 }
 
 @Composable
 private fun HomeEmpty(
     onAddWidgetClick: () -> Unit,
-) = TextButton(onClick = { onAddWidgetClick() }) {
+) = TextButton(
+    onClick = { onAddWidgetClick() },
+) {
     Icon(
         imageVector = Icons.Filled.Add,
         contentDescription = stringResource(id = R.string.add_widget_button_description)
@@ -183,8 +180,17 @@ private fun HomeContent(
             onWidgetClick = onWidgetClick,
         )
 
-        HomeViewModel.UiState.Empty -> HomeEmpty(onAddWidgetClick = onAddWidgetClick)
-        HomeViewModel.UiState.Loading -> CircularProgressIndicator()
+        HomeViewModel.UiState.Empty -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            HomeEmpty(onAddWidgetClick = onAddWidgetClick)
+        }
+
+        HomeViewModel.UiState.Loading -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {CircularProgressIndicator()}
     }
 }
 

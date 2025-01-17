@@ -41,14 +41,18 @@ class HomeViewModel(
                             (widgetId to userName) to config
                         }
 
-                        _uiState.update { state ->
-                            (state as? UiState.Content)?.copy(
-                                configurations = configurations,
-                            ) ?: UiState.Content(
-                                configurations = configurations,
-                                contributions = emptyMap(),
-                                refreshing = false,
-                            )
+                        if (configurations.isEmpty()) {
+                            _uiState.update { UiState.Empty }
+                        } else {
+                            _uiState.update { state ->
+                                (state as? UiState.Content)?.copy(
+                                    configurations = configurations,
+                                ) ?: UiState.Content(
+                                    configurations = configurations,
+                                    contributions = emptyMap(),
+                                    refreshing = false,
+                                )
+                            }
                         }
                     },
                     failed = { error ->
@@ -68,14 +72,18 @@ class HomeViewModel(
                             userName to contributions
                         }
 
-                        _uiState.update { state ->
-                            (state as? UiState.Content)?.copy(
-                                contributions = contributions,
-                            ) ?: UiState.Content(
-                                contributions = contributions,
-                                configurations = emptyMap(),
-                                refreshing = false,
-                            )
+                        if (contributions.isEmpty()) {
+                            _uiState.update { UiState.Empty }
+                        } else {
+                            _uiState.update { state ->
+                                (state as? UiState.Content)?.copy(
+                                    contributions = contributions,
+                                ) ?: UiState.Content(
+                                    contributions = contributions,
+                                    configurations = emptyMap(),
+                                    refreshing = false,
+                                )
+                            }
                         }
                     },
                     failed = { error ->
