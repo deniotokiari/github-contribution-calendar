@@ -107,7 +107,7 @@ class HomeViewModel(
             appAnalytics.trackHomeRefresh(size ?: 0)
 
             _uiState.update { state ->
-                (state as? UiState.Content)?.copy(refreshing = true) ?: state
+                (state as? UiState.Content)?.copy(refreshing = false) ?: state
             }
 
         }
