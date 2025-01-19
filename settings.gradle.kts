@@ -1,4 +1,6 @@
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {
         google()
         mavenCentral()
@@ -15,4 +17,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "GitHub Contribution Calendar"
 include(":app")
- 
+include(":core:misc")

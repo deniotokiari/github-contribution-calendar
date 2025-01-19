@@ -2,6 +2,7 @@ package pl.deniotokiari.githubcontributioncalendar.ui.compose
 
 import android.content.Intent
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -10,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.util.Consumer
 import androidx.navigation.NavHostController
@@ -51,7 +51,7 @@ fun AppScreen() = GitHubContributionCalendarTheme {
             }
         }
 
-        val context = (LocalContext.current as? ComponentActivity)
+        val context = (LocalActivity.current as? ComponentActivity)
 
         handleNavigation(context?.intent, navController)
 

@@ -6,4 +6,5 @@ plugins {
     alias(libs.plugins.com.google.firebase.crashlytics) apply false
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.kotlin.serialization) apply false
+    alias(libs.plugins.android.library) apply false
 }
