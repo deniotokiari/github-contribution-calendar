@@ -1,60 +1,22 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
-    alias(libs.plugins.com.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.com.apollographql.apollo3)
-    alias(libs.plugins.com.google.gms.google.services)
-    alias(libs.plugins.com.google.firebase.crashlytics)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.common.android.aplication.convention)
 }
 
-val appId = "pl.deniotokiari.githubcontributioncalendar"
-
 android {
-    namespace = appId
-    compileSdk = 35
-
     defaultConfig {
-        applicationId = appId
-        minSdk = 26
-        targetSdk = 35
         versionCode = 14
         versionName = "1.0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
 
         buildConfigField("String", "GITHUB_TOKEN", "\"${gradleLocalProperties(rootDir, providers).getProperty("github.token")}\"")
         buildConfigField("String", "GITHUB_URL", "\"${gradleLocalProperties(rootDir, providers).getProperty("github.url")}\"")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            isDebuggable = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
     }
 }
 
@@ -86,6 +48,6 @@ dependencies {
 
 apollo {
     service("github") {
-        packageName.set("$appId.service.github")
+        packageName.set("pl.deniotokiari.githubcontributioncalendar.service.github")
     }
 }

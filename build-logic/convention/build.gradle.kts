@@ -11,6 +11,9 @@ dependencies {
 
 gradlePlugin {
     plugins {
-
+        register("androidApplicationConventionPlugin") {
+            id = "gradlePlugins.android.application.convention"
+            implementationClass = "pl.deniotokiari.capital.gain.calculator.buildlogic.AndroidApplicationConventionPlugin"
+        }
     }
 }
