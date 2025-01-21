@@ -2,6 +2,7 @@ package pl.deniotokiari.githubcontributioncalendar
 
 import android.content.Context
 import android.os.PowerManager
+import android.util.Log
 import androidx.core.content.getSystemService
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -19,7 +20,7 @@ import org.koin.dsl.module
 import pl.deniotokiari.githubcontributioncalendar.analytics.Analytics
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.analytics.FirebaseAnalyticsImpl
-import pl.deniotokiari.githubcontributioncalendar.core.Logger
+import pl.deniotokiari.githubcontributioncalendar.core.misc.Logger
 import pl.deniotokiari.githubcontributioncalendar.network.GitHubService
 import pl.deniotokiari.githubcontributioncalendar.network.apolloClient
 import pl.deniotokiari.githubcontributioncalendar.ui.widget.AppWidget
@@ -43,10 +44,11 @@ val appModule = module {
     single<PowerManager?> { get<Context>().getSystemService<PowerManager>() }
 
     single<Logger> {
-        Logger(
-            onLog = { message -> Firebase.crashlytics.log(message) },
-            onError = { error -> Firebase.crashlytics.recordException(error) }
-        )
+        if (BuildConfig.DEBUG) {
+            LogLogger()
+        } else {
+            FirebaseLogger()
+        }
     }
 }
 
@@ -57,3 +59,23 @@ private val Context.contributionsDataStore: DataStore<Preferences> by preference
 private val Context.widgetConfigurationDataStore: DataStore<Preferences> by preferencesDataStore(
     name = "widgetConfiguration"
 )
+
+private class FirebaseLogger : Logger {
+    override fun message(message: String) {
+        Firebase.crashlytics.log(message)
+    }
+
+    override fun error(error: Throwable) {
+        Firebase.crashlytics.recordException(error)
+    }
+}
+
+private class LogLogger : Logger {
+    override fun message(message: String) {
+        Log.d("githubcontributioncalendar", message)
+    }
+
+    override fun error(error: Throwable) {
+        Log.e("githubcontributioncalendar", error.message, error)
+    }
+}

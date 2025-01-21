@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import pl.deniotokiari.capital.gain.calculator.buildlogic.implementation
 
 plugins {
     alias(libs.plugins.common.android.aplication.convention)
@@ -44,6 +45,8 @@ dependencies {
 
     debugImplementation(libs.ui.test.manifest)
     debugImplementation(libs.ui.tooling)
+
+    implementation(project(":core:misc"))
 }
 
 apollo {

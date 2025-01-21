@@ -68,6 +68,7 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 common-android-aplication-convention = { id = "gradlePlugins.android.application.convention", version = "unspecified" }
+common-android-library-convention = { id = "gradlePlugins.android.library.convention", version = "unspecified" }
 
 [bundles]
 glance = ["glance-appwidget", "glance-material3"]

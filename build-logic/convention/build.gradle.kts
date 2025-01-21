@@ -15,5 +15,10 @@ gradlePlugin {
             id = "gradlePlugins.android.application.convention"
             implementationClass = "pl.deniotokiari.capital.gain.calculator.buildlogic.AndroidApplicationConventionPlugin"
         }
+
+        register("androidLibraryConventionPlugin") {
+            id = "gradlePlugins.android.library.convention"
+            implementationClass = "pl.deniotokiari.capital.gain.calculator.buildlogic.AndroidLibraryConventionPlugin"
+        }
     }
 }
