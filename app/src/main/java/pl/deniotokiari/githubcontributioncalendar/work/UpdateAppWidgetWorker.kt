@@ -14,6 +14,7 @@ import androidx.work.WorkerParameters
 import pl.deniotokiari.githubcontributioncalendar.analytics.AppAnalytics
 import pl.deniotokiari.githubcontributioncalendar.core.fold
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateAllWidgetsUseCase
+import pl.deniotokiari.githubcontributioncalendar.core.misc.Logger
 import java.util.concurrent.TimeUnit
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration

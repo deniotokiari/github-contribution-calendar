@@ -17,6 +17,7 @@ import pl.deniotokiari.githubcontributioncalendar.data.model.WidgetId
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetAllContributionsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetAllWidgetsConfigurationsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateAllWidgetsUseCase
+import pl.deniotokiari.githubcontributioncalendar.core.misc.Logger
 
 class HomeViewModel(
     private val getAllWidgetsConfigurationsUseCase: GetAllWidgetsConfigurationsUseCase,

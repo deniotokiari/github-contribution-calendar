@@ -23,6 +23,7 @@ import pl.deniotokiari.githubcontributioncalendar.domain.model.WidgetIdentifiers
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.GetWidgetsConfigurationsWithContributionsUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateWidgetConfigurationUseCase
 import pl.deniotokiari.githubcontributioncalendar.domain.usecase.UpdateWidgetContributionUseCase
+import pl.deniotokiari.githubcontributioncalendar.core.misc.Logger
 
 class UserViewModel(
     private val user: String,
