@@ -14,9 +14,31 @@ This directory contains GitHub Actions workflows for continuous integration of t
 - **Actions**: Runs unit tests, generates test reports
 - **Notifications**: GitHub Actions UI notifications
 
-## No Configuration Required
+## Required GitHub Secrets
 
-These workflows run automatically without any additional setup. No GitHub secrets or email configuration is needed.
+To enable the workflows, you need to configure the following secrets in your GitHub repository:
+
+### Setting up GitHub Secrets
+
+1. Go to your GitHub repository
+2. Click on **Settings** tab
+3. In the left sidebar, click **Secrets and variables** → **Actions**
+4. Click **New repository secret** and add the following:
+
+#### Required Secrets:
+
+| Secret Name | Description | Example |
+|-------------|-------------|---------|
+| `GOOGLE_SERVICES` | Complete content of google-services.json file | `{"project_info": {...}}` |
+| `CONFIG` | Complete content of local.properties file | `sdk.dir=/path/to/sdk` |
+
+### How to Get the Secret Values:
+
+#### For `GOOGLE_SERVICES`:
+Copy the entire content of your `app/google-services.json` file and paste it as the secret value.
+
+#### For `CONFIG`:
+Copy the entire content of your `local.properties` file and paste it as the secret value.
 
 ## Workflow Features
 
@@ -24,6 +46,8 @@ These workflows run automatically without any additional setup. No GitHub secret
 
 #### Build Workflow (`build.yml`)
 - ✅ Checks out code
+- ✅ Sets up Google Services (from secret)
+- ✅ Sets up Local Properties (from secret)
 - ✅ Sets up JDK 17 and Android SDK
 - ✅ Caches Gradle dependencies
 - ✅ Builds debug APK
@@ -32,6 +56,8 @@ These workflows run automatically without any additional setup. No GitHub secret
 
 #### Test Workflow (`test.yml`)
 - ✅ Checks out code
+- ✅ Sets up Google Services (from secret)
+- ✅ Sets up Local Properties (from secret)
 - ✅ Sets up JDK 17 and Android SDK
 - ✅ Caches Gradle dependencies
 - ✅ Runs unit tests (83 tests)
@@ -86,8 +112,12 @@ You can also trigger workflows manually:
 1. **Build fails**: Check Android SDK setup and dependencies
 2. **Tests fail**: Review test logs in the Actions tab
 3. **Gradle cache issues**: Clear cache by updating the cache key
+4. **Secrets not found**: Ensure `GOOGLE_SERVICES` and `CONFIG` secrets are configured
+5. **Google Services error**: Verify the `GOOGLE_SERVICES` secret contains valid JSON
+6. **Local Properties error**: Verify the `CONFIG` secret contains valid properties
 
 ### Getting Help:
 - Check the Actions tab for detailed logs
 - Review the test reports in artifacts
 - Check the workflow files for configuration details
+- Verify all required secrets are configured in repository settings

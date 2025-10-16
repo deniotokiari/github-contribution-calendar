@@ -12,6 +12,14 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Setup Google Services
+      run: |
+        echo '${{ secrets.GOOGLE_SERVICES }}' > app/google-services.json
+        
+    - name: Setup Local Properties
+      run: |
+        echo '${{ secrets.CONFIG }}' > local.properties
+      
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
