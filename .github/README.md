@@ -115,6 +115,7 @@ You can also trigger workflows manually:
 4. **Secrets not found**: Ensure `GOOGLE_SERVICES` and `CONFIG` secrets are configured
 5. **Google Services error**: Verify the `GOOGLE_SERVICES` secret contains valid JSON
 6. **Local Properties error**: Verify the `CONFIG` secret contains valid properties
+7. **"Resource not accessible by integration"**: This is fixed by the permissions in the workflow files
 
 ### Getting Help:
 - Check the Actions tab for detailed logs
